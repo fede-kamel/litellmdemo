@@ -1,0 +1,11 @@
+[project]
+name = "litellmdemo"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.12"
+dependencies = [
+    "langchain-oci>=0.3.2",
+    "langchain-openai>=1.6.7",
+    "litellm[proxy]==1.104.0",
+    "oci>=2.187.2",
+]

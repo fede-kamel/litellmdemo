@@ -1,0 +1,94 @@
+# LiteLLM AI Gateway in front of OCI Generative AI (us-chicago-1).
+#
+# Applications call one OpenAI-compatible endpoint with a model-group name and
+# never name a vendor model. The gateway decides the deployment: by complexity
+# tier, by tag, by latency, by context window, and by fallback when a
+# deployment fails. Every decision comes back in x-litellm-* response headers.
+#
+# Region and compartment come from the environment (scripts/gateway.sh reads
+# them from ~/.config/litellmdemo/config.json); OCI requests are signed with
+# the operator's OCI session by oci_session_signer.py.
+#
+# Prices: where LiteLLM's model map has no OCI entry, input/output costs are
+# set from the map's price for the same model at its own provider.
+
+x-oci: &oci
+  oci_region: os.environ/OCI_REGION
+  oci_compartment_id: os.environ/OCI_COMPARTMENT_ID
+
+model_list:
+  # --- Tier ladder: what the complexity router chooses between -------------
+  - model_name: oci-fast                      # SIMPLE
+    litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash-lite}
+    model_info: {max_output_tokens: 65535}   # OCI accepts < 65536; the model map says 65536
+  - model_name: oci-fast-backup
+    litellm_params: {<<: *oci, model: oci/meta.llama-4-maverick-17b-128e-instruct-fp8}
+
+  - model_name: oci-balanced                  # MEDIUM: two vendors, load-balanced by latency
+    litellm_params: {<<: *oci, model: oci/openai.gpt-5-mini}
+  - model_name: oci-balanced
+    litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash}
+    model_info: {max_output_tokens: 65535}   # OCI accepts < 65536; the model map says 65536
+
+  - model_name: oci-strong                    # COMPLEX
+    litellm_params: {<<: *oci, model: oci/google.gemini-2.5-pro}
+    model_info: {max_output_tokens: 65535}   # OCI accepts < 65536; the model map says 65536
+  - model_name: oci-strong-backup
+    litellm_params: {<<: *oci, model: oci/openai.gpt-5.2}
+    model_info: {input_cost_per_token: 1.75e-06, output_cost_per_token: 1.4e-05, max_input_tokens: 272000}
+
+  - model_name: oci-reasoning                 # REASONING
+    litellm_params: {<<: *oci, model: oci/xai.grok-4.20-reasoning}
+    model_info: {input_cost_per_token: 1.25e-06, output_cost_per_token: 2.5e-06, max_input_tokens: 1000000}
+  - model_name: oci-reasoning-backup
+    litellm_params: {<<: *oci, model: oci/openai.o4-mini}
+    model_info: {input_cost_per_token: 1.1e-06, output_cost_per_token: 4.4e-06, max_input_tokens: 200000}
+
+  # --- Auto routers: the application asks for these -------------------------
+  - model_name: oci-auto                      # complexity router, built-in heuristic classifier
+    litellm_params:
+      model: auto_router/complexity_router
+      complexity_router_config:
+        tiers: {SIMPLE: oci-fast, MEDIUM: oci-balanced, COMPLEX: oci-strong, REASONING: oci-reasoning}
+
+  # --- Tag routing: same group, a premium lane for tagged requests ----------
+  - model_name: oci-chat
+    litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash, tags: ["default"]}
+    model_info: {max_output_tokens: 65535}   # OCI accepts < 65536; the model map says 65536
+  - model_name: oci-chat
+    litellm_params: {<<: *oci, model: oci/openai.gpt-5.2, tags: ["premium"]}
+    model_info: {input_cost_per_token: 1.75e-06, output_cost_per_token: 1.4e-05, max_input_tokens: 272000}
+
+  # --- Context-window fallback: a deliberately small window -----------------
+  - model_name: oci-compact
+    litellm_params: {<<: *oci, model: oci/meta.llama-3.3-70b-instruct}
+    model_info: {max_input_tokens: 2000}
+  - model_name: oci-long
+    litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash}
+    model_info: {max_output_tokens: 65535}   # OCI accepts < 65536; the model map says 65536
+
+  # --- Fallback chain: a deployment that always fails -----------------------
+  - model_name: oci-flaky
+    litellm_params: {<<: *oci, model: oci/meta.llama-0-retired-instruct}
+
+router_settings:
+  routing_strategy: latency-based-routing
+  enable_pre_call_checks: true                # context-window check before the call
+  enable_tag_filtering: true
+  num_retries: 1
+  allowed_fails: 2
+  cooldown_time: 30
+  fallbacks:
+    - {oci-fast: [oci-fast-backup]}
+    - {oci-strong: [oci-strong-backup]}
+    - {oci-reasoning: [oci-reasoning-backup]}
+    - {oci-flaky: [oci-balanced]}
+  context_window_fallbacks:
+    - {oci-compact: [oci-long]}
+
+litellm_settings:
+  callbacks: oci_session_signer.handler
+  drop_params: true                           # e.g. temperature for GPT-5 reasoning models
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY

@@ -1,0 +1,6 @@
+{
+  "oci_profile": "<your OCI CLI profile with an active session>",
+  "oci_auth": "security_token",
+  "oci_region": "us-chicago-1",
+  "oci_compartment_id": "<compartment or tenancy OCID with Generative AI access>"
+}
