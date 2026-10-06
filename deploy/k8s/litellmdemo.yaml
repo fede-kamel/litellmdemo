@@ -92,7 +92,9 @@ spec:
               - {key: __init__.py, path: __init__.py}
               - {key: router_model.py, path: router_model.py}
               - {key: serve.py, path: serve.py}
+              - {key: ladder.py, path: ladder.py}
               - {key: head.joblib, path: model/head.joblib}
+              - {key: ladder.npz, path: model/ladder.npz}
               - {key: meta.json, path: model/meta.json}
 ---
 apiVersion: v1

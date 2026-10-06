@@ -15,7 +15,7 @@ import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from classifier.router_model import shared
 
@@ -34,11 +34,12 @@ app = FastAPI(title="route-classifier", lifespan=lifespan)
 
 class ClassifyRequest(BaseModel):
     messages: list[dict]
+    bar: float | None = Field(default=None, ge=0.3, le=0.99)   # quality bar; None: the one chosen in training
 
 
 @app.post("/classify")
 async def classify(req: ClassifyRequest) -> dict:
-    decision = await asyncio.to_thread(shared().classify, req.messages)
+    decision = await asyncio.to_thread(shared().classify, req.messages, req.bar)
     return decision.as_dict()
 
 

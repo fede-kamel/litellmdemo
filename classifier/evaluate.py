@@ -9,8 +9,9 @@ Policies:
   trained       oci-auto-trained, our classifier (route read from the headers)
   oracle        the outcome label: the cheapest route that passed
 
-For the difficulty prompts the label run already holds each SIMPLE, MEDIUM
-and COMPLEX answer's cost and verdict; REASONING is answered and judged here.
+For the difficulty prompts the label runs already hold each route's cost and
+verdicts (SIMPLE, MEDIUM, COMPLEX: three runs; REASONING: one, from
+label.py --reasoning); only the three routers are called here.
 A policy's quality is the share of prompts whose chosen route passed (with
 voted labels, the chosen route's pass rate across the label runs); its cost is
 what those answers cost. For CODE and MULTILINGUAL prompts, only
@@ -86,7 +87,7 @@ async def main() -> None:
     async def one(row: dict) -> dict:
         jobs = {name: routed(group, row["prompt"]) for name, group in ROUTERS.items()}
         if row["route"] in DIFFICULTY:
-            reasoning = previous.get(row["id"])
+            reasoning = row.get("reasoning") or previous.get(row["id"])   # label.py --reasoning stores it
             pending = [] if reasoning else [reasoning_tier(row)]
             results = await asyncio.gather(*pending, *jobs.values())
             if not reasoning:
@@ -108,7 +109,7 @@ async def main() -> None:
             return row["route"]
         return (row["routed"][name]["route"] or "MEDIUM").upper()
 
-    policies = ["always SIMPLE", "always COMPLEX", "always REASONING", "heuristic", "llm", "trained", "oracle"]
+    policies = ["always SIMPLE", "always MEDIUM", "always COMPLEX", "always REASONING", "heuristic", "llm", "trained", "oracle"]
     table = []
     for p in policies:
         quality = cost = 0.0

@@ -1,29 +1,35 @@
-import { Brain, CheckCircle2, Database, FlaskConical, Scale } from "lucide-react";
+import { Brain, CheckCircle2, FlaskConical, Scale } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getJSON, usd } from "../api";
 import { Bars, Panel, RouteChip } from "./bits";
 
-type Policy = { policy: string; quality: number; cost_usd: number; classifier_cost_usd: number; route_match: number; task_type_accuracy: number | null };
+type Point = { quality: number; cost_per_request: number };
+type Ladder = { bar: number; train_prompts: number; held_out_prompts: number; held_out: Record<string, Point>;
+  held_out_curve: ({ bar: number } & Point)[]; held_out_mix: Record<string, number> };
 type Info = {
   trained: boolean;
-  meta: null | { examples: number; train: number; held_out: number; held_out_accuracy: number; cv_balanced_accuracy: number;
-    held_out_recall: Record<string, number>; confusion_matrix: { labels: string[]; rows_true_cols_predicted: number[][] };
-    encoder: string; C: number; train_seconds: number; trained_at: string };
-  eval: null | { held_out_difficulty: number; held_out_task_type: number; policies: Policy[] };
+  meta: null | { examples: number; encoder: string; held_out_recall: Record<string, number>; ladder?: Ladder };
+  labels?: { outcome_prompts: number; runs: number; unanimous: number; with_reasoning: number; families: number };
   data?: { prompts: number; by_route: Record<string, number>; examples: { prompt: string; route: string; family: string }[] };
 };
 
 const STEPS = [
-  { icon: FlaskConical, title: "Generate", body: "The judge model writes 312 prompts: 13 task families from trivial to expert, code tasks, and requests in 7 languages." },
-  { icon: Scale, title: "Label by outcome", body: "SIMPLE, MEDIUM and COMPLEX each answer; the judge grades correctness, completeness and instruction-following (1–5). Label: the cheapest route scoring ≥4 on all three." },
-  { icon: Brain, title: "Mini-train", body: "A multilingual MiniLM encoder (local) and a logistic-regression head, regularisation chosen by 5-fold cross-validation. Seconds on a laptop CPU." },
-  { icon: CheckCircle2, title: "Plug into LiteLLM", body: "classifier_type: custom: the gateway calls our classify() per request. Rules first (image → VISION, very long → LONG_CONTEXT), then the model." },
+  { icon: FlaskConical, title: "Generate", body: "The judge model writes 463 prompts across 18 task families, trivial to expert (general tasks plus support, billing, IT ops, finance and people ops), and code and seven languages." },
+  { icon: Scale, title: "Label by outcome", body: "Every route answers every prompt; the judge grades each answer on correctness, completeness and instruction-following (1–5). Pass: at least 4 on all three. Three runs per route give a pass rate, not a guess." },
+  { icon: Brain, title: "Train the ladder", body: "For each route, predict the chance its answer passes: a logistic model on the request's embedding and difficulty signals, averaged with the pass rates of the most similar labelled requests." },
+  { icon: CheckCircle2, title: "Route in LiteLLM", body: "classifier_type: custom. Rules first (image, length, language), then code, then the cheapest route that clears the quality bar. Each request may set its own bar." },
 ];
+
+const LABEL: Record<string, string> = {
+  ladder: "the ladder (our router)", "always SIMPLE": "always the fast models", "always MEDIUM": "always the balanced models",
+  "always COMPLEX": "always the strong models", "always REASONING": "always the reasoning models", oracle: "perfect routing (oracle)",
+};
 
 export function ClassifierView() {
   const [info, setInfo] = useState<Info | null>(null);
   useEffect(() => { getJSON<Info>("/api/classifier").then(setInfo); }, []);
-  const m = info?.meta;
+  const L = info?.meta?.ladder;
+  const order = ["ladder", "always SIMPLE", "always MEDIUM", "always COMPLEX", "always REASONING", "oracle"];
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-4 gap-3">
@@ -34,48 +40,52 @@ export function ClassifierView() {
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-3 gap-4">
-        <Panel kicker="Training data" title={info?.data ? `${info.data.prompts} labelled prompts` : "not labelled yet"}>
-          {info?.data && <Bars values={info.data.by_route} />}
-          <div className="mt-3 space-y-1.5">
-            {info?.data?.examples.slice(0, 6).map((e) => (
-              <div key={e.prompt} className="flex items-start gap-2 text-[11.5px]"><RouteChip route={e.route} /><span className="line-clamp-1 text-ink-2">{e.prompt}</span></div>
-            ))}
-          </div>
+      <div className="grid grid-cols-[1.35fr_1fr] gap-4">
+        <Panel kicker="Does it pay?" title={L ? `Quality and cost on ${L.held_out_prompts} unseen prompts` : "not trained yet"}>
+          {L && (
+            <table className="w-full text-[12.5px]">
+              <thead><tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-ink-3">
+                <th className="py-1.5">Policy</th><th>Answers good enough</th><th>Cost per request</th></tr></thead>
+              <tbody>{order.filter((k) => L.held_out[k]).map((k) => (
+                <tr key={k} className={k === "ladder" ? "bg-oracle-soft/40 font-semibold" : "border-b border-line/60"}>
+                  <td className="py-1.5">{LABEL[k]}{k === "ladder" && <span className="ml-1 font-normal text-ink-3">· bar {Math.round(L.bar * 100)}%</span>}</td>
+                  <td>{Math.round(L.held_out[k].quality * 100)}%</td><td className="font-mono">{usd(L.held_out[k].cost_per_request)}</td></tr>
+              ))}</tbody>
+            </table>
+          )}
+          {L && <p className="mt-3 text-[11.5px] leading-snug text-ink-3">The bar was chosen inside the training split ({L.train_prompts} prompts, 5-fold cross-validation): the cheapest bar at least as good as always using the reasoning models. These {L.held_out_prompts} prompts were never seen in training or in choosing it.</p>}
         </Panel>
-        <Panel kicker="Held-out accuracy" title={m ? `${Math.round(m.held_out_accuracy * 100)}% on ${m.held_out} unseen prompts` : "not trained yet"}>
-          {m && <>
-            <Bars values={m.held_out_recall} max={1} />
-            <div className="mt-3 text-[11px] text-ink-3">recall per route · cross-validated balanced accuracy {Math.round(m.cv_balanced_accuracy * 100)}% · trained in {m.train_seconds}s · <span className="font-mono">{m.encoder.split("/").pop()}</span></div>
-          </>}
-        </Panel>
-        <Panel kicker="Confusion matrix" title="rows: the right route · columns: predicted">
-          {m && (
-            <table className="w-full text-center font-mono text-[10.5px]">
-              <thead><tr><th />{m.confusion_matrix.labels.map((l) => <th key={l} className="px-0.5 font-medium text-ink-3">{l.slice(0, 4)}</th>)}</tr></thead>
-              <tbody>{m.confusion_matrix.rows_true_cols_predicted.map((row, i) => (
-                <tr key={i}><td className="pr-1 text-left text-ink-3">{m.confusion_matrix.labels[i].slice(0, 6)}</td>
-                  {row.map((v, j) => <td key={j} className={i === j ? "bg-moss-soft font-semibold text-moss" : v ? "bg-oracle-soft text-oracle" : "text-ink-3/40"}>{v}</td>)}</tr>
+        <Panel kicker="The dial" title="Every quality bar, on the same unseen prompts">
+          {L && (
+            <table className="w-full font-mono text-[12px]">
+              <thead><tr className="border-b border-line text-left text-[10.5px] uppercase tracking-wide text-ink-3"><th className="py-1">bar</th><th>good answers</th><th>per request</th></tr></thead>
+              <tbody>{L.held_out_curve.map((c) => (
+                <tr key={c.bar} className={c.bar === L.bar ? "bg-oracle-soft/40 font-semibold" : "border-b border-line/50"}>
+                  <td className="py-1">{Math.round(c.bar * 100)}%{c.bar === L.bar ? " · trained" : ""}</td><td>{Math.round(c.quality * 100)}%</td><td>{usd(c.cost_per_request)}</td></tr>
               ))}</tbody>
             </table>
           )}
         </Panel>
       </div>
-      <Panel kicker="Does it pay?" title={info?.eval ? `Routing policies on ${info.eval.held_out_difficulty} held-out prompts, priced by real OCI calls` : "run classifier/evaluate.py"}
-        right={<Database className="size-4 text-ink-3" />}>
-        {info?.eval && (
-          <table className="w-full text-[12.5px]">
-            <thead><tr className="border-b border-line text-left text-[11px] uppercase tracking-wide text-ink-3">
-              <th className="py-1.5">Policy</th><th>Answers good enough</th><th>Cost of answers</th><th>Classifier cost</th><th>Picked the labelled route</th><th>Code / language routes</th></tr></thead>
-            <tbody>{info.eval.policies.map((p) => (
-              <tr key={p.policy} className={p.policy === "trained" ? "bg-oracle-soft/40 font-semibold" : "border-b border-line/60"}>
-                <td className="py-1.5 font-mono">{p.policy}</td><td>{Math.round(p.quality * 100)}%</td><td className="font-mono">{usd(p.cost_usd)}</td>
-                <td className="font-mono">{usd(p.classifier_cost_usd)}</td><td>{Math.round(p.route_match * 100)}%</td>
-                <td>{p.task_type_accuracy === null ? "—" : `${Math.round(p.task_type_accuracy * 100)}%`}</td></tr>
-            ))}</tbody>
-          </table>
-        )}
-      </Panel>
+      <div className="grid grid-cols-3 gap-4">
+        <Panel kicker="Training data" title={info?.data ? `${info.data.prompts} labelled prompts` : "not labelled yet"}>
+          {info?.data && <Bars values={info.data.by_route} />}
+          <div className="mt-3 space-y-1.5">
+            {info?.data?.examples.slice(0, 5).map((e) => (
+              <div key={e.prompt} className="flex items-start gap-2 text-[11.5px]"><RouteChip route={e.route} /><span className="line-clamp-1 text-ink-2">{e.prompt}</span></div>
+            ))}
+          </div>
+        </Panel>
+        <Panel kicker="Why not one label?" title={info?.labels ? `${Math.round((info.labels.unanimous / info.labels.outcome_prompts) * 100)}% of prompts get the same label every time` : "—"}>
+          {info?.labels && <p className="text-[12.5px] leading-relaxed text-ink-2">
+            Labelled three times, only {info.labels.unanimous} of {info.labels.outcome_prompts} prompts got the same cheapest passing route in every run: whether the fast model passes is often a coin flip. So the router does not guess one label; it predicts each route's chance of a good answer and takes the cheapest one likely enough.
+          </p>}
+        </Panel>
+        <Panel kicker="Code check" title="Programming requests go to the code models">
+          {info?.meta && <Bars values={{ CODE: info.meta.held_out_recall.CODE ?? 0 }} max={1} />}
+          <p className="mt-2 text-[11.5px] text-ink-3">recall on held-out code prompts · encoder <span className="font-mono">{info?.meta?.encoder.split("/").pop()}</span>, run locally</p>
+        </Panel>
+      </div>
     </div>
   );
 }

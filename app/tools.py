@@ -55,11 +55,15 @@ def get_account(account_id: str) -> str:
 
 @tool
 def calculate(expression: str) -> str:
-    """Evaluate an arithmetic expression with + - * / ** and parentheses, e.g. '48000 * 0.25'."""
-    try:
-        return str(round(_eval(ast.parse(expression, mode="eval").body), 6))
-    except (ValueError, SyntaxError, ZeroDivisionError) as exc:
-        return f"Cannot evaluate: {exc}"
+    """Evaluate arithmetic with + - * / ** and parentheses, e.g. '48000 * 0.25'. Several expressions separated by
+    ';' are evaluated in one call, one result per line: '1.2e6 * 1.12; 1.2e6 * 1.12 * 1.09'."""
+    out = []
+    for part in [p.strip() for p in expression.split(";") if p.strip()]:
+        try:
+            out.append(str(round(_eval(ast.parse(part, mode="eval").body), 6)))
+        except (ValueError, SyntaxError, ZeroDivisionError) as exc:
+            out.append(f"Cannot evaluate {part!r}: {exc}")
+    return "\n".join(out) if len(out) > 1 else (out[0] if out else "Cannot evaluate: empty expression")
 
 
 TOOLS = [lookup_policy, get_account, calculate]

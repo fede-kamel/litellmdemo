@@ -172,7 +172,8 @@ async def compare(req: CompareRequest) -> dict:
 
 class AskRequest(BaseModel):
     prompt: str = Field(min_length=1, max_length=200_000)
-    max_tokens: int = Field(default=1200, ge=16, le=8000)
+    max_tokens: int = Field(default=4000, ge=16, le=8000)   # reasoning models spend much of it thinking
+    bar: float | None = Field(default=None, ge=0.3, le=0.99)   # the ladder's quality bar; None: the trained default
 
 
 EXAMPLES = [
@@ -185,9 +186,12 @@ EXAMPLES = [
 ]
 
 
-@app.get("/api/ask/examples")
-def ask_examples() -> list[str]:
-    return EXAMPLES
+@app.get("/api/ask/config")
+def ask_config() -> dict:
+    """Examples, the trained quality bar, and what each bar delivered on held-out prompts."""
+    meta = json.loads((ROOT / "classifier" / "model" / "meta.json").read_text()).get("ladder", {})
+    return {"examples": EXAMPLES, "default_bar": meta.get("bar"), "held_out_curve": meta.get("held_out_curve", []),
+            "held_out": meta.get("held_out", {}), "held_out_prompts": meta.get("held_out_prompts")}
 
 
 @app.post("/api/ask")
@@ -195,9 +199,15 @@ async def ask(req: AskRequest) -> dict:
     """One request through the trained router, with the evidence for its route and its model."""
     messages = [{"role": "user", "content": req.prompt}]
     started = time.time()
-    why, reply = await asyncio.gather(asyncio.to_thread(explain, messages),
-                                      chat("oci-auto-trained", messages, max_tokens=req.max_tokens))
+    metadata = {"route_quality_bar": req.bar} if req.bar is not None else None
+    why, reply = await asyncio.gather(asyncio.to_thread(explain, messages, 3, req.bar),
+                                      chat("oci-auto-trained", messages, max_tokens=req.max_tokens, metadata=metadata))
     route = agent.route_of(reply["headers"])
+    if reply["ok"]:
+        CALLS.append(route)
+    if reply["ok"] and not reply["text"]:
+        reply = {**reply, "text": "(The model returned no text: it spent its whole token budget reasoning. "
+                                  "Raise max_tokens for this request.)"}
     cfg = yaml.safe_load((ROOT / "gateway" / "config.yaml").read_text())
     trained = next(d for d in cfg["model_list"] if d["model_name"] == "oci-auto-trained")
     group = trained["litellm_params"]["complexity_router_config"]["tiers"].get(route.get("route") or "", "")
@@ -262,6 +272,11 @@ def classifier() -> dict:
     labels = ROOT / "classifier" / "data" / "labels.jsonl"
     if labels.exists():
         rows = [json.loads(line) for line in labels.read_text().splitlines()]
+        voted = [r for r in rows if r.get("votes")]
+        same = sum(1 for r in voted if len({{"COMPLEX": "REASONING"}.get(v, v) for v in r["votes"]}) == 1)
+        out["labels"] = {"outcome_prompts": len(voted), "runs": 3, "unanimous": same,
+                         "with_reasoning": sum(1 for r in rows if r.get("reasoning")),
+                         "families": len({r["family"] for r in rows})}
         out["data"] = {"prompts": len(rows), "by_route": dict(Counter(r["route"] for r in rows)),
                        "examples": [{"prompt": r["prompt"][:160], "route": r["route"], "family": r["family"]}
                                     for r in rows[::max(1, len(rows) // 12)]][:12]}

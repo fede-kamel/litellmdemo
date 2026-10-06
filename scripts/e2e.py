@@ -48,7 +48,7 @@ def check(s: dict, events: list[dict]) -> tuple[bool, str]:
     elif expect == "fallback":
         ok = first.get("fallbacks", 0) >= 1 and first.get("group") == "oci-balanced"
     else:
-        ok = first.get("route") == expect
+        ok = first.get("route") in s.get("accept", [expect])
     spend = sum(c.get("cost") or 0 for c in calls)
     return ok, (f"route={first.get('route') or first.get('group')} deployment={first.get('deployment')} "
                 f"calls={len(calls)} fallbacks={sum(c.get('fallbacks', 0) for c in calls)} spend=${spend:.5f}")

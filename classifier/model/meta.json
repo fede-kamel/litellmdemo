@@ -6,7 +6,7 @@
     "REASONING",
     "CODE"
   ],
-  "trained_at": "2026-10-06T16:05:11+00:00",
+  "trained_at": "2026-10-06T16:47:17+00:00",
   "examples": 407,
   "train": 324,
   "held_out": 83,
@@ -63,5 +63,126 @@
     ]
   },
   "embed_seconds": 3.3,
-  "train_seconds": 0.16
+  "train_seconds": 0.19,
+  "ladder": {
+    "bar": 0.7,
+    "train_prompts": 286,
+    "held_out_prompts": 73,
+    "cv_curve_on_train": [
+      {
+        "bar": 0.6,
+        "quality": 0.823,
+        "cost_per_request": 0.005082
+      },
+      {
+        "bar": 0.65,
+        "quality": 0.839,
+        "cost_per_request": 0.005839
+      },
+      {
+        "bar": 0.7,
+        "quality": 0.859,
+        "cost_per_request": 0.006441
+      },
+      {
+        "bar": 0.75,
+        "quality": 0.876,
+        "cost_per_request": 0.007209
+      },
+      {
+        "bar": 0.8,
+        "quality": 0.879,
+        "cost_per_request": 0.007791
+      },
+      {
+        "bar": 0.85,
+        "quality": 0.874,
+        "cost_per_request": 0.008157
+      },
+      {
+        "bar": 0.9,
+        "quality": 0.872,
+        "cost_per_request": 0.008304
+      },
+      {
+        "bar": 0.95,
+        "quality": 0.874,
+        "cost_per_request": 0.008436
+      }
+    ],
+    "held_out": {
+      "ladder": {
+        "quality": 0.84,
+        "cost_per_request": 0.005993
+      },
+      "always SIMPLE": {
+        "quality": 0.566,
+        "cost_per_request": 0.000402
+      },
+      "always MEDIUM": {
+        "quality": 0.795,
+        "cost_per_request": 0.003232
+      },
+      "always COMPLEX": {
+        "quality": 0.58,
+        "cost_per_request": 0.018267
+      },
+      "always REASONING": {
+        "quality": 0.863,
+        "cost_per_request": 0.009923
+      },
+      "oracle": {
+        "quality": 0.895,
+        "cost_per_request": 0.003271
+      }
+    },
+    "held_out_curve": [
+      {
+        "bar": 0.6,
+        "quality": 0.748863,
+        "cost_per_request": 0.00494
+      },
+      {
+        "bar": 0.65,
+        "quality": 0.789973,
+        "cost_per_request": 0.005188
+      },
+      {
+        "bar": 0.7,
+        "quality": 0.840205,
+        "cost_per_request": 0.005993
+      },
+      {
+        "bar": 0.75,
+        "quality": 0.840205,
+        "cost_per_request": 0.007313
+      },
+      {
+        "bar": 0.8,
+        "quality": 0.858466,
+        "cost_per_request": 0.007474
+      },
+      {
+        "bar": 0.85,
+        "quality": 0.863027,
+        "cost_per_request": 0.007968
+      },
+      {
+        "bar": 0.9,
+        "quality": 0.863027,
+        "cost_per_request": 0.008666
+      },
+      {
+        "bar": 0.95,
+        "quality": 0.863027,
+        "cost_per_request": 0.008671
+      }
+    ],
+    "held_out_mix": {
+      "SIMPLE": 0.192,
+      "MEDIUM": 0.548,
+      "COMPLEX": 0.0,
+      "REASONING": 0.26
+    }
+  }
 }

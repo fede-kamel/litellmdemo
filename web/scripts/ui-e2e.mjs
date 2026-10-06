@@ -67,12 +67,12 @@ try {
   check("the three routers answer", await visible("Built-in heuristic", 240000) && (await page.getByText("right route", { exact: true }).count()) + (await page.getByText("different route", { exact: true }).count()) === 3);
   await shot("06-compare");
 
-  await tab("The classifier");
-  check("the classifier view shows held-out accuracy", await visible("unseen prompts"));
-  check("the policy comparison is shown", await visible("always COMPLEX"));
+  await tab("Classifier");
+  check("the classifier view shows held-out quality and cost", await visible("unseen prompts") && await visible("always the reasoning models"));
+  check("the dial shows every quality bar", await visible("Every quality bar"));
   await shot("07-classifier");
 
-  await tab("The gateway");
+  await tab("Gateway");
   check("the gateway view lists the routes", await visible("oci-multilingual") && await visible("Who classifies"));
   await shot("08-gateway");
 } catch (err) {

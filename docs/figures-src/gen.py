@@ -186,8 +186,8 @@ f.header("FIGURE 2 · WHERE THE CLASSIFIER SITS", "Inside the gateway, before an
 steps = [
     ("1", "Request", NAVY, ["model: oci-auto-trained", "messages, maybe an image"]),
     ("2", "Rules", OCHRE, ["image → VISION", "very long → LONG_CONTEXT", "not English → MULTILINGUAL"]),
-    ("3", "Trained model", RED, ["e5-small embedding", "+ logistic regression", "SIMPLE · MEDIUM ·", "REASONING · CODE"]),
-    ("4", "Route → group", INDIGO, ["REASONING → oci-reasoning", "CODE → oci-code", "SIMPLE → oci-fast ..."]),
+    ("3", "Trained ladder", RED, ["code? → CODE", "else P(good answer)", "for every route", "cheapest over the bar"]),
+    ("4", "Route → group", INDIGO, ["REASONING → oci-reasoning", "MEDIUM → oci-balanced", "CODE → oci-code ..."]),
     ("5", "Deployment", TEAL, ["latency-based choice", "context-window check", "fallback if it fails"]),
     ("6", "OCI model", RED, ["signed with the", "operator's session", "e.g. Grok 4.20 reasoning"]),
 ]
@@ -219,13 +219,13 @@ f.save("figure2-classifier-path.svg")
 # ===================================================== Figure 3 · the mini-training pipeline
 f = Fig(2000, 1120)
 f.header("FIGURE 3 · MINI-TRAINING", "Label by outcome, train in seconds, plug into LiteLLM",
-         "the label is the cheapest route whose answer a judge accepts, not a guess about difficulty", accent=RED)
+         "the router learns each route's chance of a good answer from answers a judge actually graded", accent=RED)
 cols = [
-    ("1", "Generate", NAVY, "classifier/generate.py", ["312 prompts", "13 task families", "easy → expert", "+ code · 7 languages"]),
-    ("2", "Answer", TEAL, "classifier/label.py", ["SIMPLE · MEDIUM · COMPLEX", "each answers every prompt", "through the gateway", "624 real OCI calls"]),
+    ("1", "Generate", NAVY, "classifier/generate.py", ["463 prompts", "18 task families", "+ support · billing · ops", "+ code · 7 languages"]),
+    ("2", "Answer", TEAL, "classifier/label.py", ["every route answers", "every prompt, 3 runs", "reasoning route: 1 run", "3,590 real OCI answers"]),
     ("3", "Judge", OCHRE, "GPT-5.2 · anonymised", ["correctness 1–5", "completeness 1–5", "instruction-following 1–5", "pass = all ≥ 4"]),
-    ("4", "Label", RED, "cheapest passing route", ["SIMPLE 129 · MEDIUM 46", "COMPLEX 4 · REASONING 29", "CODE 48 · other languages 56", "$5.39 in all"]),
-    ("5", "Train", INDIGO, "classifier/train.py", ["multilingual-e5-small", "+ logistic regression", "5-fold CV, held-out 20%", "0.14 s on a laptop CPU"]),
+    ("4", "Pass rates", RED, "per prompt, per route", ["fast 56% · balanced 79%", "strong 58% · reasoning 86%", "only 63% label-stable", "about $33 in all"]),
+    ("5", "Train", INDIGO, "classifier/train.py", ["e5-small embeddings", "+ difficulty signals", "4 logistic models", "+ precedent · seconds"]),
 ]
 x = 70
 for n, title, c, sub, lines in cols:
@@ -241,8 +241,8 @@ for n, title, c, sub, lines in cols:
     x += 375
 f.panel(70, 880, 1860, 190, RED)
 f.text(1000, 935, "WHAT THE LABELS SAID", 21, RED, weight="700", spacing="4")
-f.text(1000, 985, "62% of the prompts were answered well enough by the cheapest route.", 25, INK, weight="700")
-f.text(1000, 1030, "Gemini 2.5 Pro was the cheapest passing route for only 4 of 208: most traffic does not need a strong model.", 20, SUB)
+f.text(1000, 985, "Labelled three times, only 63% of prompts got the same cheapest passing route every time.", 25, INK, weight="700")
+f.text(1000, 1030, "So the router predicts each route's chance of a good answer, and Gemini 2.5 Pro (58%, at 5x the balanced cost) is never the pick.", 20, SUB)
 f.save("figure3-mini-training.svg")
 
 
@@ -263,17 +263,17 @@ if os.path.exists(_ev_path):
         y = Y0 - (q - 0.45) / 0.6 * (Y0 - Y1)
         f.e.append(f'<line x1="{X0}" y1="{y}" x2="{X1}" y2="{y}" stroke="{LINE}" stroke-dasharray="4 6"/>')
         f.text(X0 - 20, y + 7, f"{int(q * 100)}%", 18, SUB, anchor="end")
-    for c in (0, 0.2, 0.4, 0.6, 0.8):
+    for c in [i * 0.2 for i in range(0, 8)]:
         if c <= max_cost:
             x = X0 + c / max_cost * (X1 - X0)
             f.text(x, Y0 + 36, f"${c:.1f}", 18, SUB)
     f.text((X0 + X1) / 2, Y0 + 80, "cost of the answers (USD)", 20, INK, weight="600")
     f.e.append(f'<text x="120" y="{(Y0 + Y1) / 2}" font-family="{FONT}" font-size="20" fill="{INK}" font-weight="600" '
                f'text-anchor="middle" transform="rotate(-90 120 {(Y0 + Y1) / 2})">answers good enough</text>')
-    style = {"trained": (RED, "our trained classifier"), "oracle": (OKG, "perfect routing (oracle)"),
-             "heuristic": (MUT, "LiteLLM heuristic"), "llm": (INDIGO, "LLM classifier"),
-             "always SIMPLE": (SUB, "always the cheapest"), "always COMPLEX": (SUB, "always Gemini 2.5 Pro"),
-             "always REASONING": (SUB, "always the reasoning route")}
+    style = {"trained": (RED, "our ladder router"), "oracle": (OKG, "the labelled route"),
+             "heuristic": (MUT, "LiteLLM heuristic"), "llm": (INDIGO, "LiteLLM LLM classifier"),
+             "always SIMPLE": (SUB, "always the fast models"), "always MEDIUM": (SUB, "always the balanced models"),
+             "always COMPLEX": (SUB, "always Gemini 2.5 Pro"), "always REASONING": (SUB, "always the reasoning models")}
     for name, (color, label) in style.items():
         p = pol.get(name)
         if not p:
@@ -282,13 +282,14 @@ if os.path.exists(_ev_path):
         y = Y0 - (p["quality"] - 0.45) / 0.6 * (Y0 - Y1)
         r = 22 if name == "trained" else 15
         dx, dy, anchor = {"always SIMPLE": (30, 48, "start"), "heuristic": (30, -34, "start"),
-                          "always COMPLEX": (-30, -10, "end")}.get(name, (30, -10, "start"))
+                          "always COMPLEX": (-30, -10, "end"), "oracle": (-30, -44, "end"),
+                          "always MEDIUM": (-30, 44, "end"), "trained": (34, 30, "start")}.get(name, (30, -10, "start"))
         f.e.append(f'<circle cx="{x}" cy="{y}" r="{r}" fill="{color}" opacity="0.9"/>')
         f.text(x + dx, y + dy, label, 19 if name != "trained" else 22, color, anchor=anchor, weight="700")
         f.text(x + dx, y + dy + 28, f"{int(round(p['quality'] * 100))}% · ${p['cost_usd']:.3f}", 17, SUB, anchor=anchor, mono=True)
     t, r_ = pol["trained"], pol["always REASONING"]
     f.panel(1680, 300, 260, 680, RED)
-    f.text(1810, 360, "TRAINED vs", 18, RED, weight="700", spacing="2")
+    f.text(1810, 360, "LADDER vs", 18, RED, weight="700", spacing="2")
     f.text(1810, 388, "ALWAYS REASONING", 18, RED, weight="700", spacing="2")
     f.text(1810, 480, f"{int(round((1 - t['cost_usd'] / r_['cost_usd']) * 100))}%", 64, INK, weight="700")
     f.text(1810, 520, "less spend", 19, SUB)
@@ -332,7 +333,7 @@ f.text(1020, 565, "oci-auto-trained asks the classifier service", 18, SUB)
 f.chip(700, 595, 300, "OCI_AUTH=instance_principal", RED, size=16)
 f.chip(1040, 595, 300, "config + plugins: ConfigMap", INDIGO, size=16)
 f.arrow(1020, 660, 1020, 760, color=INDIGO, sw=4)
-f.text(1250, 705, "POST /classify · 1.5 s budget", 17, INDIGO, weight="600")
+f.text(1250, 705, "POST /classify · 3 s budget", 17, INDIGO, weight="600")
 f.text(1250, 732, "down or slow → fallback_tier MEDIUM", 17, OCHRE, weight="600")
 f.rect(650, 760, 740, 220, stroke=INDIGO, sw=2.5)
 f.text(1020, 805, "route-classifier", 26, INDIGO, weight="700", mono=True)

@@ -13,6 +13,12 @@
 4. Report held-out accuracy, per-route recall and the confusion matrix, and
    save the head with its metadata.
 
+5. Fit the ladder router (classifier/ladder.py) on the outcome-labelled
+   prompts of the training split. Its quality bar is chosen by 5-fold
+   cross-validation inside the training split: the cheapest bar whose
+   answers are at least as good as always using the REASONING route. The
+   held-out prompts then score it once, against every fixed route.
+
 Training takes seconds on a laptop CPU; the same script runs unchanged on a
 GPU node with a larger encoder.
 """
@@ -37,6 +43,59 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from classifier.router_model import ENCODER, LEARNED, MODEL_DIR, QUERY_PREFIX, learned_label  # noqa: E402
 
 DATA = Path(__file__).resolve().parent / "data"
+
+
+BARS = [0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+
+
+def fit_ladder(encoder, held: set) -> dict:
+    from sklearn.model_selection import KFold
+
+    from classifier import ladder
+
+    rows = [json.loads(line) for line in (DATA / "labels.jsonl").read_text().splitlines()]
+    rows = [r for r in rows if r.get("label_source") == "outcome" and "reasoning" in r]
+    tr = [r for r in rows if r["id"] not in held]
+    te = [r for r in rows if r["id"] in held]
+    def embed(rs):
+        return encoder.encode([QUERY_PREFIX + r["prompt"][:4000] for r in rs], normalize_embeddings=True,
+                              show_progress_bar=False, batch_size=32)
+    E_tr, E_te = embed(tr), embed(te)
+    P_tr, C_tr = ladder.outcomes(tr)
+    P_te, C_te = ladder.outcomes(te)
+    t_tr, t_te = [r["prompt"][:4000] for r in tr], [r["prompt"][:4000] for r in te]
+
+    def score(choice, P, C):
+        n = np.arange(len(choice))
+        return float(P[n, choice].mean()), float(C[n, choice].mean())
+
+    # choose the quality bar inside the training split only
+    cv_pass = np.zeros_like(P_tr)
+    for a, b in KFold(5, shuffle=True, random_state=7).split(E_tr):
+        params = ladder.fit(E_tr[a], [t_tr[i] for i in a], P_tr[a], C_tr[a])
+        cv_pass[b] = ladder.predict(params, E_tr[b], [t_tr[i] for i in b])["pass"]
+    target = P_tr[:, 3].mean()                     # always REASONING, on the training split
+    params = ladder.fit(E_tr, t_tr, P_tr, C_tr)
+    curve = [(b, *score(ladder.choose(params, cv_pass, b), P_tr, C_tr)) for b in BARS]
+    good = [c for c in curve if c[1] >= target]
+    bar = min(good, key=lambda c: c[2])[0] if good else max(curve, key=lambda c: c[1])[0]
+
+    ladder.save(params, MODEL_DIR / "ladder.npz")
+    held_choice = ladder.choose(params, ladder.predict(params, E_te, t_te)["pass"], bar)
+    n = len(te)
+    result = {"bar": bar, "train_prompts": len(tr), "held_out_prompts": n,
+              "cv_curve_on_train": [{"bar": b, "quality": round(q, 3), "cost_per_request": round(c, 6)} for b, q, c in curve]}
+    held_eval = {"ladder": score(held_choice, P_te, C_te)}
+    for j, r in enumerate(ladder.ROUTES):
+        held_eval[f"always {r}"] = score(np.full(n, j), P_te, C_te)
+    held_eval["oracle"] = score(np.argmax(P_te - 1e-9 * C_te, axis=1), P_te, C_te)
+    result["held_out"] = {k: {"quality": round(q, 3), "cost_per_request": round(c, 6)} for k, (q, c) in held_eval.items()}
+    # reported, never used to choose: how every bar does on the held-out prompts
+    held_pass = ladder.predict(params, E_te, t_te)["pass"]
+    result["held_out_curve"] = [{"bar": b, **dict(zip(("quality", "cost_per_request"),
+                                 (round(v, 6) for v in score(ladder.choose(params, held_pass, b), P_te, C_te))))} for b in BARS]
+    result["held_out_mix"] = {r: round(float((held_choice == j).mean()), 3) for j, r in enumerate(ladder.ROUTES)}
+    return result
 
 
 def main() -> None:
@@ -99,8 +158,10 @@ def main() -> None:
         "confusion_matrix": {"labels": labels, "rows_true_cols_predicted": cm},
         "embed_seconds": round(embed_seconds, 1), "train_seconds": round(train_seconds, 2),
     }
+    meta["ladder"] = fit_ladder(encoder, held)
     (MODEL_DIR / "meta.json").write_text(json.dumps(meta, indent=2))
     (DATA / "split.json").write_text(json.dumps({"train": id_tr.tolist(), "held_out": id_te.tolist()}, indent=1))
+    print("ladder:", json.dumps({k: meta["ladder"][k] for k in ("bar", "held_out", "held_out_mix")}, indent=1))
     print(json.dumps({k: meta[k] for k in ("examples", "held_out", "C", "cv_balanced_accuracy",
                                            "held_out_accuracy", "repeated_cv_accuracy", "held_out_recall", "train_seconds")}, indent=1))
     print("confusion (rows true, cols predicted):", labels)

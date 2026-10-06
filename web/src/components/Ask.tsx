@@ -7,7 +7,11 @@ import { RouteMap } from "./RouteMap";
 
 type Tier = { route: string; deployment?: string; pass_rate: number; cost?: number };
 type Precedent = { prompt: string; similarity: number; label: string; learned_as?: string; votes?: string[]; source?: string; tiers: Tier[] };
-type Check_ = { check: string; fired: boolean; saw: string };
+type Step = { route: string; pass: number; cost: number; clears: boolean; chosen: boolean };
+type Check_ = { check: string; fired: boolean; saw: string; bar?: number; steps?: Step[] };
+type CurvePoint = { bar: number; quality: number; cost_per_request: number };
+type AskConfig = { examples: string[]; default_bar: number; held_out_curve: CurvePoint[];
+  held_out: Record<string, { quality: number; cost_per_request: number }>; held_out_prompts: number };
 type AskResult = {
   prompt: string; ok: boolean; text: string; seconds: number; agrees: boolean;
   why: { decision: Decision; checks: Check_[]; precedent: Precedent[]; meaning: string; summary: string };
@@ -15,20 +19,47 @@ type AskResult = {
   gateway?: string; gateway_role?: string;
 };
 
-const CHECK_LABEL: Record<string, string> = { image: "Image rule", length: "Length rule", language: "Language rule", model: "Trained model" };
+const CHECK_LABEL: Record<string, string> = {
+  image: "Image rule", length: "Length rule", language: "Language rule", code: "Code check", ladder: "Quality ladder", model: "Trained model",
+};
+
+/** The ladder: each route, cheapest first, with its chance of a good answer against the bar. */
+function LadderSteps({ steps, bar }: { steps: Step[]; bar: number }) {
+  return (
+    <div className="mt-2 space-y-1.5">
+      {steps.map((s) => (
+        <div key={s.route} className="flex items-center gap-2 text-[11px]">
+          <span className="w-[96px] shrink-0"><RouteChip route={s.route} /></span>
+          <div className="relative h-2.5 flex-1 rounded-full bg-sand">
+            <div className={clsx("h-2.5 rounded-full", s.chosen ? "bg-oracle" : s.clears ? "bg-moss/60" : "bg-ink-3/40")} style={{ width: `${s.pass * 100}%` }} />
+            <div className="absolute -top-1 h-4.5 w-0.5 bg-ink" style={{ left: `${bar * 100}%` }} title={`bar ${Math.round(bar * 100)}%`} />
+          </div>
+          <span className="w-10 text-right font-mono text-ink-2">{Math.round(s.pass * 100)}%</span>
+          <span className="w-[72px] text-right font-mono text-ink-3">{usd(s.cost)}</span>
+          <span className={clsx("w-[64px] text-[10.5px] font-semibold", s.chosen ? "text-oracle" : "text-ink-3")}>{s.chosen ? "chosen" : s.clears ? "clears" : "below bar"}</span>
+        </div>
+      ))}
+      <div className="pl-[104px] text-[10.5px] text-ink-3">bar at {Math.round(bar * 100)}% · cost is the route's typical cost per request · cheapest route first</div>
+    </div>
+  );
+}
 
 export function Ask() {
-  const [examples, setExamples] = useState<string[]>([]);
+  const [cfg, setCfg] = useState<AskConfig | null>(null);
+  const [bar, setBar] = useState<number | null>(null);
   const [prompt, setPrompt] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [res, setRes] = useState<AskResult | null>(null);
-  useEffect(() => { getJSON<string[]>("/api/ask/examples").then((e) => { setExamples(e); setPrompt(e[1] ?? ""); }); }, []);
+  useEffect(() => { getJSON<AskConfig>("/api/ask/config").then((c) => { setCfg(c); setBar(c.default_bar); setPrompt(c.examples[1] ?? ""); }); }, []);
+  const examples = cfg?.examples ?? [];
+  const point = cfg?.held_out_curve.reduce<CurvePoint | null>((best, p) => (best === null || Math.abs(p.bar - (bar ?? 0)) < Math.abs(best.bar - (bar ?? 0)) ? p : best), null);
+  const reasoning = cfg?.held_out["always REASONING"];
 
   const go = async () => {
     if (!prompt.trim()) return;
     setBusy(true); setError(null); setRes(null);
-    try { setRes(await postJSON<AskResult>("/api/ask", { prompt })); }
+    try { setRes(await postJSON<AskResult>("/api/ask", { prompt, bar })); }
     catch (e) { setError(String(e)); }
     finally { setBusy(false); }
   };
@@ -54,6 +85,20 @@ export function Ask() {
             <button key={e} onClick={() => setPrompt(e)} className="max-w-[260px] truncate rounded-lg border border-line bg-panel px-2.5 py-1 text-[11.5px] text-ink-2 hover:border-oracle/50">{e}</button>
           ))}
         </div>
+        {cfg && bar !== null && (
+          <div className="mt-4 flex flex-wrap items-center gap-4 rounded-xl border border-line bg-paper px-4 py-3">
+            <div className="text-[12px] font-semibold">Quality bar</div>
+            <input type="range" min={0.5} max={0.95} step={0.05} value={bar} onChange={(e) => setBar(Number(e.target.value))} className="w-[240px] accent-[#c74634]" aria-label="quality bar" />
+            <span className="font-mono text-[13px] font-semibold">{Math.round(bar * 100)}%</span>
+            <span className="text-[11.5px] text-ink-3">{bar === cfg.default_bar ? "the bar chosen in training" : bar > cfg.default_bar ? "better answers, more spend" : "less spend"}</span>
+            {point && reasoning && (
+              <span className="ml-auto text-[11.5px] text-ink-2">
+                on {cfg.held_out_prompts} unseen prompts at {Math.round(point.bar * 100)}%: <b>{Math.round(point.quality * 100)}%</b> good answers at {usd(point.cost_per_request)} a request
+                · always reasoning: {Math.round(reasoning.quality * 100)}% at {usd(reasoning.cost_per_request)}
+              </span>
+            )}
+          </div>
+        )}
         {error && <div className="mt-3 rounded-lg bg-oracle-soft px-3 py-2 text-[12px] text-oracle">{error}</div>}
       </Panel>
 
@@ -87,10 +132,12 @@ export function Ask() {
                         {c.fired ? <Check className="size-3" /> : <Minus className="size-3" />}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <div className="text-[12.5px] font-semibold">{i + 1}. {CHECK_LABEL[c.check] ?? c.check} <span className="font-normal text-ink-3">{c.fired ? (c.check === "model" ? "decides" : "fires, decides") : "passes"}</span></div>
-                        {c.check === "model" && Object.keys(res.why.decision.probabilities).length
-                          ? <div className="mt-1.5"><Bars values={res.why.decision.probabilities} max={1} /></div>
-                          : <div className="text-[12px] text-ink-3">{c.saw}</div>}
+                        <div className="text-[12.5px] font-semibold">{i + 1}. {CHECK_LABEL[c.check] ?? c.check} <span className="font-normal text-ink-3">{c.fired ? (c.check === "model" || c.check === "ladder" ? "decides" : "fires, decides") : "passes"}</span></div>
+                        {c.check === "ladder" && c.steps
+                          ? <LadderSteps steps={c.steps} bar={c.bar ?? 0.7} />
+                          : c.check === "model" && Object.keys(res.why.decision.probabilities).length
+                            ? <div className="mt-1.5"><Bars values={res.why.decision.probabilities} max={1} /></div>
+                            : <div className="text-[12px] text-ink-3">{c.saw}</div>}
                       </div>
                     </li>
                   ))}

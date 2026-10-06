@@ -36,25 +36,37 @@ class TrainedClassifier:
     def __init__(self) -> None:
         self._client = None
 
-    async def decide(self, messages: list) -> dict:
+    @staticmethod
+    def bar_of(context) -> float | None:
+        metadata = dict(context.metadata or {})
+        for source in (metadata, metadata.get("requester_metadata") or {}):
+            value = source.get("route_quality_bar") if isinstance(source, dict) else None
+            if value is not None:
+                try:
+                    return min(0.99, max(0.3, float(value)))
+                except (TypeError, ValueError):
+                    return None
+        return None
+
+    async def decide(self, messages: list, bar: float | None = None) -> dict:
         if SERVICE:
             import httpx
 
             if self._client is None:
-                self._client = httpx.AsyncClient(base_url=SERVICE, timeout=1.5)
+                self._client = httpx.AsyncClient(base_url=SERVICE, timeout=3.0)
             try:
-                r = await self._client.post("/classify", json={"messages": messages})
+                r = await self._client.post("/classify", json={"messages": messages, "bar": bar})
                 r.raise_for_status()
                 return r.json()
             except (httpx.HTTPError, ValueError) as exc:
                 return {"route": None, "criterion": f"fallback: classifier service ({type(exc).__name__})"}
         from classifier.router_model import shared
 
-        return (await asyncio.to_thread(shared().classify, messages)).as_dict()
+        return (await asyncio.to_thread(shared().classify, messages, bar)).as_dict()
 
     async def classify(self, context) -> str | None:
         messages = list(context.structured_messages or context.raw_messages or [])
-        decision = await self.decide(messages)
+        decision = await self.decide(messages, self.bar_of(context))
         try:
             DECISIONS.parent.mkdir(parents=True, exist_ok=True)
             with DECISIONS.open("a") as fh:

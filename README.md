@@ -33,8 +33,9 @@ A route is decided by three layers, in order:
 
 1. **Facts in the request**, by rules: an image → VISION; more than ~30k
    tokens → LONG_CONTEXT; not English → MULTILINGUAL.
-2. **What the request needs**, by our trained classifier: SIMPLE, MEDIUM,
-   REASONING or CODE.
+2. **What the request needs**, by our trained ladder: a programming request →
+   CODE; otherwise each route's chance of an answer the judge accepts, and the
+   cheapest route that clears the quality bar.
 3. **Business rules**, by the gateway: tags (`premium` → GPT-5.2), budgets
    and keys, latency, fallbacks, retries and cooldowns.
 
@@ -44,57 +45,78 @@ grades the request) and `oci-auto-trained` (ours, `classifier_type: custom`).
 
 ![Where the classifier sits](docs/figures/figure2-classifier-path.png)
 
-## The classifier: label by outcome, train in seconds
+## The router: label by outcome, predict the chance of a good answer
 
 ![Mini-training](docs/figures/figure3-mini-training.png)
 
-1. **Generate**: the judge model writes 312 prompts across 13 task families,
-   trivial to expert, plus code tasks and requests in seven languages.
-2. **Label by outcome**: SIMPLE, MEDIUM and COMPLEX each answer every prompt
-   through the gateway; GPT-5.2 grades the anonymised answers on
-   correctness, completeness and instruction-following (1-5). The label is
-   the cheapest route scoring at least 4 on all three. $5.39 of OCI calls.
-3. **Mini-train**: multilingual-e5-small embeddings (local) and a logistic
-   regression head, 5-fold cross-validation, 20% held out: **73% held-out
-   accuracy** on the learned routes, trained in 0.14 s on a laptop CPU (the
-   encoder stays frozen; see "Did we really train it?" below). The rules catch
-   56 of 56 non-English requests.
-4. **Plug in**: `gateway/trained_classifier.py` implements LiteLLM's
+1. **Generate**: the judge model writes 463 prompts across 18 task families,
+   trivial to expert (general tasks plus support, billing, IT ops, finance and
+   people ops), code tasks, and requests in seven languages.
+2. **Label by outcome**: every route answers every prompt through the
+   gateway; GPT-5.2 grades the anonymised answers on correctness,
+   completeness and instruction-following (1-5); an answer passes at 4 or
+   more on all three. Three runs per route (one for the reasoning route) give
+   each prompt a pass rate per route: 3,590 judged answers, about $33.
+3. **Why not one label**: labelled three times, only 63% of prompts got the
+   same cheapest passing route every time, so accuracy against one label tops
+   out in the 60s and 70s for any model (bigger encoders, up to 568M weights,
+   did not move it). The router predicts pass probabilities instead.
+4. **Train the ladder** (`classifier/ladder.py`): per route, a logistic model on
+   the multilingual-e5-small embedding and seven difficulty signals, trained on
+   fractional outcomes, averaged with the pass rates of the 12 most similar
+   labelled requests. A code head sends programming requests to CODE. Seconds
+   on a laptop CPU; the shipped model is 210 KB.
+5. **Choose the quality bar** inside the training split by 5-fold
+   cross-validation: the cheapest bar at least as good as always using the
+   reasoning models. Each request may set its own (`metadata.route_quality_bar`).
+6. **Plug in**: `gateway/trained_classifier.py` implements LiteLLM's
    `ClassifierPlugin` (`async classify(context) -> route`).
-
-What the labels said: the cheapest route was good enough for **62%** of the
-prompts, and Gemini 2.5 Pro was the cheapest passing route for only 4 of 208.
 
 ## Results
 
-On held-out prompts, priced by the real OCI answers and graded by the same
-judge ([evidence/classifier-eval.json](evidence/classifier-eval.json)):
+Through the real gateway, on held-out prompts never seen in training or in
+choosing the bar, every answer a real OCI call graded by the same judge
+([evidence/classifier-eval.json](evidence/classifier-eval.json)):
 
 | Policy | Answers good enough | Cost of the answers | Code and language routes |
 |---|---|---|---|
-| always the cheapest route | 62% | $0.015 | — |
-| always Gemini 2.5 Pro | 52% | $0.794 | — |
-| always the reasoning route | 86% | $0.364 | — |
-| LiteLLM heuristic (`oci-auto`) | 64% | $0.041 | 0% |
-| LLM classifier (`oci-auto-llm`) | 81% | $0.365 | 0% |
-| **our trained classifier (`oci-auto-trained`)** | 81% | $0.211 | 100% |
-| perfect routing (oracle) | 88% | $0.235 | 100% |
+| always the fast models | 57% | $0.029 | — |
+| always the balanced models | 80% | $0.236 | — |
+| always Gemini 2.5 Pro | 58% | $1.333 | — |
+| always the reasoning models | 86% | $0.724 | — |
+| LiteLLM heuristic (`oci-auto`) | 62% | $0.076 | 0% |
+| LiteLLM LLM classifier (`oci-auto-llm`) | 68% | $0.719 | 0% |
+| **our ladder (`oci-auto-trained`, bar 70%)** | **84%** | **$0.438** | **100%** |
 
 ![Quality against cost](docs/figures/figure4-quality-cost.png)
 
-Our classifier matches the LLM classifier's quality at 42% less spend and
-no extra model call per request, gives up 5 points against always using the reasoning
-route for 42% less, and is 17 points better than LiteLLM's
-heuristic. It is the only router that sends code and other languages to
-their own models.
+The ladder gives 22 points more good answers than LiteLLM's heuristic and 16
+more than its LLM classifier at 40% less, 4 points more than always using the
+balanced models, and stays 2 points under always using the reasoning models
+for 40% less. Raising the bar trades spend for quality on the same unseen
+prompts ([classifier/model/meta.json](classifier/model/meta.json),
+`ladder.held_out_curve`): at 85% it matches always-reasoning (86%) for about
+20% less. It is the only router that sends code and other languages to their
+own models. Held-out is 73 prompts: one prompt moves a score by 1.4 points.
 
-**Did we really train it?** The shipped router trains a logistic-regression
-head (1,540 weights) on frozen multilingual-e5-small embeddings. Fine-tuning
-the encoder itself as well (117.7M weights, `classifier/finetune.py`, 47 s on
-the Mac's GPU) raised held-out accuracy from 73.1% to 80.8%
-([evidence/finetune-comparison.json](evidence/finetune-comparison.json)); two schedules were tried and the
-better one kept, so read that gain as optimistic. The frozen head ships: it
-rebuilds from 7 KB in a second.
+**Did we really train it?** Yes: supervised learning on judged outcomes. The
+shipped router fits four logistic models (one per route) and a code head on
+frozen multilingual-e5-small embeddings. In an earlier experiment on
+single-run labels, fine-tuning the encoder itself (117.7M weights,
+`classifier/finetune.py`, 47 s on the Mac's GPU) added about 8 points of label
+accuracy ([evidence/finetune-comparison.json](evidence/finetune-comparison.json));
+with more labelled traffic that is the next lever, on an OCI GPU.
+
+## See why a request got its model
+
+The control room opens on **Ask and explain**: type any request and the
+gateway routes it; the screen shows the decision path (each rule, the code
+check, then every route cheapest first with its chance of a good answer
+against the bar), where that number comes from (the request's own features
+and its twelve most similar labelled requests), the closest training requests
+with how often each route passed, and why that deployment answered. Drag the
+quality bar to move the same request between models. Nothing on the screen is
+written by a model after the fact (`classifier/explain.py`).
 
 ## Run it
 
@@ -129,7 +151,8 @@ with one Ampere A1 node.
 ```shell
 cp deploy/deploy.example.json ~/.config/litellmdemo/deploy.json   # your OCI profile and regions
 scripts/oci/up.sh                     # compartment, VCN, cluster, node, IAM; about 15 minutes
-scripts/oci/deploy.sh --forward       # ConfigMaps, Secret, both Deployments; gateway on 127.0.0.1:4100
+scripts/oci/deploy.sh                 # ConfigMaps, Secret, both Deployments
+scripts/oci/forward.sh &              # the OKE gateway on 127.0.0.1:4100, reconnecting on its own
 LITELLM_GATEWAY=http://127.0.0.1:4100 uv run python scripts/probe_routes.py
 scripts/oci/down.sh                   # delete everything up.sh created
 ```
@@ -140,7 +163,7 @@ scripts/oci/down.sh                   # delete everything up.sh created
   OKE Workload Identity scopes this to the pod's service account instead of
   the node; it needs an Enhanced cluster.
 - **The classifier is its own service.** `oci-auto-trained` calls
-  `route-classifier` over HTTP with a 1.5 s budget. If the classifier is down
+  `route-classifier` over HTTP with a 3 s budget. If the classifier is down
   or slow, the plugin declines and LiteLLM routes to `fallback_tier`: routing
   degrades, requests keep answering.
 - **No registry.** Both pods run stock `python:3.12-slim`; an init container
@@ -148,10 +171,16 @@ scripts/oci/down.sh                   # delete everything up.sh created
   config and the 7 KB head come from ConfigMaps. A pod restarts exactly when
   the hash of what it mounts changes.
 - **Measured on the cluster** ([evidence/oke-run.json](evidence/oke-run.json)):
-  route probes 11/11, browser test 14/14, use cases 11/13 (the two misses are
-  the classifier's; see "Unseen domains" in the field notes). Deleting the classifier pod mid-run: the request
-  answered on MEDIUM through the outage, and routing returned to CODE when
-  the new pod was ready.
+  route probes 11/11, use cases 13/13, browser test 20/20. Signing held for
+  70 minutes of token rotation (24/24). With the classifier scaled to zero,
+  requests still answered on MEDIUM and routing came back with it; a killed
+  classifier or gateway pod is replaced in about 20 s (packages are cached on
+  the node). Classification takes 79 ms (median) on the one Ampere core.
+- **Failover off the cluster.** The control room sends requests to
+  `LITELLM_GATEWAY` (the OKE gateway, through `scripts/oci/forward.sh`, which
+  restarts the port-forward whenever its pod goes away) and falls back to
+  `LITELLM_GATEWAY_FALLBACK` (the laptop gateway) when it is unreachable or its
+  OCI signing fails: `uv run python scripts/failover.py` ends with `FAILOVER OK`.
 - **The API endpoint admits one address** (or a NAT pool you name in
   `deploy.json`). `up.sh` detects it on port 6443, because NAT can send 6443
   out of a different address than web traffic.
@@ -166,6 +195,8 @@ scripts/oci/down.sh                   # delete everything up.sh created
 | the screens, clicked in a browser | `cd web && node scripts/ui-e2e.mjs` | `UI E2E OK` |
 | the same routes through the OKE gateway | `LITELLM_GATEWAY=http://127.0.0.1:4100 uv run python scripts/probe_routes.py` | `ROUTES OK` |
 | requests survive a classifier outage | `scripts/oci/chaos.sh` | `CHAOS OK` |
+| signing survives token rotation | `scripts/oci/soak.sh` (70 min) | `SOAK OK` |
+| the control room survives a gateway outage | `uv run python scripts/failover.py` | `FAILOVER OK` |
 
 ## Field notes
 
@@ -180,8 +211,11 @@ scripts/oci/down.sh                   # delete everything up.sh created
 | Open-source limit | One auto-router with operator-defined routes per gateway. |
 | Agent requests | The agent's system prompt and tool turns drowned the request: every prompt looked alike to the classifier and Spanish read as English. Classify the user turns only. |
 | Short requests | py3langid called "What is 18 percent of 4,217.50?" Afrikaans. The language rule needs a few words and 50% confidence; that keeps 56/56 non-English prompts and flags 0/256 English ones. |
-| Unseen domains | The training prompts have no customer-support requests: "reset a password" routes to CODE and a billing reply to SIMPLE. The fix is data, not rules: support prompts labelled by the same outcome contract. |
+| Unseen domains | The first prompts had no customer-support requests: "reset a password" routed to CODE. 151 business prompts, labelled the same way, fixed it; the ladder now sends it to the balanced models, because the fast ones passed similar requests 47% of the time. |
 | OKE behind NAT | Port 6443 left from a different address than web traffic; allowlist the address seen on 6443. |
+| Labels | Labelled three times, only 63% of prompts got the same cheapest passing route. Predict each route's pass probability, not one label. |
+| Gemini 2.5 Pro | 58% good answers at five times the balanced cost: thinks at length, answers tersely. The router never picks it. |
+| OKE signing | Instance-principal signing failed after ~20 minutes: LiteLLM signs with `do_request_sign()`, which skips the SDK's token refresh (only `__call__` refreshes). The pre-call hook refreshes it. |
 | Well-known is not hard | Famous proofs pass on the cheapest model, so the classifier learned SIMPLE for them; constrained planning is what needs REASONING. |
 | Session signing | The provider signs with API-key fields or an `oci_signer`; a `CustomLogger.async_pre_call_deployment_hook` attaches a session signer per call. |
 

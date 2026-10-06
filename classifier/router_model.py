@@ -4,12 +4,12 @@ Criteria, in order:
 1. Rules on facts the request states outright: an image part routes to VISION;
    a prompt beyond LONG_CONTEXT_CHARS routes to LONG_CONTEXT; a prompt not in
    English (py3langid) routes to MULTILINGUAL.
-2. A mini-trained model for what the request needs: a multilingual sentence
-   encoder (multilingual-e5-small, run locally) and a logistic regression head
-   trained on outcome-labelled prompts (classifier/label.py). It predicts
-   SIMPLE, MEDIUM, REASONING or CODE. COMPLEX is not learned: in the outcome
-   labels it was the cheapest passing route for 4 prompts in 208, so those
-   count as REASONING.
+2. Code: a logistic regression head on the request's embedding
+   (multilingual-e5-small, run locally) recognises programming requests.
+3. The ladder (classifier/ladder.py) for everything else: it predicts how
+   likely each route's answer is to pass the judge and picks the cheapest
+   route that clears the operator's quality bar. Trained on outcome labels
+   (classifier/label.py): every route answered every prompt, judged.
 
 `classify(messages)` returns the route, the criterion that decided it, the
 class probabilities and the time it took. The LiteLLM plugin
@@ -23,6 +23,8 @@ import threading
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
+
+import numpy as np
 
 MODEL_DIR = Path(__file__).resolve().parent / "model"
 ENCODER = "intfloat/multilingual-e5-small"
@@ -70,9 +72,10 @@ def language_confidence(text: str) -> tuple[str, float]:
 @dataclass
 class Decision:
     route: str
-    criterion: str                       # "rule: image", "rule: length", "rule: language (xx)", "model", "fallback"
-    probabilities: dict[str, float] = field(default_factory=dict)
+    criterion: str                       # "rule: image", "rule: length", "rule: language (xx)", "model: code", "ladder", "fallback"
+    probabilities: dict[str, float] = field(default_factory=dict)   # ladder: P(pass) per route; code: class probabilities
     milliseconds: float = 0.0
+    details: dict = field(default_factory=dict)                     # ladder: the bar, the two predictors, costs
 
     def as_dict(self) -> dict:
         return asdict(self)
@@ -108,6 +111,7 @@ class RouterModel:
         self._lock = threading.Lock()
         self._encoder = None
         self._head = None
+        self._ladder: dict | None = None
         self.meta: dict = {}
 
     @property
@@ -126,12 +130,21 @@ class RouterModel:
             self.meta = json.loads((self.model_dir / "meta.json").read_text())
             self._encoder = SentenceTransformer(self.meta.get("encoder", ENCODER), device="cpu")
             self._head = joblib.load(self.model_dir / "head.joblib")
+            if (self.model_dir / "ladder.npz").exists():
+                from classifier import ladder
+
+                self._ladder = ladder.load(self.model_dir / "ladder.npz")
+
+    @property
+    def default_bar(self) -> float:
+        self._load()
+        return float(self.meta.get("ladder", {}).get("bar", 0.8))
 
     def embed(self, texts: list[str]):
         self._load()
         return self._encoder.encode([QUERY_PREFIX + t for t in texts], normalize_embeddings=True, show_progress_bar=False)
 
-    def classify(self, messages: list[dict]) -> Decision:
+    def classify(self, messages: list[dict], bar: float | None = None) -> Decision:
         started = time.perf_counter()
         text, image = text_of(messages)
         if image:
@@ -147,7 +160,22 @@ class RouterModel:
         probs = self._head.predict_proba(vector)[0]
         labels = list(self._head.classes_)
         ranked = dict(sorted(zip(labels, (round(float(p), 3) for p in probs), strict=True), key=lambda kv: -kv[1]))
-        return Decision(next(iter(ranked)), "model", ranked, _ms(started))
+        top = next(iter(ranked))
+        if top == "CODE" or self._ladder is None:
+            return Decision(top, "model: code" if top == "CODE" else "model", ranked, _ms(started))
+        from classifier import ladder
+
+        bar = self.default_bar if bar is None else float(bar)
+        pred = ladder.predict(self._ladder, vector, [text[:4000]])
+        p = pred["pass"][0]
+        route = ladder.ROUTES[int(ladder.choose(self._ladder, pred["pass"], bar)[0])]
+        r3 = lambda a: {k: round(float(v), 3) for k, v in zip(ladder.ROUTES, a, strict=True)}  # noqa: E731
+        order = [ladder.ROUTES[i] for i in np.argsort(self._ladder["typical_cost"])]
+        return Decision(route, "ladder", r3(p), _ms(started), {
+            "bar": bar, "cost_order": order, "cleared": route in [r for r in order if p[ladder.ROUTES.index(r)] >= bar],
+            "logistic": r3(pred["logistic"][0]), "precedent": r3(pred["precedent"][0]),
+            "typical_cost": {k: round(float(v), 6) for k, v in zip(ladder.ROUTES, self._ladder["typical_cost"], strict=True)},
+            "code_probability": ranked.get("CODE", 0.0)})
 
 
 def _ms(started: float) -> float:

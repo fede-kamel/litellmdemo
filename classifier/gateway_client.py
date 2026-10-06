@@ -69,13 +69,15 @@ def _gateway_fault(r: httpx.Response) -> bool:
 
 
 async def chat(model: str, prompt: str | list, *, max_tokens: int = 1500, json_mode: bool = False,
-               tags: list[str] | None = None, retries: int = 2) -> dict:
+               tags: list[str] | None = None, retries: int = 2, metadata: dict | None = None) -> dict:
     messages = prompt if isinstance(prompt, list) else [{"role": "user", "content": prompt}]
     body: dict = {"model": model, "messages": messages, "max_tokens": max_tokens}
     if json_mode:
         body["response_format"] = {"type": "json_object"}
     if tags:
         body["tags"] = tags
+    if metadata:
+        body["metadata"] = metadata
     r, url, error = None, GATEWAY, ""
     async with _gate:
         for attempt in range(retries + len(GATEWAYS)):

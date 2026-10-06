@@ -2,7 +2,8 @@
 
 Every scenario is a single request to the same agent; the gateway decides the
 route. `expect` is the route a well-built router should choose, shown next to
-the route it actually took. Northwind Cloud is fictional; nothing here is real
+the route it actually took. `accept` widens it where the outcome labels say
+two routes are both reasonable (see each scenario's `why`). Northwind Cloud is fictional; nothing here is real
 customer data.
 """
 
@@ -37,11 +38,15 @@ def invoice_image() -> str:
 
 SCENARIOS = [
     {"id": "support-faq", "use_case": "Customer support", "title": "FAQ: reset a password", "expect": "SIMPLE",
+     "accept": ["SIMPLE", "MEDIUM"],
+     "why": "the fast models passed similar password and account requests 47% of the time; the balanced 96%",
      "prompt": "How do I reset my Northwind Cloud console password?"},
     {"id": "support-billing", "use_case": "Customer support", "title": "Billing dispute", "expect": "MEDIUM",
      "prompt": "I was charged twice for September on account NW-4471. Look up our refund policy and draft a short, "
                "polite reply to the customer explaining what happens next."},
     {"id": "support-escalation", "use_case": "Customer support", "title": "Escalation with SLA credits", "expect": "REASONING",
+     "accept": ["MEDIUM", "REASONING"],
+     "why": "the balanced models are 73% likely to pass it, the reasoning models 76%: both clear a 70% bar",
      "prompt": "Enterprise customer NW-0093 had three outages last month (2h10m, 45m, 3h30m) against a 99.9% SLA. "
                "Using our SLA policy, work out the credit, explain the calculation, and propose a remediation plan "
                "with owners and dates for the account team."},

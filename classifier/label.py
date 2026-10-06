@@ -2,6 +2,7 @@
 
     uv run python classifier/label.py            # prompts.jsonl -> labels.jsonl
     uv run python classifier/label.py --votes 3  # label each prompt three times; keep the median
+    uv run python classifier/label.py --reasoning  # also answer and judge each with the REASONING route
 
 For every prompt that is not CODE or MULTILINGUAL (those are task-type
 routes and keep their family's label), the SIMPLE, MEDIUM and COMPLEX routes
@@ -146,7 +147,45 @@ async def vote(n: int) -> None:
     print(json.dumps({"labelled": len(results), "votes": n, "label_changed_by_votes": changed}))
 
 
+async def reasoning(previous_eval: Path) -> None:
+    """Record, for every outcome-labelled prompt, whether the REASONING route's answer passes.
+
+    The ladder router needs it to price escalation. One answer per prompt, graded by
+    the same judge on the same criteria (classifier/evaluate.py's single-answer grade);
+    answers already judged by an earlier evaluation are reused, not paid for again.
+    """
+    from classifier.evaluate import reasoning_tier
+
+    out = DATA / "labels.jsonl"
+    rows = [json.loads(line) for line in out.read_text().splitlines()]
+    reuse = {}
+    if previous_eval.exists():
+        for r in json.loads(previous_eval.read_text()).get("rows", []):
+            t = next((x for x in r.get("tiers", []) if x["tier"] == "REASONING"), None)
+            if t:
+                reuse[r["id"]] = t
+    todo = [r for r in rows if r.get("label_source") == "outcome" and "reasoning" not in r]
+
+    async def one(row: dict) -> tuple[str, dict]:
+        return row["id"], reuse.get(row["id"]) or await reasoning_tier(row)
+
+    found: dict[str, dict] = {}
+    for i, task in enumerate(asyncio.as_completed([one(r) for r in todo]), 1):
+        rid, tier = await task
+        found[rid] = tier
+        if i % 40 == 0:
+            print(f"reasoning {i}/{len(todo)}", flush=True)
+    rows = [{**r, "reasoning": found[r["id"]]} if r["id"] in found else r for r in rows]
+    out.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows))
+    passed = [r["reasoning"]["passed"] for r in rows if "reasoning" in r]
+    print(json.dumps({"with_reasoning": len(passed), "reused": sum(1 for r in todo if r["id"] in reuse),
+                      "pass_rate": round(sum(passed) / max(1, len(passed)), 3),
+                      "spend_usd": round(sum(t["cost"] for k, t in found.items() if k not in reuse), 4)}))
+
+
 async def main() -> None:
+    if "--reasoning" in sys.argv:
+        return await reasoning(ROOT_OUT.parent / "evidence" / "classifier-eval.json")
     if "--votes" in sys.argv:
         return await vote(int(sys.argv[sys.argv.index("--votes") + 1]))
     rows = [json.loads(line) for line in (DATA / "prompts.jsonl").read_text().splitlines()]

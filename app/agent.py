@@ -24,12 +24,15 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from app.tools import TOOLS  # noqa: E402
+from langgraph.errors import GraphRecursionError  # noqa: E402
+
 from classifier.gateway_client import GATEWAY, key  # noqa: E402
 from classifier.router_model import shared  # noqa: E402
 
 SYSTEM = """You are Northwind Cloud's assistant for support, engineering and finance teams. Northwind Cloud is a
 fictional company. Use the tools for policies, accounts and arithmetic instead of guessing, and answer in the
-language of the request. Be concise and complete."""
+language of the request. Batch arithmetic: put every calculation you need into one calculate call, separated by
+';'. Use at most six tool calls. Be concise and complete."""
 
 ROUTE_HEADERS = {
     "x-litellm-complexity-router-tier": "route", "x-litellm-complexity-router-cause": "cause",
@@ -89,16 +92,54 @@ def chat_model(router: str, tags: list[str] | None = None, gateway: str = GATEWA
                       max_retries=0, timeout=300, extra_body=extra or None)
 
 
+FINAL_NUDGE = "Please give your final answer to my request in full."
+
+
+def _final_from_transcript(history: list, model) -> str:
+    """One tool-free call: the request, the tool results so far, and a request for the final answer."""
+    request = next((_text(m) for m in history if getattr(m, "type", None) == "human" or (isinstance(m, dict) and m.get("role") == "user")), "")
+    results = [f"- {getattr(m, 'name', 'tool')}: {_text(m)[:600]}" for m in history if getattr(m, "type", None) == "tool"]
+    prompt = (f"{request}\n\nResults already computed with tools:\n" + "\n".join(results[-20:]) +
+              "\n\nUsing these results, give your final answer in full now.")
+    return _text(model.invoke([{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt}]))
+
+
+def _text(message) -> str:
+    content = getattr(message, "content", "")
+    if isinstance(content, list):   # content blocks
+        return "".join(b.get("text", "") if isinstance(b, dict) else str(b) for b in content)
+    return content if isinstance(content, str) else str(content)
+
+
 def run(messages: list[dict], emit: Callable[[dict], None], router: str = "oci-auto-trained",
         tags: list[str] | None = None, use_tools: bool = True, gateway: str = GATEWAY) -> dict:
     agent = create_oci_agent(model=chat_model(router, tags, gateway), tools=TOOLS if use_tools else [], system_prompt=SYSTEM,
                              name="northwind-assistant")
     recorder = RouteRecorder(emit, router, gateway)
     started = time.time()
-    result = agent.invoke({"messages": messages}, config={"callbacks": [recorder], "recursion_limit": 20})
-    final = result["messages"][-1]
-    answer = final.content if isinstance(final.content, str) else str(final.content)
-    emit({"type": "answer", "text": answer, "seconds": round(time.time() - started, 1), "calls": recorder.calls})
+    config = {"callbacks": [recorder], "recursion_limit": 20}
+    state: dict = {"messages": messages}
+    capped = False
+    try:
+        for state in agent.stream({"messages": messages}, config=config, stream_mode="values"):
+            pass
+        result = state
+        answer = _text(result["messages"][-1])
+    except GraphRecursionError:
+        # The agent kept calling tools. Answer from what it gathered, without tools,
+        # rather than end the run with an error.
+        capped = True
+        result = state
+        answer = _final_from_transcript(state["messages"], chat_model(router, tags, gateway))
+    retried = False
+    if not answer.strip() and not capped:
+        # Some models (Gemini Flash-Lite after a tool result) return an empty final
+        # message; ask once more rather than end the run with nothing to show.
+        retried = True
+        result = agent.invoke({"messages": [*result["messages"], {"role": "user", "content": FINAL_NUDGE}]}, config=config)
+        answer = _text(result["messages"][-1])
+    emit({"type": "answer", "text": answer, "seconds": round(time.time() - started, 1), "calls": recorder.calls,
+          "retried_empty": retried, "tool_limit_reached": capped})
     return {"answer": answer, "calls": recorder.calls}
 
 

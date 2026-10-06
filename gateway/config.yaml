@@ -116,7 +116,7 @@ model_list:
       complexity_router_config:
         classifier_type: custom
         classifier_plugin: trained_classifier.plugin
-        classifier_plugin_timeout_ms: 2000
+        classifier_plugin_timeout_ms: 4000   # one shared Ampere core: classification is 0.3-0.7 s, more under load
         fallback_tier: MEDIUM
         # The open-source build registers one auto-router with operator-defined
         # tiers; this is it. Route rubric: SIMPLE short fact or formatting;

@@ -246,7 +246,7 @@ def build(template: Path, out: Path) -> None:
         if ph.placeholder_format.idx == 0:
             ph.text = "The Right Model for Every Request"
         elif ph.name.startswith("Text Placeholder 2"):
-            ph.text = "Built on LiteLLM's router, across fifteen OCI models"
+            ph.text = "LiteLLM routing across fifteen OCI models"
         elif ph.name.startswith("Text Placeholder 3"):
             ph.text = "Federico Kamelhar"
         elif ph.name.startswith("Text Placeholder 4"):
@@ -265,13 +265,13 @@ def build(template: Path, out: Path) -> None:
     agenda = [("The blog", "LiteLLM natively supports OCI Generative AI", "3–4"),
               ("The architecture", "one gateway between every app and every model", "5"),
               ("Why route", "the price spread, the toolbox, the use cases, the criteria", "6–9"),
-              ("The classifier", "where it sits, how we trained it, whether it pays", "10–15"),
-              ("Live demo", "the routing control room, then back to the slides", "16–19"),
-              ("Built with Codex, run on OKE", "skills as the harness; Kubernetes; field notes; what we would upstream", "20–25")]
+              ("The router", "where it sits, how we trained it, whether it pays", "10–15"),
+              ("Live demo", "ask and explain, the control room, then back to the slides", "16–20"),
+              ("Built with Codex, run on OKE", "skills as the harness; Kubernetes; field notes; what we would upstream", "21–25")]
     for i, (t, sub, pages) in enumerate(agenda):
         y = 1.85 + i * 0.7
         rect(s, 0.72, y, 11.9, 0.6, SAND if i % 2 == 0 else WHITE, line=CARD_LINE)
-        rect(s, 0.72, y, 0.07, 0.6, RED if t in ("The classifier", "Live demo") else TEAL)
+        rect(s, 0.72, y, 0.07, 0.6, RED if t in ("The router", "Live demo") else TEAL)
         text(s, 1.0, y + 0.15, 0.5, 0.35, f"{i + 1:02d}", size=15, color=RED, bold=True, font=MONO)
         text(s, 1.65, y + 0.14, 3.6, 0.35, t, size=16, color=INK, bold=True)
         text(s, 5.3, y + 0.17, 6.0, 0.35, sub, size=13.5, color=BODY)
@@ -328,16 +328,11 @@ def build(template: Path, out: Path) -> None:
         ["GPT-5 mini", "2.00"], ["Grok 4.20 reasoning", "2.50"], ["o3", "8.00"],
         ["Gemini 2.5 Pro", "10.00"], ["GPT-5.2", "14.00"],
     ], col_w=[3.8, 2.5], size=12)
-    pct = None
-    labels = ROOT / "classifier" / "data" / "labels.jsonl"
-    if labels.exists():
-        rows = [json.loads(line) for line in labels.read_text().splitlines()]
-        diff = [r for r in rows if r.get("label_source") == "outcome"]
-        pct = round(100 * sum(r["route"] == "SIMPLE" for r in diff) / max(1, len(diff)))
     card(s, 7.3, 1.85, 5.3, 2.05, "A 47× price spread", "from the cheapest to the most expensive model in the same gateway, for the same request.", accent=TEAL)
-    card(s, 7.3, 4.15, 5.3, 2.3, f"{pct}% passed on the cheapest route" if pct else "Most requests are easy",
-         "When three routes answered the same 208 prompts and a judge graded them, the cheapest answer was good enough for most of them. Sending everything to the strongest model pays for quality nobody needed.", accent=RED)
-    notes(s, "Prices are list prices from LiteLLM's model map for each model (OCI entries where present, the provider's own otherwise). The 62% comes from our outcome labels, slide 13.")
+    card(s, 7.3, 4.15, 5.3, 2.3, "Price does not buy quality",
+         "On 359 prompts, every answer judged: the fast models were good enough 56% of the time, the balanced 79%, the reasoning 86%. "
+         "Gemini 2.5 Pro: 58%, at five times the balanced cost.", accent=RED)
+    notes(s, "Prices are list prices from LiteLLM's model map for each model (OCI entries where present, the provider's own otherwise). Pass rates: three judged runs per route per prompt (one for the reasoning route), classifier/data/labels.jsonl.")
 
     # 7 · the routing toolbox
     s = prs.slides.add_slide(blank)
@@ -360,7 +355,7 @@ def build(template: Path, out: Path) -> None:
     header(s, "Same gateway, different requests", "Use cases and the route each needs")
     table(s, 0.72, 1.85, 11.9, [
         ["Use case", "Request", "Route", "Answered by"],
-        ["Customer support", "FAQ · billing dispute · SLA escalation", "SIMPLE · MEDIUM · REASONING", "Llama 4 Scout · GPT-5 mini · Grok 4.20"],
+        ["Customer support", "FAQ · billing dispute · SLA escalation", "MEDIUM", "GPT-5 mini · Gemini 2.5 Flash"],
         ["Coding assistant", "explain a line · debug a race condition", "CODE", "GPT-5.1, backup Grok 4.3"],
         ["Analyst", "one number · a forecast under a cap", "SIMPLE · REASONING", "Flash-Lite · Grok 4.20 / o3"],
         ["Document analysis", "a 300-page contract", "LONG_CONTEXT", "Gemini 2.5 Flash (1M tokens)"],
@@ -377,7 +372,7 @@ def build(template: Path, out: Path) -> None:
     header(s, "What decides a route", "The criteria")
     for i, (t, b, c) in enumerate([
         ("1 · Facts in the request", "Checked by rules, exactly: an image goes to VISION; a very long prompt to LONG_CONTEXT; a language other than English to MULTILINGUAL.", OCHRE),
-        ("2 · What the request needs", "Learned by our classifier from outcomes: the cheapest route whose answer passes a judge on correctness, completeness and instruction-following.", RED),
+        ("2 · What the request needs", "Predicted by our ladder: each route's chance of an answer a judge accepts (correctness, completeness, instruction-following); the cheapest route over the quality bar wins.", RED),
         ("3 · Business rules", "Applied by the gateway: customer tier (tags), team budgets (keys), latency (strategy), availability (fallbacks, retries, cooldowns).", INDIGO),
     ]):
         x = 0.72 + i * 4.02
@@ -416,19 +411,27 @@ def build(template: Path, out: Path) -> None:
     repo(s, "classifier/generate.py · label.py · train.py · evaluate.py")
     notes(s, "The key idea: a label is not someone's guess about difficulty; it is the cheapest route that actually produced an acceptable answer.")
 
-    # 13 · results: accuracy
+    # 13 · from labels to a ladder
     s = prs.slides.add_slide(blank)
-    header(s, "A routing head trained on frozen embeddings, scored on prompts it never saw", "How accurate is it?")
-    if meta:
-        cm = meta["confusion_matrix"]
-        rows_cm = [["right route \\ predicted", *cm["labels"]]] + [[cm["labels"][i], *row] for i, row in enumerate(cm["rows_true_cols_predicted"])]
-        table(s, 0.72, 1.85, 6.6, rows_cm, col_w=[1.9] + [1.175] * len(cm["labels"]), size=11)
-        card(s, 7.6, 1.85, 5.0, 1.75, f"{round(meta['held_out_accuracy'] * 100)}% on {meta['held_out']} unseen prompts",
-             f"cross-validated balanced accuracy {round(meta['cv_balanced_accuracy'] * 100)}%. Trained: a logistic-regression head, 1,540 weights, in {meta['train_seconds']} s. The encoder stays frozen.", accent=RED)
-        rec = meta["held_out_recall"]
-        card(s, 7.6, 3.85, 5.0, 2.6, "Recall per route",
-             "  ·  ".join(f"{k} {round(v * 100)}%" for k, v in rec.items()) + ". Rules add 56 of 56 non-English requests, every image and every very long prompt.", accent=TEAL)
-    notes(s, "Read the matrix honestly: CODE and REASONING are learned well; MEDIUM is the noisy middle, where a cheap model passes some of the time.")
+    header(s, "Predict each route's chance of a good answer, not one label", "Why a ladder")
+    lad = (meta or {}).get("ladder")
+    card(s, 0.72, 1.85, 5.6, 2.15, "One label is a coin flip",
+         "Labelled three times, only 63% of prompts got the same cheapest passing route every time. Accuracy against such labels "
+         "tops out in the 60s and 70s for any model: bigger encoders (up to 568M weights) did not move it.", accent=OCHRE)
+    card(s, 0.72, 4.25, 5.6, 2.2, "So predict pass probabilities",
+         "Per route: a logistic model on the embedding and difficulty signals, averaged with the pass rates of the 12 most similar "
+         "labelled requests. Take the cheapest route at least as likely as the quality bar.", accent=RED)
+    if lad:
+        rows_l = [["Quality bar", "Good answers", "Per request"]] + [
+            [f"{round(c['bar'] * 100)}%" + ("  (trained)" if c["bar"] == lad["bar"] else ""), f"{round(c['quality'] * 100)}%", f"${c['cost_per_request']:.4f}"]
+            for c in lad["held_out_curve"]] + [["always reasoning", f"{round(lad['held_out']['always REASONING']['quality'] * 100)}%",
+                                                f"${lad['held_out']['always REASONING']['cost_per_request']:.4f}"],
+                                               ["always balanced", f"{round(lad['held_out']['always MEDIUM']['quality'] * 100)}%",
+                                                f"${lad['held_out']['always MEDIUM']['cost_per_request']:.4f}"]]
+        table(s, 6.7, 1.85, 5.9, rows_l, col_w=[2.3, 1.8, 1.8], size=11)
+        text(s, 6.7, 6.25, 5.9, 0.5, f"{lad['held_out_prompts']} prompts never seen in training or in choosing the bar.", size=10.5, color=MUTED)
+    notes(s, "The bar was chosen inside the training split by 5-fold cross-validation: the cheapest bar at least as good as always-reasoning. "
+             "On the unseen prompts the dial runs from always-balanced quality to always-reasoning quality at less cost.")
 
     # 13b · did we really train it
     s = prs.slides.add_slide(blank)
@@ -437,16 +440,16 @@ def build(template: Path, out: Path) -> None:
     if ft:
         table(s, 0.72, 1.85, 11.9, [
             ["", "What was trained", "Weights trained", "Held-out accuracy", "Balanced accuracy", "Time"],
-            ["Frozen (shipped)", "the logistic-regression head", "1,540", f"{round(ft['frozen']['held_out_accuracy'] * 100, 1)}%",
+            ["Frozen", "the logistic-regression head", "1,540", f"{round(ft['frozen']['held_out_accuracy'] * 100, 1)}%",
              f"{round(ft['frozen']['held_out_balanced_accuracy'] * 100, 1)}%", "0.14 s, laptop CPU"],
             ["Fine-tuned", "every encoder weight, then the head", f"{ft['encoder_parameters'] / 1e6:.1f} M",
              f"{round(ft['fine_tuned']['held_out_accuracy'] * 100, 1)}%", f"{round(ft['fine_tuned']['held_out_balanced_accuracy'] * 100, 1)}%",
              f"{ft['fine_tuned']['fine_tune_seconds']:.0f} s, Mac GPU (MPS)"],
         ], col_w=[1.9, 3.1, 1.6, 1.8, 1.8, 1.7], size=12.5)
     bullets(s, 0.72, 3.7, 11.9, 2.8, [
-        ("Yes, both are real training.", "The head is fitted by supervised learning on outcome labels; fine-tuning also moves the encoder's 117.6 million weights, SetFit-style (a triplet loss pulls prompts with the same route together)."),
-        ("Fine-tuning helped, a little.", "About four more held-out prompts right out of 52. Two training schedules were tried and the better one kept, so read the gain as optimistic."),
-        ("Why the frozen head ships.", "It rebuilds from a 7 KB file in a second; the fine-tuned encoder is 470 MB. With more labelled data, fine-tuning on an OCI GPU is the next step: same script."),
+        ("Yes: supervised learning on outcomes.", "The shipped router fits four logistic models, one per route (391 weights each), on what a judge actually accepted, plus a code head. The encoder stays frozen."),
+        ("Fine-tuning the encoder is the next lever.", "In an earlier experiment on single-run labels (table above), training all 117.6 million encoder weights SetFit-style added about 8 points of label accuracy, in 47 s on the Mac's GPU. Read it as optimistic: two schedules were tried."),
+        ("Why the small model ships.", "The ladder rebuilds from a 210 KB file and runs on one Ampere core in Kubernetes; a fine-tuned encoder is 470 MB. With more labelled traffic, fine-tune on an OCI GPU: same scripts."),
     ], size=13)
     repo(s, "classifier/train.py (frozen) · classifier/finetune.py (fine-tuned) · evidence/finetune-comparison.json")
     notes(s, "Answer to 'did we really train it?': yes. Be precise: the shipped router trains a head on frozen embeddings; the fine-tuning run trains the encoder too.")
@@ -459,35 +462,50 @@ def build(template: Path, out: Path) -> None:
     if ev:
         pol = {p["policy"]: p for p in ev["policies"]}
         notes(s, "Policies on the held-out prompts: " + "; ".join(f"{p['policy']} {round(p['quality'] * 100)}% at ${p['cost_usd']:.3f}" for p in ev["policies"])
-              + f". The trained router matches the LLM classifier's quality ({round(pol['llm']['quality'] * 100)}%) at "
-              f"{round((1 - pol['trained']['cost_usd'] / pol['llm']['cost_usd']) * 100)}% less, with no classifier call per request.")
+              + f". Through the real gateway, the ladder gives {round((pol['trained']['quality'] - pol['heuristic']['quality']) * 100)} more points of good answers than LiteLLM's heuristic, "
+              f"{round((pol['trained']['quality'] - pol['llm']['quality']) * 100)} more than the LLM classifier at {round((1 - pol['trained']['cost_usd'] / pol['llm']['cost_usd']) * 100)}% less, "
+              f"and stays {round((pol['always REASONING']['quality'] - pol['trained']['quality']) * 100)} points under always-reasoning at {round((1 - pol['trained']['cost_usd'] / pol['always REASONING']['cost_usd']) * 100)}% less.")
 
     # 15 · live demo divider
     s = prs.slides.add_slide(blank)
     rect(s, 0, 0, 13.333, 7.5, TEAL)
     text(s, 0.72, 2.2, 11.9, 0.4, "LIVE DEMO · SWITCH TO THE BROWSER", size=13, color=YELLOW, bold=True, spacing=220)
     text(s, 0.72, 2.7, 11.9, 1.0, "The routing control room", size=40, color=WHITE, bold=True)
-    beats = ["Support: FAQ, billing, SLA escalation: watch the route climb from SIMPLE to REASONING",
-             "Japanese and an invoice photo: decided by rules in under a millisecond",
-             "Compare routers: the heuristic, the LLM classifier and ours on the same request",
-             "A failing deployment: the fallback, with no change to the app",
-             "The classifier and the gateway tabs: the training numbers and every route"]
+    beats = ["Ask and explain: type any request; the gateway picks the model and the screen shows why",
+             "Drag the quality bar: the same request moves between the fast, balanced and reasoning models",
+             "Control room: an agent's calls routed live; Japanese and an invoice photo decided by rules",
+             "Compare routers: LiteLLM's heuristic, its LLM classifier and our ladder on the same request",
+             "Resilience: a failing deployment falls back; the cluster gateway fails over to the laptop"]
     text(s, 0.72, 3.85, 11.9, 3.0, [[(f"{i + 1}   ", {"bold": True, "color": YELLOW, "size": 15}), (b, {"color": WHITE, "size": 15})] for i, b in enumerate(beats)], line=1.5)
     text(s, 0.72, 7.08, 11.9, 0.3, FOOTER, size=8, color=RGBColor(0xC8, 0xD6, 0xDB))
-    notes(s, "Before the talk: scripts/gateway.sh running, uvicorn ui.server:app on 8780, OCI session fresh (it lasts about an hour). Fallback: the screenshots on the next slides.")
+    notes(s, "Before the talk: scripts/oci/forward.sh running (OKE gateway on 4100), scripts/gateway.sh as the fallback on 4000 with a fresh OCI session, "
+             "then LITELLM_GATEWAY=http://127.0.0.1:4100 LITELLM_GATEWAY_FALLBACK=http://127.0.0.1:4000 uvicorn ui.server:app --port 8780. Fallback: the screenshots on the next slides.")
 
     # 16 · what you saw
     s = prs.slides.add_slide(blank)
     header(s, "Back to the slides", "What you just saw")
     table(s, 0.72, 1.85, 11.9, [
         ["In the demo", "What it shows", "Where it comes from"],
-        ["the route climbing with the request", "the classifier deciding by need, not by default", "complexity router, classifier_type custom"],
+        ["any request, routed and explained", "each route's chance of a good answer against the bar", "classifier/ladder.py · classifier/explain.py"],
+        ["the quality bar moving the route", "one dial between spend and answer quality, per request", "metadata.route_quality_bar"],
         ["Japanese and an image in under 1 ms", "certain facts decided by rules, before the model", "classifier/router_model.py"],
-        ["three routers, three answers", "the heuristic misroutes; ours does not", "oci-auto · oci-auto-llm · oci-auto-trained"],
-        ["fallback ×1 on the card", "a failing model skipped, the app unchanged", "router_settings.fallbacks"],
-        ["cost on every call", "spend per request, from the gateway", "x-litellm-response-cost"],
+        ["three routers, three answers", "the built-in tiers cannot express code or language", "oci-auto · oci-auto-llm · oci-auto-trained"],
+        ["fallback ×1, then failover", "a failing model skipped; a failing gateway skipped", "router fallbacks · LITELLM_GATEWAY_FALLBACK"],
     ], col_w=[3.7, 4.6, 3.6], size=12)
     notes(s, "Land the demo, then show the screens in detail.")
+
+    # 16b · ask and explain
+    s = prs.slides.add_slide(blank)
+    header(s, "Type a request: the gateway picks the model and shows why", "Ask and explain")
+    shot(s, "00-ask.png", 0.72, 1.7, 7.2)
+    bullets(s, 8.15, 1.85, 4.5, 4.9, [
+        ("The decision path.", "Each rule, the code check, then every route cheapest first: its chance of a good answer against the bar."),
+        ("Where the number comes from.", "The request's own features, and the twelve most similar labelled requests."),
+        ("Precedent.", "The closest training requests and how often each route's answer passed the judge."),
+        ("Why that model.", "The route's group, its deployments, and the one latency-based routing chose."),
+    ], size=12.5)
+    repo(s, "POST /api/ask · classifier/explain.py · web/src/components/Ask.tsx")
+    notes(s, "Nothing on this screen is written by a model after the fact: every sentence is built from the router's own numbers and the labels on file.")
 
     # 17 · the control room
     s = prs.slides.add_slide(blank)
@@ -496,7 +514,7 @@ def build(template: Path, out: Path) -> None:
     bullets(s, 8.15, 1.85, 4.5, 4.9, [
         ("Route trace.", "Every call the agent makes: the route, the criterion, the OCI model, latency, cost, fallbacks."),
         ("The agent.", "langchain-oci create_oci_agent; its model is the gateway, asked for oci-auto-trained."),
-        ("The classifier's view.", "Its probabilities next to the route it took."),
+        ("The router's view.", "Its pass probabilities next to the route it took."),
     ], size=13)
     repo(s, "app/agent.py · ui/server.py · web/src/components/ControlRoom.tsx")
     notes(s, "The UI is a thin client over the gateway's own headers.")
@@ -506,7 +524,7 @@ def build(template: Path, out: Path) -> None:
     header(s, "Same request, three classifiers", "Compare routers")
     shot(s, "06-compare-crop.png", 0.72, 1.7, 11.9)
     repo(s, "POST /api/compare · web/src/components/Compare.tsx")
-    notes(s, "The SLA escalation, live: the built-in heuristic calls it SIMPLE and Llama 4 Scout guesses the policy; the LLM classifier sends it to Gemini 2.5 Pro at 4.7x the cost; ours sends it to Grok 4.20 reasoning, which does the arithmetic.")
+    notes(s, "Same request through LiteLLM's heuristic, its LLM classifier and our ladder. Point at the route each chose and its cost; the held-out numbers behind the comparison are on the 'Does routing pay?' slide.")
 
     # 19 · codex
     s = prs.slides.add_slide(blank)
@@ -532,9 +550,9 @@ def build(template: Path, out: Path) -> None:
     figure(s, "figure5-kubernetes.png", 2.4, 1.6, 8.5)
     repo(s, "scripts/oci/up.sh · scripts/oci/deploy.sh · deploy/k8s/litellmdemo.yaml · scripts/oci/down.sh")
     notes(s, "Instance principal: the node signs, no key or token in the cluster; Workload Identity would scope it to the pod and needs an Enhanced cluster. "
-             "Kill the classifier pod during a request: the plugin declines within 1.5 s, LiteLLM routes to fallback_tier MEDIUM, the request still answers. "
+             "Kill the classifier pod during a request: the plugin declines within 3 s, LiteLLM routes to fallback_tier MEDIUM, the request still answers. "
              "No registry: stock python image, pinned packages via an init container, code and the 7 KB head as ConfigMaps. "
-             "Measured on the cluster (evidence/oke-run.json): route probes 11/11, browser test 14/14, use cases 11/13; the pod-kill run answered on MEDIUM during the outage and routed CODE again after.")
+             "Measured on the cluster (evidence/oke-run.json): route probes 11/11, use cases 13/13, browser test 20/20, 70-minute token-rotation soak 24/24; a classifier outage answered on MEDIUM; a killed pod is replaced in about 20 s; classification 79 ms median on one Ampere core.")
 
     # 21 · field notes
     s = prs.slides.add_slide(blank)
@@ -545,13 +563,12 @@ def build(template: Path, out: Path) -> None:
         ["Complexity router · Llama 4", "The map says 8,192 output tokens; OCI allows 4,096. Same failure, same fix."],
         ["Cohere vision", "LiteLLM sends cohere.* in Cohere format; OCI rejects it for command-a-vision. Route images to Gemini or Llama 4."],
         ["Model catalog", "Listed is not served: Grok 4, Grok Code and the Codex models returned 404 on demand. Smoke-test before adding."],
-        ["Prices", "Newer OCI models have no price-map entry: cost is None until you set it."],
-        ["Open-source limit", "One router with custom routes per gateway."],
         ["LLM classifier", "Its default timeout is 3 s; GPT-5 nano took longer, so it silently fell back to the heuristic. Use the fastest model (Flash-Lite) and a longer timeout."],
-        ["Labels", "The cheapest route passed 62% of prompts. Gemini 2.5 Pro thinks ~1.7k tokens, then answers tersely: the cheapest passing route for only 4 of 208."],
+        ["Gemini 2.5 Pro", "Thinks ~1.7k tokens, then answers tersely: 58% good answers at five times the balanced cost. The router never picks it."],
         ["Agent requests", "The agent's system prompt and tool turns drowned the request: every prompt looked alike, and Spanish read as English. Classify the user turns only."],
+        ["Labels", "Labelled three times, only 63% of prompts got the same cheapest passing route. Predict each route's pass probability instead of one label."],
+        ["OKE signing", "Instance-principal signing failed after ~20 minutes: LiteLLM's do_request_sign() skips the SDK's token refresh. Refresh in the pre-call hook."],
         ["OKE on a corporate network", "NAT sent port 6443 out of a different address than web traffic; the API allowlist must use the address seen on 6443."],
-        ["Well-known is not hard", "Famous proofs (√2, infinitely many primes) pass on the cheapest model; the classifier learned SIMPLE for them. Constrained planning is what needs REASONING."],
     ], col_w=[3.0, 8.9], size=10)
     notes(s, "The first two are worth an upstream fix: OCI-specific max_output_tokens in the model map.")
 
@@ -560,6 +577,7 @@ def build(template: Path, out: Path) -> None:
     header(s, "For the LiteLLM team", "What we would send upstream")
     table(s, 0.72, 1.85, 11.9, [
         ["Found", "Proposal", "Kind"],
+        ["Instance, resource and workload principals stop signing after ~20 min: LiteLLM calls do_request_sign(), which skips the SDK's token refresh (only __call__ refreshes)", "Refresh before signing (signer._reset_signers() or sign via __call__); we patch it in our hook today", "provider fix"],
         ["OCI Gemini rejects max_tokens 65,536; OCI Llama 4 allows 4,096, the map says 8,192", "OCI-specific max_output_tokens in model_prices_and_context_window.json, so the complexity router stops failing over silently", "model map PR"],
         ["Newer OCI models have no price entry: cost is None", "Prices for the OCI GPT-5.x, Grok 4.x and Gemini 2.5 deployments we use", "model map PR"],
         ["cohere.command-a-vision is sent in Cohere format; OCI rejects it", "Send vision-capable Cohere models in the generic format", "provider fix"],

@@ -16,12 +16,16 @@ export OCI_CLI_AUTH=api_key OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING=True PYTHO
 NS=litellmdemo
 COMP="$(python3 -c "import json; print(json.load(open('$CONF_DIR/oci-state.json'))['compartment'])")"
 k() { kubectl "$@"; }
-apply_cm() { k create configmap "$1" -n "$NS" "${@:2}" --dry-run=client -o yaml | k apply -f - >/dev/null; }
+apply_cm() {  # server-side: client-side apply keeps a copy in a 256 KB annotation, too small for the ladder
+  k create configmap "$1" -n "$NS" "${@:2}" --dry-run=client -o yaml | k apply --server-side --force-conflicts -f - >/dev/null
+}
 
 k apply -f "$ROOT/deploy/k8s/litellmdemo.yaml" >/dev/null
 apply_cm requirements --from-file="$ROOT/deploy/requirements/classifier.txt" --from-file="$ROOT/deploy/requirements/gateway.txt"
 apply_cm classifier-code --from-file="$ROOT/classifier/__init__.py" --from-file="$ROOT/classifier/router_model.py" \
-  --from-file="$ROOT/classifier/serve.py" --from-file="$ROOT/classifier/model/head.joblib" --from-file="$ROOT/classifier/model/meta.json"
+  --from-file="$ROOT/classifier/serve.py" --from-file="$ROOT/classifier/ladder.py" \
+  --from-file="$ROOT/classifier/model/head.joblib" --from-file="$ROOT/classifier/model/ladder.npz" \
+  --from-file="$ROOT/classifier/model/meta.json"
 apply_cm gateway-code --from-file="$ROOT/gateway/config.yaml" --from-file="$ROOT/gateway/oci_session_signer.py" \
   --from-file="$ROOT/gateway/trained_classifier.py"
 # --from-file keeps the key file's trailing newline, and LiteLLM would then
@@ -37,7 +41,7 @@ stamp() {  # deployment files...
   k patch deployment "$1" -n "$NS" --type merge \
     -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"litellmdemo/config-hash\":\"$h\"}}}}}" >/dev/null
 }
-stamp route-classifier "$ROOT"/deploy/requirements/classifier.txt "$ROOT"/classifier/{__init__.py,router_model.py,serve.py} "$ROOT"/classifier/model/*
+stamp route-classifier "$ROOT"/deploy/requirements/classifier.txt "$ROOT"/classifier/{__init__.py,router_model.py,serve.py,ladder.py} "$ROOT"/classifier/model/*
 stamp litellm-gateway "$ROOT"/deploy/requirements/gateway.txt "$ROOT"/gateway/{config.yaml,oci_session_signer.py,trained_classifier.py} "$KEYTMP" <(echo "$COMP")
 echo "applied; waiting for both deployments (first start installs packages: a few minutes)"
 k rollout status -n "$NS" deployment/route-classifier --timeout=15m
