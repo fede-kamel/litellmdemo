@@ -12,8 +12,8 @@ and the key stay on the gateway host; applications only hold a gateway key.
 
 On Kubernetes (OCI_AUTH=instance_principal) the gateway signs as the OKE node
 it runs on instead: an IAM dynamic group and policy allow that node to use
-Generative AI, and no key or token is stored in the cluster. The OCI SDK
-refreshes the instance-principal token itself.
+Generative AI, and no key or token is stored in the cluster. The token is
+refreshed before each call (see `signer()`).
 
     litellm_settings:
       callbacks: oci_session_signer.handler
@@ -46,6 +46,11 @@ class OCISessionSigner(CustomLogger):
                     import oci
 
                     self._signer = oci.auth.signers.InstancePrincipalsSecurityTokenSigner()
+                # The SDK refreshes the token (about 20 minutes) only in signer.__call__;
+                # LiteLLM signs with do_request_sign(), which skips it, so every call
+                # after the first token expired failed with 401. Refresh here: it is a
+                # cached read until the token is near expiry.
+                self._signer._reset_signers()
                 return self._signer
             if self._signer is None or time.monotonic() - self._loaded_at > REFRESH_SECONDS:
                 import oci

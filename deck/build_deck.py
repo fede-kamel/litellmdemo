@@ -246,7 +246,7 @@ def build(template: Path, out: Path) -> None:
         if ph.placeholder_format.idx == 0:
             ph.text = "The Right Model for Every Request"
         elif ph.name.startswith("Text Placeholder 2"):
-            ph.text = "LiteLLM routing across OCI Generative AI"
+            ph.text = "Built on LiteLLM's router, across fifteen OCI models"
         elif ph.name.startswith("Text Placeholder 3"):
             ph.text = "Federico Kamelhar"
         elif ph.name.startswith("Text Placeholder 4"):
@@ -255,8 +255,9 @@ def build(template: Path, out: Path) -> None:
         if ph.has_text_frame and not ph.text_frame.text.strip():
             ph._element.getparent().remove(ph._element)
     rect(s, 2.62, 1.1, 0.02, 0.4, RGBColor(0x8F, 0xA6, 0xAD))
-    s.shapes.add_picture(str(LOGOS / "langchain-white.png"), Inches(2.82), Inches(1.12), height=Inches(0.36))
-    notes(s, "Talk #2 after Deep Agents on your own data. One gateway, fifteen OCI models, and a classifier we trained that decides which model answers each request.")
+    text(s, 2.82, 1.06, 2.4, 0.45, "LiteLLM", size=22, color=WHITE, bold=True)
+    notes(s, "Audience: the LiteLLM team. Everything here runs on LiteLLM 1.104.0 from PyPI, unmodified: the complexity router with "
+             "classifier_type custom, tags, fallbacks, context-window checks. The last slides are what we found and what we would upstream.")
 
     # 2 · agenda
     s = prs.slides.add_slide(blank)
@@ -266,7 +267,7 @@ def build(template: Path, out: Path) -> None:
               ("Why route", "the price spread, the toolbox, the use cases, the criteria", "6–9"),
               ("The classifier", "where it sits, how we trained it, whether it pays", "10–15"),
               ("Live demo", "the routing control room, then back to the slides", "16–19"),
-              ("Built with Codex, run on OKE", "skills as the harness; Kubernetes; field notes; what is next", "20–24")]
+              ("Built with Codex, run on OKE", "skills as the harness; Kubernetes; field notes; what we would upstream", "20–25")]
     for i, (t, sub, pages) in enumerate(agenda):
         y = 1.85 + i * 0.7
         rect(s, 0.72, y, 11.9, 0.6, SAND if i % 2 == 0 else WHITE, line=CARD_LINE)
@@ -554,7 +555,22 @@ def build(template: Path, out: Path) -> None:
     ], col_w=[3.0, 8.9], size=10)
     notes(s, "The first two are worth an upstream fix: OCI-specific max_output_tokens in the model map.")
 
-    # 21 · next
+    # 22 · upstream
+    s = prs.slides.add_slide(blank)
+    header(s, "For the LiteLLM team", "What we would send upstream")
+    table(s, 0.72, 1.85, 11.9, [
+        ["Found", "Proposal", "Kind"],
+        ["OCI Gemini rejects max_tokens 65,536; OCI Llama 4 allows 4,096, the map says 8,192", "OCI-specific max_output_tokens in model_prices_and_context_window.json, so the complexity router stops failing over silently", "model map PR"],
+        ["Newer OCI models have no price entry: cost is None", "Prices for the OCI GPT-5.x, Grok 4.x and Gemini 2.5 deployments we use", "model map PR"],
+        ["cohere.command-a-vision is sent in Cohere format; OCI rejects it", "Send vision-capable Cohere models in the generic format", "provider fix"],
+        ["The classifier sees the whole conversation: an agent's system prompt and tool turns drowned the request", "Pass the user turns (or the last one) to classifier plugins, or document it", "router change"],
+        ["The LLM classifier's 3 s timeout falls back to the heuristic with no error", "Log a warning and count classifier fallbacks; the cause header already exists", "observability"],
+        ["We run the classifier as its own service", "classifier_type: http (URL + timeout), declining to fallback_tier on error: our plugin, offered as is", "feature"],
+        ["OTel v2 reports provider \"oci\"", "gen_ai.provider.name = oracle_cloud.generative_ai: BerriAI/litellm#41824, open", "open PR"],
+    ], col_w=[4.3, 6.0, 1.6], size=10.5)
+    notes(s, "Each row has evidence in the repo: README field notes, evidence/, and the plugin in gateway/trained_classifier.py. Ask which they want as PRs first.")
+
+    # 23 · next
     s = prs.slides.add_slide(blank)
     header(s, "From a laptop to an OCI GPU", "What is next")
     steps(s, 0.72, 1.95, 11.9, 2.8, [

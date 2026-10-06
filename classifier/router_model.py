@@ -39,6 +39,10 @@ def learned_label(route: str) -> str | None:
 _identifier = None
 
 
+MIN_LETTERS = 12
+MIN_LANGUAGE_CONFIDENCE = 0.5
+
+
 def language(text: str) -> str:
     """ISO code of the text's language; "en" unless the identifier is confident.
 
@@ -46,15 +50,21 @@ def language(text: str) -> str:
     py3langid little to go on, so the language rule needs a few words and 50%
     confidence before it overrides the model.
     """
+    lang, confidence = language_confidence(text)
+    return lang if lang == "en" or confidence >= MIN_LANGUAGE_CONFIDENCE else "en"
+
+
+def language_confidence(text: str) -> tuple[str, float]:
+    """py3langid's raw guess and its normalised confidence ("en", 0.0 for too few letters)."""
     global _identifier
-    if sum(ch.isalpha() for ch in text) < 12:
-        return "en"
+    if sum(ch.isalpha() for ch in text) < MIN_LETTERS:
+        return "en", 0.0
     if _identifier is None:
         from py3langid.langid import MODEL_FILE, LanguageIdentifier
 
         _identifier = LanguageIdentifier.from_model_file(MODEL_FILE, norm_probs=True)
     lang, confidence = _identifier.classify(text[:2000])
-    return lang if lang == "en" or confidence >= 0.5 else "en"
+    return lang, float(confidence)
 
 
 @dataclass

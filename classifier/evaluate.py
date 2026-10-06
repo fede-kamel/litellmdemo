@@ -11,8 +11,9 @@ Policies:
 
 For the difficulty prompts the label run already holds each SIMPLE, MEDIUM
 and COMPLEX answer's cost and verdict; REASONING is answered and judged here.
-A policy's quality is the share of prompts whose chosen route passed; its
-cost is what those answers cost. For CODE and MULTILINGUAL prompts, only
+A policy's quality is the share of prompts whose chosen route passed (with
+voted labels, the chosen route's pass rate across the label runs); its cost is
+what those answers cost. For CODE and MULTILINGUAL prompts, only
 route accuracy is reported: the built-in tiers cannot express them.
 """
 
@@ -118,7 +119,7 @@ async def main() -> None:
             chosen = next((x for x in r["tiers"] if x["tier"] == t), None)
             if chosen is None:          # a task-type route on a difficulty prompt: price it as MEDIUM
                 chosen = next(x for x in r["tiers"] if x["tier"] == "MEDIUM")
-            quality += chosen["passed"]
+            quality += chosen.get("pass_rate", chosen["passed"])   # share of label runs it passed
             cost += chosen["cost"]
             exact += t == r["route"]
             if p in ROUTERS:

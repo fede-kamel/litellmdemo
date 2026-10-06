@@ -6,6 +6,8 @@
 - POST /api/runs               run the langchain-oci agent on a scenario or a prompt;
                                GET /api/runs/{id}/stream streams every model call's route (SSE)
 - POST /api/compare            send one request to the three auto-routers and to fixed routes
+- POST /api/ask                any prompt through oci-auto-trained, with why: the checks, the model's
+                               probabilities, precedent from the labels, and why that deployment
 - POST /api/classify           our classifier's view of a request: route, criterion, probabilities
 - GET  /api/gateway            the routes, model groups and deployments from gateway/config.yaml
 - GET  /api/classifier         training data, held-out accuracy, the policy comparison
@@ -34,7 +36,8 @@ sys.path.insert(0, str(ROOT))
 
 from app import agent  # noqa: E402
 from app.scenarios import SCENARIOS, messages_for, summary  # noqa: E402
-from classifier.gateway_client import chat  # noqa: E402
+from classifier.gateway_client import GATEWAYS, active_gateway, chat, mark_down  # noqa: E402
+from classifier.explain import explain  # noqa: E402
 from classifier.router_model import shared  # noqa: E402
 
 app = FastAPI(title="LiteLLM routing control room")
@@ -81,9 +84,23 @@ async def start_run(req: RunRequest) -> dict:
             CALLS.append({**event, "run": rid, "scenario": scenario and scenario["id"]})
         asyncio.run_coroutine_threadsafe(_append(run, event), loop)
 
+    gateway = await active_gateway()
+
     def work() -> None:
+        tools = router not in ("oci-flaky", "oci-chat")
         try:
-            agent.run(messages, emit, router=router, tags=tags, use_tools=router not in ("oci-flaky", "oci-chat"))
+            try:
+                agent.run(messages, emit, router=router, tags=tags, use_tools=tools, gateway=gateway)
+            except Exception as exc:  # noqa: BLE001
+                # A gateway that fails before any model call (unreachable, or its OCI
+                # signing broken) gets the run once more on the next gateway.
+                calls = [e for e in run["events"] if e["type"] == "llm"]
+                spare = [g for g in GATEWAYS if g != gateway]
+                if calls or not spare or not _looks_like_gateway_fault(exc):
+                    raise
+                mark_down(gateway)
+                emit({"type": "failover", "from": gateway, "to": spare[0], "reason": str(exc)[:200]})
+                agent.run(messages, emit, router=router, tags=tags, use_tools=tools, gateway=spare[0])
         except Exception as exc:  # noqa: BLE001 - surfaced to the UI
             emit({"type": "error", "message": str(exc)[:500]})
         finally:
@@ -97,6 +114,11 @@ async def _append(run: dict, event: dict) -> None:
     async with run["cond"]:
         run["events"].append(event)
         run["cond"].notify_all()
+
+
+def _looks_like_gateway_fault(exc: Exception) -> bool:
+    text = f"{type(exc).__name__} {exc}"
+    return any(k in text for k in ("APIConnectionError", "ConnectError", "Connection refused", "OciException", "502", "503"))
 
 
 async def _finish(run: dict) -> None:
@@ -146,6 +168,63 @@ async def compare(req: CompareRequest) -> dict:
     results = await asyncio.gather(*(one(r) for r in ROUTERS))
     decision = await asyncio.to_thread(shared().classify, messages)
     return {"scenario": scenario and summary(scenario), "classifier": decision.as_dict(), "results": results}
+
+
+class AskRequest(BaseModel):
+    prompt: str = Field(min_length=1, max_length=200_000)
+    max_tokens: int = Field(default=1200, ge=16, le=8000)
+
+
+EXAMPLES = [
+    "What is 18 percent of 4,217.50?",
+    "Draft a short, polite reply to a customer who was charged twice in September, explaining the refund steps.",
+    "Our GPU spend grew 12%, 9%, 15% and 11% over four quarters from $1.2M. With a $7.5M annual budget and a hard "
+    "$2.1M cap per quarter, model three growth scenarios, say when the cap binds, and what to defer.",
+    "Explain this SQL: SELECT region, SUM(amount) FROM orders GROUP BY region HAVING SUM(amount) > 1e6;",
+    "Bonjour, comment puis-je télécharger ma facture du mois dernier ?",
+]
+
+
+@app.get("/api/ask/examples")
+def ask_examples() -> list[str]:
+    return EXAMPLES
+
+
+@app.post("/api/ask")
+async def ask(req: AskRequest) -> dict:
+    """One request through the trained router, with the evidence for its route and its model."""
+    messages = [{"role": "user", "content": req.prompt}]
+    started = time.time()
+    why, reply = await asyncio.gather(asyncio.to_thread(explain, messages),
+                                      chat("oci-auto-trained", messages, max_tokens=req.max_tokens))
+    route = agent.route_of(reply["headers"])
+    cfg = yaml.safe_load((ROOT / "gateway" / "config.yaml").read_text())
+    trained = next(d for d in cfg["model_list"] if d["model_name"] == "oci-auto-trained")
+    group = trained["litellm_params"]["complexity_router_config"]["tiers"].get(route.get("route") or "", "")
+    candidates = [d["litellm_params"]["model"] for d in cfg["model_list"] if d["model_name"] == group]
+    strategy = cfg.get("router_settings", {}).get("routing_strategy", "simple-shuffle")
+    if not reply["ok"]:
+        model_why = "The gateway did not answer: " + reply["text"][:300]
+    elif route.get("fallbacks"):
+        model_why = (f"{route.get('deployment')} answered after {route['fallbacks']} fallback(s): "
+                     f"the first choice in {group} failed, so the gateway moved down the fallback chain.")
+    elif len(candidates) > 1:
+        model_why = (f"{group} has {len(candidates)} deployments; with {strategy} the gateway sent it to the one "
+                     f"answering fastest lately: {route.get('deployment')}.")
+    else:
+        model_why = f"{group} has one deployment: {route.get('deployment')}."
+    gateway_route = route.get("route")
+    return {"prompt": req.prompt, "why": why, "group": group, "candidates": candidates, "strategy": strategy,
+            "model_why": model_why, "route": route, "ok": reply["ok"], "text": reply["text"][:6000],
+            "agrees": gateway_route == why["decision"]["route"], "seconds": round(time.time() - started, 2),
+            "gateway": reply.get("gateway"), "gateway_role": _role(reply.get("gateway"))}
+
+
+def _role(url: str | None) -> str:
+    """"primary" for LITELLM_GATEWAY (the OKE gateway in the cluster demo), "fallback" for the others."""
+    if not url:
+        return "none"
+    return "primary" if url == GATEWAYS[0] else "fallback"
 
 
 @app.post("/api/classify")
@@ -206,6 +285,13 @@ async def warm() -> None:
 @app.get("/api/health")
 def health() -> dict:
     return {"ok": True, "classifier_trained": shared().trained}
+
+
+@app.get("/api/gateways")
+async def gateways() -> dict:
+    """Which gateway new requests go to, and the others in failover order."""
+    active = await active_gateway()
+    return {"active": active, "role": _role(active), "gateways": GATEWAYS}
 
 
 DIST = ROOT / "web" / "dist"

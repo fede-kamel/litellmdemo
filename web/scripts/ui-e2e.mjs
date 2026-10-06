@@ -22,6 +22,22 @@ const runAndWait = async () => {
 
 try {
   await page.goto("http://127.0.0.1:8780/", { waitUntil: "networkidle" });
+  check("the gateway in use is shown", await visible("gateway: primary") || await visible("gateway: fallback"));
+
+  // Ask and explain: any prompt, the route, and why
+  await page.locator("textarea").fill("Draft a short, polite reply to a customer who was charged twice in September, explaining the refund steps.");
+  await page.locator("button:has-text('Route it')").click();
+  check("a typed request is routed and answered", await visible("Why this route", 240000) && await visible("The answer"));
+  check("the explanation shows the decision path", await visible("Image rule") && await visible("Language rule") && await visible("Trained model"));
+  check("the explanation cites precedent from the labels", await visible("most similar requests") && await page.locator("text=/similarity 0\\.\\d\\d/").count() >= 3);
+  check("the explanation says why that model", await visible("Why this model") && await page.locator("text=/deployment|fallback/").count() > 0);
+  await shot("00-ask");
+  await page.locator("textarea").fill("Bonjour, comment puis-je télécharger ma facture du mois dernier ?");
+  await page.locator("button:has-text('Route it')").click();
+  check("a French request is explained by the language rule", await visible("written in French", 240000));
+  await shot("00-ask-french");
+
+  await tab("Control room");
   check("control room loads the use cases", await visible("Customer support") && await visible("Coding assistant"));
   await shot("01-control-room");
 

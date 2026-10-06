@@ -136,6 +136,11 @@ export function ControlRoom({ onCall }: { onCall: () => void }) {
                 </div>
               );
               if (e.type === "tool_result") return <div key={i} className="ml-12 line-clamp-2 font-mono text-[11px] text-ink-3">→ {e.output}</div>;
+              if (e.type === "failover") return (
+                <div key={i} className="flex items-center gap-2 rounded-lg border border-ochre/40 bg-ochre-soft px-3 py-2 text-[12px] text-ochre">
+                  <CircleAlert className="size-4" /> gateway {e.from} failed before answering; the run moved to {e.to}
+                </div>
+              );
               return null;
             })}
           </div>

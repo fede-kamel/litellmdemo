@@ -6,7 +6,9 @@
 #                     signs OCI calls as the node (instance principal)
 #
 # Both run the stock python:3.12-slim image. An init container installs pinned
-# packages into a pod-local volume; the code, the gateway config and the 7 KB
+# packages into a cache on the node, keyed by the requirements and the Python
+# version: the first start installs (minutes), every restart after reuses it
+# (seconds), and changing a pin rebuilds once; the code, the gateway config and the 7 KB
 # classifier head come from ConfigMaps that scripts/oci/deploy.sh builds from
 # this repository. The only Secret is the gateway's master key and the
 # compartment; no OCI key or token is stored in the cluster.
@@ -33,27 +35,40 @@ spec:
       securityContext: {runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, fsGroup: 10001,
                         seccompProfile: {type: RuntimeDefault}}
       initContainers:
+        - name: prepare-cache
+          image: python:3.12-slim
+          command: ["chown", "10001:10001", "/deps"]
+          securityContext: {runAsNonRoot: false, runAsUser: 0, allowPrivilegeEscalation: false,
+                            capabilities: {drop: [ALL], add: [CHOWN]}}
+          volumeMounts: [{name: deps, mountPath: /deps}]
         - name: install
           image: python:3.12-slim
           command: ["sh", "-c"]
           args:
             - |
               set -e
-              python -m venv /deps/venv
-              /deps/venv/bin/pip install -q --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch==2.14.1
-              /deps/venv/bin/pip install -q --no-cache-dir -r /reqs/classifier.txt
-              /deps/venv/bin/python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('intfloat/multilingual-e5-small')"
-          env: [{name: HOME, value: /tmp}, {name: HF_HOME, value: /deps/hf}]
+              H=$( (python -V; cat /reqs/classifier.txt) | sha256sum | cut -c1-12)
+              D=/deps/classifier-$H
+              if [ ! -f "$D/.ok" ]; then
+                rm -rf "$D"; python -m venv "$D/venv"
+                "$D/venv/bin/pip" install -q --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch==2.14.1
+                "$D/venv/bin/pip" install -q --no-cache-dir -r /reqs/classifier.txt
+                HF_HOME="$D/hf" "$D/venv/bin/python" -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('intfloat/multilingual-e5-small')"
+                touch "$D/.ok"
+              fi
+              ln -sfn "$D" /deps/classifier-current
+              find /deps -maxdepth 1 -name "classifier-*" ! -name "classifier-$H" ! -name "classifier-current" -exec rm -rf {} +
+          env: [{name: HOME, value: /tmp}]
           volumeMounts: [{name: deps, mountPath: /deps}, {name: reqs, mountPath: /reqs}, {name: tmp, mountPath: /tmp}]
           securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
           resources: {requests: {cpu: 200m, memory: 1Gi}, limits: {memory: 2Gi}}
       containers:
         - name: classifier
           image: python:3.12-slim
-          command: ["/deps/venv/bin/uvicorn", "classifier.serve:app", "--app-dir", "/app", "--host", "0.0.0.0", "--port", "8080"]
+          command: ["/deps/classifier-current/venv/bin/uvicorn", "classifier.serve:app", "--app-dir", "/app", "--host", "0.0.0.0", "--port", "8080"]
           env:
             - {name: HOME, value: /tmp}
-            - {name: HF_HOME, value: /deps/hf}
+            - {name: HF_HOME, value: /deps/classifier-current/hf}
             - {name: HF_HUB_OFFLINE, value: "1"}
             - {name: OMP_NUM_THREADS, value: "1"}
           ports: [{name: http, containerPort: 8080}]
@@ -67,7 +82,7 @@ spec:
           securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
           resources: {requests: {cpu: 250m, memory: 900Mi}, limits: {memory: 2Gi}}
       volumes:
-        - {name: deps, emptyDir: {}}
+        - {name: deps, hostPath: {path: /var/lib/litellmdemo-deps, type: DirectoryOrCreate}}
         - {name: tmp, emptyDir: {}}
         - {name: reqs, configMap: {name: requirements}}
         - name: code
@@ -106,9 +121,27 @@ spec:
       securityContext: {runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, fsGroup: 10001,
                         seccompProfile: {type: RuntimeDefault}}
       initContainers:
+        - name: prepare-cache
+          image: python:3.12-slim
+          command: ["chown", "10001:10001", "/deps"]
+          securityContext: {runAsNonRoot: false, runAsUser: 0, allowPrivilegeEscalation: false,
+                            capabilities: {drop: [ALL], add: [CHOWN]}}
+          volumeMounts: [{name: deps, mountPath: /deps}]
         - name: install
           image: python:3.12-slim
-          command: ["sh", "-c", "python -m venv /deps/venv && /deps/venv/bin/pip install -q --no-cache-dir -r /reqs/gateway.txt"]
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+              H=$( (python -V; cat /reqs/gateway.txt) | sha256sum | cut -c1-12)
+              D=/deps/gateway-$H
+              if [ ! -f "$D/.ok" ]; then
+                rm -rf "$D"; python -m venv "$D/venv"
+                "$D/venv/bin/pip" install -q --no-cache-dir -r /reqs/gateway.txt
+                touch "$D/.ok"
+              fi
+              ln -sfn "$D" /deps/gateway-current
+              find /deps -maxdepth 1 -name "gateway-*" ! -name "gateway-$H" ! -name "gateway-current" -exec rm -rf {} +
           env: [{name: HOME, value: /tmp}]
           volumeMounts: [{name: deps, mountPath: /deps}, {name: reqs, mountPath: /reqs}, {name: tmp, mountPath: /tmp}]
           securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
@@ -117,7 +150,7 @@ spec:
         - name: gateway
           image: python:3.12-slim
           workingDir: /app/gateway
-          command: ["/deps/venv/bin/litellm", "--config", "/app/gateway/config.yaml", "--host", "0.0.0.0", "--port", "4000"]
+          command: ["/deps/gateway-current/venv/bin/litellm", "--config", "/app/gateway/config.yaml", "--host", "0.0.0.0", "--port", "4000"]
           env:
             - {name: HOME, value: /tmp}
             - {name: OCI_AUTH, value: instance_principal}
@@ -140,7 +173,7 @@ spec:
           securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
           resources: {requests: {cpu: 250m, memory: 768Mi}, limits: {memory: 1536Mi}}
       volumes:
-        - {name: deps, emptyDir: {}}
+        - {name: deps, hostPath: {path: /var/lib/litellmdemo-deps, type: DirectoryOrCreate}}
         - {name: tmp, emptyDir: {}}
         - {name: reqs, configMap: {name: requirements}}
         - {name: code, configMap: {name: gateway-code}}

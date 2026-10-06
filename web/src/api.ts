@@ -6,7 +6,7 @@ export type Scenario = {
 export type Decision = { route: string; criterion: string; probabilities: Record<string, number>; milliseconds: number };
 
 export type RouteInfo = {
-  route?: string; cause?: string; group?: string; deployment?: string; fallbacks: number; retries: number;
+  gateway?: string; route?: string; cause?: string; group?: string; deployment?: string; fallbacks: number; retries: number;
   cost?: number; ms?: number; call_id?: string;
 };
 
@@ -17,7 +17,8 @@ export type RunEvent =
   | { type: "tool"; t: number; name: string; input: string }
   | { type: "tool_result"; t: number; output: string }
   | { type: "answer"; t: number; text: string; seconds: number; calls: number }
-  | { type: "error"; t: number; message: string };
+  | { type: "error"; t: number; message: string }
+  | { type: "failover"; t: number; from: string; to: string; reason: string };
 
 export type CompareResult = { router: string; ok: boolean; seconds: number; text: string } & RouteInfo;
 

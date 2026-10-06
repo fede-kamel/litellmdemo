@@ -1,6 +1,7 @@
 """Write the prompts the classifier learns from, through the gateway.
 
     uv run python classifier/generate.py            # -> classifier/data/prompts.jsonl
+    uv run python classifier/generate.py --domains  # append the business-domain prompts
 
 The judge model (group oci-judge) writes prompts for thirteen task families,
 easy to expert, plus code tasks and requests in seven other languages. Each
@@ -38,6 +39,19 @@ FAMILIES = [
     ("planning", "REASONING", "scheduling or planning problems under several hard constraints"),
     ("quantitative", "REASONING", "quantitative estimation or finance problems that need several calculation steps"),
 ]
+# Business domains the first set missed: an assistant at a cloud company gets
+# these every day, and the classifier misrouted them (README "Unseen domains").
+# Their route is decided by outcome, like every family above.
+DOMAINS = [
+    ("support", "customer-support requests to a cloud provider's assistant: account access, how-to questions, "
+                "troubleshooting steps, escalations that cite SLA terms"),
+    ("billing", "billing requests: unexpected charges, refunds, disputes, drafting replies to customers, "
+                "usage-based pricing questions, some with figures to work out"),
+    ("itops", "IT operations requests: incident triage, runbook steps, alert tuning, capacity questions, "
+              "change plans, postmortem write-ups"),
+    ("finance", "finance and FP&A requests with the numbers given: budgets, variances, forecasts, unit economics"),
+    ("people", "internal operations requests: HR policy questions, onboarding plans, announcements, meeting scheduling"),
+]
 CODE = ("code", "CODE", "programming requests: write, explain, review or debug code or SQL, from one-liners to concurrency bugs")
 LANGUAGES = ["Spanish", "French", "German", "Japanese", "Portuguese", "Italian", "Chinese"]
 
@@ -58,7 +72,23 @@ async def family_prompts(family: str, hint: str, what: str, n: int, extra: str =
             for i in items if isinstance(i, dict) and i.get("prompt")]
 
 
+async def add_domains() -> None:
+    existing = [json.loads(line) for line in OUT.read_text().splitlines()]
+    seen = {r["prompt"].lower() for r in existing}
+    start = 1 + max(int(r["id"][1:]) for r in existing)
+    jobs = [family_prompts(f, "MEDIUM", w, 15, extra) for f, w in DOMAINS
+            for extra in ("Write as the employee or customer would.", "Make about half of them need several steps.")]
+    rows = [r for batch in await asyncio.gather(*jobs) for r in batch
+            if not (r["prompt"].lower() in seen or seen.add(r["prompt"].lower()))]
+    with OUT.open("a") as fh:
+        for i, r in enumerate(rows):
+            fh.write(json.dumps({"id": f"p{start + i:04d}", **r}, ensure_ascii=False) + "\n")
+    print(json.dumps({"added": len(rows), "by_family": {f: sum(r["family"] == f for r in rows) for f, _ in DOMAINS}}))
+
+
 async def main() -> None:
+    if "--domains" in sys.argv:
+        return await add_domains()
     jobs = [family_prompts(f, h, w, 16) for f, h, w in FAMILIES]
     jobs += [family_prompts(*CODE, 24), family_prompts(*CODE, 24, "Use different languages: Python, SQL, JavaScript, Go, Java.")]
     jobs += [family_prompts(f"multilingual-{lang.lower()}", "MULTILINGUAL",

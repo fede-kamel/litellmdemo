@@ -53,8 +53,8 @@ def route_of(headers: dict) -> dict:
 class RouteRecorder(BaseCallbackHandler):
     """Turns each model call and tool step into an event."""
 
-    def __init__(self, emit: Callable[[dict], None], router: str):
-        self.emit, self.router, self.calls, self.started = emit, router, 0, {}
+    def __init__(self, emit: Callable[[dict], None], router: str, gateway: str = GATEWAY):
+        self.emit, self.router, self.gateway, self.calls, self.started = emit, router, gateway, 0, {}
 
     def on_chat_model_start(self, serialized, messages, *, run_id, **kw):
         self.started[run_id] = time.time()
@@ -70,7 +70,8 @@ class RouteRecorder(BaseCallbackHandler):
         meta = getattr(msg, "response_metadata", {}) or {}
         tool_calls = [c["name"] for c in (getattr(msg, "tool_calls", None) or [])]
         usage = meta.get("token_usage") or {}
-        self.emit({"type": "llm", "call": self.calls, "asked": self.router, **route_of(meta.get("headers")),
+        self.emit({"type": "llm", "call": self.calls, "asked": self.router, "gateway": self.gateway,
+                   **route_of(meta.get("headers")),
                    "seconds": round(time.time() - self.started.pop(run_id, time.time()), 2),
                    "tokens": {"in": usage.get("prompt_tokens"), "out": usage.get("completion_tokens")},
                    "tool_calls": tool_calls, "text": (msg.content if isinstance(getattr(msg, "content", None), str) else "")[:2000]})
@@ -82,17 +83,17 @@ class RouteRecorder(BaseCallbackHandler):
         self.emit({"type": "tool_result", "output": str(getattr(output, "content", output))[:600]})
 
 
-def chat_model(router: str, tags: list[str] | None = None) -> ChatOpenAI:
+def chat_model(router: str, tags: list[str] | None = None, gateway: str = GATEWAY) -> ChatOpenAI:
     extra = {"tags": tags} if tags else {}
-    return ChatOpenAI(model=router, base_url=f"{GATEWAY}/v1", api_key=key(), include_response_headers=True,
+    return ChatOpenAI(model=router, base_url=f"{gateway}/v1", api_key=key(), include_response_headers=True,
                       max_retries=0, timeout=300, extra_body=extra or None)
 
 
 def run(messages: list[dict], emit: Callable[[dict], None], router: str = "oci-auto-trained",
-        tags: list[str] | None = None, use_tools: bool = True) -> dict:
-    agent = create_oci_agent(model=chat_model(router, tags), tools=TOOLS if use_tools else [], system_prompt=SYSTEM,
+        tags: list[str] | None = None, use_tools: bool = True, gateway: str = GATEWAY) -> dict:
+    agent = create_oci_agent(model=chat_model(router, tags, gateway), tools=TOOLS if use_tools else [], system_prompt=SYSTEM,
                              name="northwind-assistant")
-    recorder = RouteRecorder(emit, router)
+    recorder = RouteRecorder(emit, router, gateway)
     started = time.time()
     result = agent.invoke({"messages": messages}, config={"callbacks": [recorder], "recursion_limit": 20})
     final = result["messages"][-1]

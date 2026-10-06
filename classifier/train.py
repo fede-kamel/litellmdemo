@@ -5,7 +5,9 @@
 1. Embed every prompt with a multilingual sentence encoder, locally. Routes
    decided by rules (MULTILINGUAL, VISION, LONG_CONTEXT) are not learned;
    COMPLEX outcome labels are learned as REASONING (see router_model.py).
-2. Hold out 20% of prompts, stratified by route (data/split.json).
+2. Hold out 20% of prompts, stratified by route (data/split.json). The split
+   is stable: prompts already assigned keep their side, and only new prompts
+   are split, so adding data never moves a held-out prompt into training.
 3. Fit a logistic regression head on the rest; its regularisation strength is
    chosen by 5-fold cross-validation inside the training split only.
 4. Report held-out accuracy, per-route recall and the confusion matrix, and
@@ -28,7 +30,8 @@ import joblib
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix
-from sklearn.model_selection import GridSearchCV, StratifiedKFold, train_test_split
+from sklearn.model_selection import (GridSearchCV, RepeatedStratifiedKFold, StratifiedKFold, cross_val_score,
+                                     train_test_split)
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from classifier.router_model import ENCODER, LEARNED, MODEL_DIR, QUERY_PREFIX, learned_label  # noqa: E402
@@ -51,7 +54,18 @@ def main() -> None:
     X = encoder.encode(texts, normalize_embeddings=True, show_progress_bar=False, batch_size=32)
     embed_seconds = time.time() - started
 
-    X_tr, X_te, y_tr, y_te, id_tr, id_te = train_test_split(X, y, ids, test_size=0.2, stratify=y, random_state=7)
+    split_path = DATA / "split.json"
+    old = json.loads(split_path.read_text()) if split_path.exists() else {"train": [], "held_out": []}
+    held = set(old["held_out"])
+    assigned = held | set(old["train"])
+    new = np.array([i for i, x in enumerate(ids) if x not in assigned])
+    if len(new):
+        y_new = y[new]
+        strat = y_new if min(Counter(y_new.tolist()).values()) >= 2 else None
+        _, new_held = train_test_split(new, test_size=0.2, stratify=strat, random_state=7)
+        held |= {ids[i] for i in new_held}
+    te = np.array([x in held for x in ids])
+    X_tr, X_te, y_tr, y_te, id_tr, id_te = X[~te], X[te], y[~te], y[te], ids[~te], ids[te]
     started = time.time()
     search = GridSearchCV(LogisticRegression(max_iter=4000, class_weight="balanced"),
                           {"C": [0.5, 1, 2, 4, 8, 16]}, cv=StratifiedKFold(5, shuffle=True, random_state=7),
@@ -60,6 +74,11 @@ def main() -> None:
     head = search.best_estimator_
     train_seconds = time.time() - started
 
+    # One held-out split of this size moves 1-2 points per prompt; 5x5 repeated
+    # cross-validation over every prompt is the steadier number.
+    rcv = RepeatedStratifiedKFold(n_splits=5, n_repeats=5, random_state=7)
+    rcv_acc = cross_val_score(LogisticRegression(max_iter=4000, class_weight="balanced", C=search.best_params_["C"]),
+                              X, y, cv=rcv, scoring="accuracy")
     pred = head.predict(X_te)
     labels = [c for c in LEARNED if c in set(y)]
     report = classification_report(y_te, pred, labels=labels, output_dict=True, zero_division=0)
@@ -74,6 +93,8 @@ def main() -> None:
         "label_counts": dict(Counter(y.tolist())), "C": search.best_params_["C"],
         "cv_balanced_accuracy": round(float(search.best_score_), 3),
         "held_out_accuracy": round(accuracy, 3),
+        "repeated_cv_accuracy": round(float(rcv_acc.mean()), 3), "repeated_cv_std": round(float(rcv_acc.std()), 3),
+        "labels_from_votes": sum(1 for r in rows if r.get("votes")),
         "held_out_recall": {c: round(report[c]["recall"], 3) for c in labels},
         "confusion_matrix": {"labels": labels, "rows_true_cols_predicted": cm},
         "embed_seconds": round(embed_seconds, 1), "train_seconds": round(train_seconds, 2),
@@ -81,7 +102,7 @@ def main() -> None:
     (MODEL_DIR / "meta.json").write_text(json.dumps(meta, indent=2))
     (DATA / "split.json").write_text(json.dumps({"train": id_tr.tolist(), "held_out": id_te.tolist()}, indent=1))
     print(json.dumps({k: meta[k] for k in ("examples", "held_out", "C", "cv_balanced_accuracy",
-                                           "held_out_accuracy", "held_out_recall", "train_seconds")}, indent=1))
+                                           "held_out_accuracy", "repeated_cv_accuracy", "held_out_recall", "train_seconds")}, indent=1))
     print("confusion (rows true, cols predicted):", labels)
     for name, row in zip(labels, cm, strict=True):
         print(f"  {name:12s} {row}")
