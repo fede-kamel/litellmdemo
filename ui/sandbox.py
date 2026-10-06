@@ -26,8 +26,11 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "openshell.sh"
 NAME = os.environ.get("LITELLMDEMO_SANDBOX", "litellmdemo-agent")
 CONF = Path.home() / ".config" / "litellmdemo"
-SANDBOX_GATEWAY = os.environ.get("LITELLMDEMO_SANDBOX_GATEWAY", "http://192.168.5.2:4100")
-HOST_VIEW = os.environ.get("LITELLMDEMO_SANDBOX_GATEWAY_FROM_HOST", "http://127.0.0.1:4100")
+# The gateway the sandbox's agent uses, as the sandbox and as this machine see it,
+# and the virtual key it holds: the local cluster by default, OKE when overridden.
+SANDBOX_GATEWAY = os.environ.get("LITELLMDEMO_SANDBOX_GATEWAY", "http://192.168.5.15:30400")
+HOST_VIEW = os.environ.get("LITELLMDEMO_SANDBOX_GATEWAY_FROM_HOST", "http://127.0.0.1:30400")
+AGENT_KEY_FILE = Path(os.environ.get("LITELLMDEMO_AGENT_KEY_FILE", Path.home() / ".config/litellmdemo/agent_key-local"))
 _status: dict = {"at": 0.0, "ready": False}
 
 
@@ -111,7 +114,7 @@ def probe() -> list[dict]:
 
 def agent_key() -> dict | None:
     """LiteLLM's record of the agent's virtual key (never the key itself)."""
-    keyfile, master = CONF / "agent_key", CONF / "master_key"
+    keyfile, master = AGENT_KEY_FILE, CONF / "master_key"
     if not keyfile.exists() or not master.exists():
         return None
     try:

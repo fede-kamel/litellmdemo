@@ -1,0 +1,10128 @@
+{
+ "prompts": 40,
+ "by_label": {
+  "SIMPLE": 16,
+  "MEDIUM": 12,
+  "REASONING": 12
+ },
+ "routes": {
+  "fast": [
+   {
+    "model": "google.gemini-2.5-flash-lite",
+    "pass_rate": 0.575,
+    "errors": 0,
+    "cost_per_request": 0.000711,
+    "median_seconds": 5.25,
+    "price_per_1m": [
+     0.1,
+     0.4
+    ],
+    "price_source": "OCI price list B111854/B111856"
+   },
+   {
+    "model": "openai.gpt-6-luna",
+    "pass_rate": 0.825,
+    "errors": 2,
+    "cost_per_request": 0.000587,
+    "median_seconds": 9.84,
+    "price_per_1m": [
+     0.1,
+     0.5
+    ],
+    "price_source": "vendor list price (gpt-6-luna, LiteLLM map)"
+   },
+   {
+    "model": "openai.gpt-5.6-luna",
+    "pass_rate": 0.75,
+    "errors": 0,
+    "cost_per_request": 0.001727,
+    "median_seconds": 15.8,
+    "price_per_1m": [
+     0.2,
+     1.2
+    ],
+    "price_source": "vendor list price (gpt-5.6-luna, LiteLLM map)"
+   },
+   {
+    "model": "openai.gpt-5.4-nano",
+    "pass_rate": 0.75,
+    "errors": 0,
+    "cost_per_request": 0.001497,
+    "median_seconds": 7.53,
+    "price_per_1m": [
+     0.2,
+     1.25
+    ],
+    "price_source": "vendor list price (gpt-5.4-nano, LiteLLM map)"
+   },
+   {
+    "model": "openai.gpt-oss-120b",
+    "pass_rate": 0.55,
+    "errors": 0,
+    "cost_per_request": 0.001306,
+    "median_seconds": 12.01,
+    "price_per_1m": [
+     0.15,
+     0.6
+    ],
+    "price_source": "OCI price list B112004/B112005"
+   }
+  ],
+  "balanced": [
+   {
+    "model": "openai.gpt-5-mini",
+    "pass_rate": 0.675,
+    "errors": 0,
+    "cost_per_request": 0.004168,
+    "median_seconds": 19.81,
+    "price_per_1m": [
+     0.25,
+     2.0
+    ],
+    "price_source": "LiteLLM map (oci)"
+   },
+   {
+    "model": "google.gemini-2.5-flash",
+    "pass_rate": 0.725,
+    "errors": 0,
+    "cost_per_request": 0.002434,
+    "median_seconds": 18.3,
+    "price_per_1m": [
+     0.3,
+     2.5
+    ],
+    "price_source": "OCI price list B111851/B111853"
+   },
+   {
+    "model": "openai.gpt-5.4-mini",
+    "pass_rate": 0.775,
+    "errors": 0,
+    "cost_per_request": 0.004699,
+    "median_seconds": 4.79,
+    "price_per_1m": [
+     0.75,
+     4.5
+    ],
+    "price_source": "vendor list price (gpt-5.4-mini, LiteLLM map)"
+   },
+   {
+    "model": "xai.grok-4.20-non-reasoning",
+    "pass_rate": 0.7,
+    "errors": 0,
+    "cost_per_request": 0.002532,
+    "median_seconds": 9.09,
+    "price_per_1m": [
+     1.25,
+     2.5
+    ],
+    "price_source": "OCI price list B111910/B112076"
+   }
+  ],
+  "strong": [
+   {
+    "model": "google.gemini-2.5-pro",
+    "pass_rate": 0.675,
+    "errors": 0,
+    "cost_per_request": 0.010604,
+    "median_seconds": 32.33,
+    "price_per_1m": [
+     1.25,
+     10.0
+    ],
+    "price_source": "OCI price list B111847/B111849"
+   },
+   {
+    "model": "openai.gpt-6-sol",
+    "pass_rate": 0.825,
+    "errors": 0,
+    "cost_per_request": 0.006678,
+    "median_seconds": 9.11,
+    "price_per_1m": [
+     2.0,
+     10.0
+    ],
+    "price_source": "vendor list price (gpt-6-sol, LiteLLM map)"
+   },
+   {
+    "model": "openai.gpt-6.1-sol",
+    "pass_rate": 0.825,
+    "errors": 1,
+    "cost_per_request": 0.008722,
+    "median_seconds": 13.04,
+    "price_per_1m": [
+     2.0,
+     10.0
+    ],
+    "price_source": "vendor list price (gpt-6.1-sol, LiteLLM map)"
+   },
+   {
+    "model": "openai.gpt-5.4",
+    "pass_rate": 0.825,
+    "errors": 0,
+    "cost_per_request": 0.020567,
+    "median_seconds": 8.6,
+    "price_per_1m": [
+     2.5,
+     15.0
+    ],
+    "price_source": "vendor list price (gpt-5.4, LiteLLM map)"
+   },
+   {
+    "model": "openai.gpt-5.6-terra",
+    "pass_rate": 0.725,
+    "errors": 1,
+    "cost_per_request": 0.018539,
+    "median_seconds": 15.35,
+    "price_per_1m": [
+     2.0,
+     12.0
+    ],
+    "price_source": "vendor list price (gpt-5.6-terra, LiteLLM map)"
+   }
+  ],
+  "reasoning": [
+   {
+    "model": "xai.grok-4.20-reasoning",
+    "pass_rate": 0.8,
+    "errors": 0,
+    "cost_per_request": 0.002303,
+    "median_seconds": 17.96,
+    "price_per_1m": [
+     1.25,
+     2.5
+    ],
+    "price_source": "OCI price list B111910/B112076"
+   },
+   {
+    "model": "openai.o3",
+    "pass_rate": 0.8,
+    "errors": 1,
+    "cost_per_request": 0.011696,
+    "median_seconds": 18.73,
+    "price_per_1m": [
+     2.0,
+     8.0
+    ],
+    "price_source": "vendor list price (o3, LiteLLM map)"
+   },
+   {
+    "model": "xai.grok-4.7",
+    "pass_rate": 0.825,
+    "errors": 3,
+    "cost_per_request": 0.006919,
+    "median_seconds": 29.16,
+    "price_per_1m": [
+     2.0,
+     6.0
+    ],
+    "price_source": "OCI price list B113303/B113305"
+   },
+   {
+    "model": "xai.grok-4.6",
+    "pass_rate": 0.775,
+    "errors": 3,
+    "cost_per_request": 0.00479,
+    "median_seconds": 36.8,
+    "price_per_1m": [
+     2.0,
+     6.0
+    ],
+    "price_source": "OCI price list B112086/B112589"
+   },
+   {
+    "model": "openai.gpt-5.5",
+    "pass_rate": 0.675,
+    "errors": 0,
+    "cost_per_request": 0.049059,
+    "median_seconds": 15.56,
+    "price_per_1m": [
+     5.0,
+     30.0
+    ],
+    "price_source": "vendor list price (gpt-5.5, LiteLLM map)"
+   }
+  ]
+ },
+ "answers": [
+  {
+   "id": "p0023",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 6.555e-05,
+   "seconds": 0.75
+  },
+  {
+   "id": "p0081",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 4.52e-05,
+   "seconds": 2.38
+  },
+  {
+   "id": "p0031",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00177,
+   "seconds": 2.51
+  },
+  {
+   "id": "p0079",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00176,
+   "seconds": 2.78
+  },
+  {
+   "id": "p0075",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0014960000000000002,
+   "seconds": 2.81
+  },
+  {
+   "id": "p0405",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0030239999999999998,
+   "seconds": 2.81
+  },
+  {
+   "id": "p0088",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0010225,
+   "seconds": 3.9
+  },
+  {
+   "id": "p0081",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 4
+   },
+   "cost": 7.994999999999999e-05,
+   "seconds": 1.49
+  },
+  {
+   "id": "p0068",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0032849999999999997,
+   "seconds": 2.21
+  },
+  {
+   "id": "p0391",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00048719999999999997,
+   "seconds": 4.78
+  },
+  {
+   "id": "p0365",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0009537500000000002,
+   "seconds": 2.99
+  },
+  {
+   "id": "p0196",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0013875,
+   "seconds": 2.21
+  },
+  {
+   "id": "p0077",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0038559999999999996,
+   "seconds": 6.25
+  },
+  {
+   "id": "p0196",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00063375,
+   "seconds": 3.54
+  },
+  {
+   "id": "p0410",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0005134499999999999,
+   "seconds": 7.85
+  },
+  {
+   "id": "p0380",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00044599999999999994,
+   "seconds": 5.68
+  },
+  {
+   "id": "p0052",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0012087500000000002,
+   "seconds": 8.01
+  },
+  {
+   "id": "p0079",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0029575,
+   "seconds": 3.87
+  },
+  {
+   "id": "p0088",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001948,
+   "seconds": 3.97
+  },
+  {
+   "id": "p0077",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.007495000000000001,
+   "seconds": 4.73
+  },
+  {
+   "id": "p0365",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0011423,
+   "seconds": 9.76
+  },
+  {
+   "id": "p0023",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 9.520000000000001e-05,
+   "seconds": 2.76
+  },
+  {
+   "id": "p0075",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0018774999999999998,
+   "seconds": 2.46
+  },
+  {
+   "id": "p0410",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0012431,
+   "seconds": 7.64
+  },
+  {
+   "id": "p0051",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001115,
+   "seconds": 3.46
+  },
+  {
+   "id": "p0060",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0031825000000000004,
+   "seconds": 11.11
+  },
+  {
+   "id": "p0051",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0011023,
+   "seconds": 11.41
+  },
+  {
+   "id": "p0405",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002665,
+   "seconds": 1.85
+  },
+  {
+   "id": "p0410",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0008875,
+   "seconds": 2.42
+  },
+  {
+   "id": "p0052",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.004332,
+   "seconds": 4.98
+  },
+  {
+   "id": "p0365",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002082,
+   "seconds": 3.35
+  },
+  {
+   "id": "p0031",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0008175000000000001,
+   "seconds": 7.08
+  },
+  {
+   "id": "p0088",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0037875,
+   "seconds": 5.87
+  },
+  {
+   "id": "p0079",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0008075000000000001,
+   "seconds": 5.69
+  },
+  {
+   "id": "p0023",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000335,
+   "seconds": 0.55
+  },
+  {
+   "id": "p0459",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.006872,
+   "seconds": 13.29
+  },
+  {
+   "id": "p0380",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 4
+   },
+   "cost": 0.00079875,
+   "seconds": 7.8
+  },
+  {
+   "id": "p0391",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0008575499999999999,
+   "seconds": 11.19
+  },
+  {
+   "id": "p0081",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0006388,
+   "seconds": 8.39
+  },
+  {
+   "id": "p0060",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0077800000000000005,
+   "seconds": 12.33
+  },
+  {
+   "id": "p0413",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0017159999999999999,
+   "seconds": 15.8
+  },
+  {
+   "id": "p0075",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0006925000000000001,
+   "seconds": 4.29
+  },
+  {
+   "id": "p0031",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.003336,
+   "seconds": 4.14
+  },
+  {
+   "id": "p0081",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 4
+   },
+   "cost": 0.00041125000000000005,
+   "seconds": 1.03
+  },
+  {
+   "id": "p0052",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.008095,
+   "seconds": 4.87
+  },
+  {
+   "id": "p0410",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00126,
+   "seconds": 1.87
+  },
+  {
+   "id": "p0051",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001904,
+   "seconds": 7.64
+  },
+  {
+   "id": "p0413",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00098295,
+   "seconds": 10.89
+  },
+  {
+   "id": "p0079",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.003558,
+   "seconds": 2.57
+  },
+  {
+   "id": "p0365",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0033150000000000002,
+   "seconds": 4.53
+  },
+  {
+   "id": "p0459",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00281875,
+   "seconds": 28.06
+  },
+  {
+   "id": "p0196",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.004125,
+   "seconds": 3.07
+  },
+  {
+   "id": "p0023",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00032,
+   "seconds": 1.04
+  },
+  {
+   "id": "p0427",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0006944,
+   "seconds": 6.03
+  },
+  {
+   "id": "p0391",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0013475000000000002,
+   "seconds": 3.97
+  },
+  {
+   "id": "p0391",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0033751000000000002,
+   "seconds": 18.3
+  },
+  {
+   "id": "p0051",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.003265,
+   "seconds": 4.54
+  },
+  {
+   "id": "p0380",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0012805000000000002,
+   "seconds": 13.07
+  },
+  {
+   "id": "p0459",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.04899,
+   "seconds": 22.16
+  },
+  {
+   "id": "p0371",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0019207999999999999,
+   "seconds": 17.82
+  },
+  {
+   "id": "p0031",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00696,
+   "seconds": 3.52
+  },
+  {
+   "id": "p0174",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000482,
+   "seconds": 4.62
+  },
+  {
+   "id": "p0380",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.0010575,
+   "seconds": 3.25
+  },
+  {
+   "id": "p0088",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0011425,
+   "seconds": 17.96
+  },
+  {
+   "id": "p0081",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001126,
+   "seconds": 2.3
+  },
+  {
+   "id": "p0410",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00251,
+   "seconds": 2.58
+  },
+  {
+   "id": "p0103",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0027335999999999997,
+   "seconds": 29.41
+  },
+  {
+   "id": "p0413",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0032085,
+   "seconds": 16.18
+  },
+  {
+   "id": "p0103",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00219375,
+   "seconds": 24.81
+  },
+  {
+   "id": "p0079",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.005435,
+   "seconds": 3.13
+  },
+  {
+   "id": "p0328",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00033219999999999994,
+   "seconds": 3.75
+  },
+  {
+   "id": "p0075",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00329,
+   "seconds": 14.51
+  },
+  {
+   "id": "p0088",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0040739999999999995,
+   "seconds": 6.24
+  },
+  {
+   "id": "p0023",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000445,
+   "seconds": 0.96
+  },
+  {
+   "id": "p0413",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0017900000000000004,
+   "seconds": 4.79
+  },
+  {
+   "id": "p0391",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002558,
+   "seconds": 4.82
+  },
+  {
+   "id": "p0365",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00097875,
+   "seconds": 10.59
+  },
+  {
+   "id": "p0075",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0036950000000000004,
+   "seconds": 1.7
+  },
+  {
+   "id": "p0060",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0303525,
+   "seconds": 33.54
+  },
+  {
+   "id": "p0371",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.00148455,
+   "seconds": 17.59
+  },
+  {
+   "id": "p0108",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0044,
+   "seconds": 39.47
+  },
+  {
+   "id": "p0108",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.0024196499999999998,
+   "seconds": 28.29
+  },
+  {
+   "id": "p0081",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001225,
+   "seconds": 2.36
+  },
+  {
+   "id": "p0427",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00097995,
+   "seconds": 12.01
+  },
+  {
+   "id": "p0380",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0029100000000000003,
+   "seconds": 5.32
+  },
+  {
+   "id": "p0051",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 4
+   },
+   "cost": 0.0011475,
+   "seconds": 10.76
+  },
+  {
+   "id": "p0060",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.003455,
+   "seconds": 26.89
+  },
+  {
+   "id": "p0410",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0007850000000000001,
+   "seconds": 3.83
+  },
+  {
+   "id": "p0433",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0002162,
+   "seconds": 2.91
+  },
+  {
+   "id": "p0088",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.009045000000000001,
+   "seconds": 5.11
+  },
+  {
+   "id": "p0365",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.003464,
+   "seconds": 5.57
+  },
+  {
+   "id": "p0103",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0030425000000000005,
+   "seconds": 9.83
+  },
+  {
+   "id": "p0174",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0006412499999999999,
+   "seconds": 11.94
+  },
+  {
+   "id": "p0023",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0003375,
+   "seconds": 2.99
+  },
+  {
+   "id": "p0051",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.003284,
+   "seconds": 3.89
+  },
+  {
+   "id": "p0328",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.0006020999999999999,
+   "seconds": 7.36
+  },
+  {
+   "id": "p0103",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.005683100000000001,
+   "seconds": 28.96
+  },
+  {
+   "id": "p0196",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00296,
+   "seconds": 56.09
+  },
+  {
+   "id": "p0391",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.008834999999999999,
+   "seconds": 8.46
+  },
+  {
+   "id": "p0122",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0023848,
+   "seconds": 20.42
+  },
+  {
+   "id": "p0427",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0024720000000000002,
+   "seconds": 13.7
+  },
+  {
+   "id": "p0371",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0044235,
+   "seconds": 22.41
+  },
+  {
+   "id": "p0413",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.008602,
+   "seconds": 13.37
+  },
+  {
+   "id": "p0317",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0055780000000000005,
+   "seconds": 40.8
+  },
+  {
+   "id": "p0174",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0014214000000000002,
+   "seconds": 9.59
+  },
+  {
+   "id": "p0371",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00269875,
+   "seconds": 9.18
+  },
+  {
+   "id": "p0380",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.004600000000000001,
+   "seconds": 6.81
+  },
+  {
+   "id": "p0108",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.005279800000000001,
+   "seconds": 31.2
+  },
+  {
+   "id": "p0081",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00036375000000000003,
+   "seconds": 5.03
+  },
+  {
+   "id": "p0365",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0072900000000000005,
+   "seconds": 3.7
+  },
+  {
+   "id": "p0410",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.003326,
+   "seconds": 7.35
+  },
+  {
+   "id": "p0060",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.013322,
+   "seconds": 33.36
+  },
+  {
+   "id": "p0023",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002672,
+   "seconds": 1.4
+  },
+  {
+   "id": "p0108",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.004725000000000001,
+   "seconds": 22.29
+  },
+  {
+   "id": "p0427",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0021075,
+   "seconds": 5.5
+  },
+  {
+   "id": "p0103",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.006900000000000001,
+   "seconds": 12.57
+  },
+  {
+   "id": "p0317",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0024154,
+   "seconds": 18.7
+  },
+  {
+   "id": "p0051",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00524,
+   "seconds": 3.18
+  },
+  {
+   "id": "p0433",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.0007983,
+   "seconds": 9.96
+  },
+  {
+   "id": "p0413",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00906,
+   "seconds": 8.6
+  },
+  {
+   "id": "p0174",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00121125,
+   "seconds": 3.4
+  },
+  {
+   "id": "p0081",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00279,
+   "seconds": 2.03
+  },
+  {
+   "id": "p0410",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00613,
+   "seconds": 2.77
+  },
+  {
+   "id": "p0391",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00148,
+   "seconds": 9.96
+  },
+  {
+   "id": "p0122",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "cost": 0.0019492499999999998,
+   "seconds": 22.76
+  },
+  {
+   "id": "p0328",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0016558,
+   "seconds": 14.44
+  },
+  {
+   "id": "p0328",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.0009637500000000001,
+   "seconds": 3.15
+  },
+  {
+   "id": "p0108",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00894,
+   "seconds": 16.57
+  },
+  {
+   "id": "p0427",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0036460000000000004,
+   "seconds": 5.24
+  },
+  {
+   "id": "p0371",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.008152,
+   "seconds": 14.7
+  },
+  {
+   "id": "p0175",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.0017037999999999999,
+   "seconds": 16.67
+  },
+  {
+   "id": "p0433",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0017313000000000003,
+   "seconds": 10.52
+  },
+  {
+   "id": "p0060",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.08680500000000001,
+   "seconds": 34.82
+  },
+  {
+   "id": "p0023",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0012200000000000002,
+   "seconds": 1.18
+  },
+  {
+   "id": "p0391",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.004935999999999999,
+   "seconds": 5.94
+  },
+  {
+   "id": "p0380",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0009775,
+   "seconds": 17.38
+  },
+  {
+   "id": "p0174",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0026000000000000003,
+   "seconds": 3.82
+  },
+  {
+   "id": "p0384",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0041904,
+   "seconds": 30.85
+  },
+  {
+   "id": "p0122",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0032693,
+   "seconds": 25.15
+  },
+  {
+   "id": "p0081",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00122,
+   "seconds": 1.32
+  },
+  {
+   "id": "p0317",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.0024143999999999997,
+   "seconds": 27.48
+  },
+  {
+   "id": "p0122",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0030425,
+   "seconds": 10.84
+  },
+  {
+   "id": "p0417",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.0024179999999999996,
+   "seconds": 23.92
+  },
+  {
+   "id": "p0380",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.004142,
+   "seconds": 6.06
+  },
+  {
+   "id": "p0384",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 3
+   },
+   "cost": 0.00241635,
+   "seconds": 24.33
+  },
+  {
+   "id": "p0433",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00090875,
+   "seconds": 2.95
+  },
+  {
+   "id": "p0328",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0029440000000000004,
+   "seconds": 5.31
+  },
+  {
+   "id": "p0413",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0021850000000000003,
+   "seconds": 23.97
+  },
+  {
+   "id": "p0427",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00679,
+   "seconds": 6.93
+  },
+  {
+   "id": "p0175",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0024341999999999996,
+   "seconds": 28.22
+  },
+  {
+   "id": "p0103",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.035265,
+   "seconds": 41.9
+  },
+  {
+   "id": "p0391",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0195,
+   "seconds": 7.5
+  },
+  {
+   "id": "p0317",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.005804000000000001,
+   "seconds": 32.52
+  },
+  {
+   "id": "p0103",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0029425000000000002,
+   "seconds": 27.58
+  },
+  {
+   "id": "p0120",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0029296,
+   "seconds": 28.93
+  },
+  {
+   "id": "p0384",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0053835,
+   "seconds": 27.29
+  },
+  {
+   "id": "p0317",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0026312500000000003,
+   "seconds": 7.59
+  },
+  {
+   "id": "p0371",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.027115,
+   "seconds": 36.13
+  },
+  {
+   "id": "p0417",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.00241185,
+   "seconds": 33.01
+  },
+  {
+   "id": "p0122",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.006084000000000001,
+   "seconds": 11.11
+  },
+  {
+   "id": "p0174",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00775,
+   "seconds": 7.0
+  },
+  {
+   "id": "p0108",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0043725000000000005,
+   "seconds": 29.21
+  },
+  {
+   "id": "p0380",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.011420000000000001,
+   "seconds": 5.99
+  },
+  {
+   "id": "p0175",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 1,
+    "instruction_following": 3
+   },
+   "cost": 0.0004516,
+   "seconds": 18.31
+  },
+  {
+   "id": "p0433",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00143,
+   "seconds": 3.31
+  },
+  {
+   "id": "p0328",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0021125000000000002,
+   "seconds": 3.42
+  },
+  {
+   "id": "p0384",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.024502,
+   "seconds": 75.2
+  },
+  {
+   "id": "p0158",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0048102,
+   "seconds": 56.98
+  },
+  {
+   "id": "p0371",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0028112500000000004,
+   "seconds": 17.72
+  },
+  {
+   "id": "p0384",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00434375,
+   "seconds": 13.64
+  },
+  {
+   "id": "p0175",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.002542,
+   "seconds": 40.27
+  },
+  {
+   "id": "p0427",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0014425000000000002,
+   "seconds": 15.24
+  },
+  {
+   "id": "p0158",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.0024167999999999998,
+   "seconds": 37.89
+  },
+  {
+   "id": "p0417",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 1,
+    "instruction_following": 1
+   },
+   "cost": 0.0004577,
+   "seconds": 22.47
+  },
+  {
+   "id": "p0175",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 2,
+    "instruction_following": 3
+   },
+   "cost": 0.0039787500000000005,
+   "seconds": 9.84
+  },
+  {
+   "id": "p0111",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.0046922,
+   "seconds": 41.62
+  },
+  {
+   "id": "p0413",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.005058,
+   "seconds": 52.21
+  },
+  {
+   "id": "p0413",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.042870000000000005,
+   "seconds": 21.87
+  },
+  {
+   "id": "p0108",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.060175000000000006,
+   "seconds": 79.84
+  },
+  {
+   "id": "p0174",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00103125,
+   "seconds": 8.02
+  },
+  {
+   "id": "p0317",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.009240000000000002,
+   "seconds": 13.42
+  },
+  {
+   "id": "p0120",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 2,
+    "instruction_following": 4
+   },
+   "cost": 0.0024202499999999997,
+   "seconds": 35.03
+  },
+  {
+   "id": "p0355",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.0036157999999999997,
+   "seconds": 37.73
+  },
+  {
+   "id": "p0190",
+   "model": "xai.grok-4.6",
+   "ok": false,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0,
+   "seconds": 180.23
+  },
+  {
+   "id": "p0158",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 1,
+    "instruction_following": 5
+   },
+   "cost": 0.00040040000000000003,
+   "seconds": 24.03
+  },
+  {
+   "id": "p0433",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 5,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.0023575000000000002,
+   "seconds": 3.08
+  },
+  {
+   "id": "p0417",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.0038600000000000006,
+   "seconds": 9.71
+  },
+  {
+   "id": "p0103",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.01045,
+   "seconds": 46.47
+  },
+  {
+   "id": "p0328",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0007637500000000001,
+   "seconds": 7.23
+  },
+  {
+   "id": "p0111",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0024192,
+   "seconds": 32.97
+  },
+  {
+   "id": "p0122",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.017495,
+   "seconds": 23.65
+  },
+  {
+   "id": "p0432",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.0036569999999999997,
+   "seconds": 37.83
+  },
+  {
+   "id": "p0120",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0036907,
+   "seconds": 22.72
+  },
+  {
+   "id": "p0355",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 3
+   },
+   "cost": 0.0017496,
+   "seconds": 24.47
+  },
+  {
+   "id": "p0371",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.01105,
+   "seconds": 29.16
+  },
+  {
+   "id": "p0175",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.0069240000000000005,
+   "seconds": 9.11
+  },
+  {
+   "id": "p0103",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.08732999999999999,
+   "seconds": 34.45
+  },
+  {
+   "id": "p0384",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.016356,
+   "seconds": 26.71
+  },
+  {
+   "id": "p0341",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.0037103999999999995,
+   "seconds": 36.12
+  },
+  {
+   "id": "p0120",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00299,
+   "seconds": 9.09
+  },
+  {
+   "id": "p0122",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0028250000000000003,
+   "seconds": 22.51
+  },
+  {
+   "id": "p0111",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 2,
+    "instruction_following": 3
+   },
+   "cost": 0.0020664000000000004,
+   "seconds": 30.23
+  },
+  {
+   "id": "p0108",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.018418000000000004,
+   "seconds": 67.15
+  },
+  {
+   "id": "p0427",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00503,
+   "seconds": 35.4
+  },
+  {
+   "id": "p0174",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0038399999999999997,
+   "seconds": 22.69
+  },
+  {
+   "id": "p0158",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 1,
+    "instruction_following": 5
+   },
+   "cost": 0.0102825,
+   "seconds": 30.88
+  },
+  {
+   "id": "p0432",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 1,
+    "instruction_following": 2
+   },
+   "cost": 0.0024284999999999997,
+   "seconds": 36.62
+  },
+  {
+   "id": "p0143",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0048118,
+   "seconds": 40.64
+  },
+  {
+   "id": "p0371",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.046579999999999996,
+   "seconds": 25.57
+  },
+  {
+   "id": "p0328",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.002902,
+   "seconds": 6.35
+  },
+  {
+   "id": "p0317",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0334325,
+   "seconds": 35.16
+  },
+  {
+   "id": "p0427",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.02642,
+   "seconds": 10.81
+  },
+  {
+   "id": "p0398",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0036608,
+   "seconds": 30.69
+  },
+  {
+   "id": "p0355",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.0048361,
+   "seconds": 24.95
+  },
+  {
+   "id": "p0108",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.12035000000000001,
+   "seconds": 49.08
+  },
+  {
+   "id": "p0068",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00016325,
+   "seconds": 1.2
+  },
+  {
+   "id": "p0433",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.0008287500000000001,
+   "seconds": 17.8
+  },
+  {
+   "id": "p0174",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.01541,
+   "seconds": 5.78
+  },
+  {
+   "id": "p0417",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "cost": 0.013156000000000001,
+   "seconds": 19.48
+  },
+  {
+   "id": "p0341",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.0024199499999999997,
+   "seconds": 33.29
+  },
+  {
+   "id": "p0111",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.005371250000000001,
+   "seconds": 19.61
+  },
+  {
+   "id": "p0175",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.024432500000000003,
+   "seconds": 19.09
+  },
+  {
+   "id": "p0432",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 1,
+    "instruction_following": 2
+   },
+   "cost": 0.0039030000000000007,
+   "seconds": 22.82
+  },
+  {
+   "id": "p0433",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.002908,
+   "seconds": 2.89
+  },
+  {
+   "id": "p0355",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0032687500000000004,
+   "seconds": 10.24
+  },
+  {
+   "id": "p0077",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00026710000000000004,
+   "seconds": 2.35
+  },
+  {
+   "id": "p0317",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00293625,
+   "seconds": 23.41
+  },
+  {
+   "id": "p0158",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "cost": 0.015162,
+   "seconds": 25.41
+  },
+  {
+   "id": "p0328",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.012415,
+   "seconds": 6.75
+  },
+  {
+   "id": "p0143",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0024179999999999996,
+   "seconds": 30.92
+  },
+  {
+   "id": "p0120",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.009888000000000001,
+   "seconds": 18.78
+  },
+  {
+   "id": "p0432",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "cost": 0.0038875000000000003,
+   "seconds": 9.57
+  },
+  {
+   "id": "p0405",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 8.950000000000001e-05,
+   "seconds": 0.94
+  },
+  {
+   "id": "p0158",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0095025,
+   "seconds": 9.03
+  },
+  {
+   "id": "p0190",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 2,
+    "instruction_following": 2
+   },
+   "cost": 0.0038107999999999996,
+   "seconds": 39.81
+  },
+  {
+   "id": "p0384",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00396875,
+   "seconds": 22.02
+  },
+  {
+   "id": "p0341",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.003952300000000001,
+   "seconds": 27.53
+  },
+  {
+   "id": "p0068",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00065775,
+   "seconds": 3.94
+  },
+  {
+   "id": "p0122",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0058200000000000005,
+   "seconds": 40.13
+  },
+  {
+   "id": "p0122",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.03337,
+   "seconds": 15.56
+  },
+  {
+   "id": "p0111",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.010774,
+   "seconds": 21.12
+  },
+  {
+   "id": "p0175",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.0012087500000000002,
+   "seconds": 20.19
+  },
+  {
+   "id": "p0398",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0024178499999999996,
+   "seconds": 38.38
+  },
+  {
+   "id": "p0317",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00801,
+   "seconds": 20.98
+  },
+  {
+   "id": "p0433",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.005525,
+   "seconds": 3.83
+  },
+  {
+   "id": "p0143",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "cost": 0.005830600000000001,
+   "seconds": 29.3
+  },
+  {
+   "id": "p0341",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00468375,
+   "seconds": 17.56
+  },
+  {
+   "id": "p0077",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00134325,
+   "seconds": 6.28
+  },
+  {
+   "id": "p0417",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 2,
+    "instruction_following": 3
+   },
+   "cost": 0.04569,
+   "seconds": 41.98
+  },
+  {
+   "id": "p0190",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 1,
+    "instruction_following": 2
+   },
+   "cost": 0.00243495,
+   "seconds": 32.81
+  },
+  {
+   "id": "p0459",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0017497,
+   "seconds": 9.39
+  },
+  {
+   "id": "p0355",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.012774,
+   "seconds": 23.39
+  },
+  {
+   "id": "p0052",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00048455000000000004,
+   "seconds": 3.66
+  },
+  {
+   "id": "p0384",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.06012000000000001,
+   "seconds": 66.83
+  },
+  {
+   "id": "p0068",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00060525,
+   "seconds": 1.69
+  },
+  {
+   "id": "p0405",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00027675000000000003,
+   "seconds": 3.21
+  },
+  {
+   "id": "p0398",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 2,
+    "instruction_following": 4
+   },
+   "cost": 0.0054578000000000005,
+   "seconds": 27.27
+  },
+  {
+   "id": "p0190",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 1,
+    "instruction_following": 5
+   },
+   "cost": 0.00044180000000000006,
+   "seconds": 22.92
+  },
+  {
+   "id": "p0143",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.00683875,
+   "seconds": 21.54
+  },
+  {
+   "id": "p0398",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.00499375,
+   "seconds": 15.18
+  },
+  {
+   "id": "p0317",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.065065,
+   "seconds": 21.67
+  },
+  {
+   "id": "p0196",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00013270000000000003,
+   "seconds": 1.29
+  },
+  {
+   "id": "p0341",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.008494000000000002,
+   "seconds": 17.42
+  },
+  {
+   "id": "p0077",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00098025,
+   "seconds": 2.22
+  },
+  {
+   "id": "p0120",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.04118,
+   "seconds": 42.56
+  },
+  {
+   "id": "p0432",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.022298000000000002,
+   "seconds": 30.93
+  },
+  {
+   "id": "p0384",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.01788,
+   "seconds": 37.78
+  },
+  {
+   "id": "p0190",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.004295,
+   "seconds": 10.93
+  },
+  {
+   "id": "p0120",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.003305,
+   "seconds": 26.84
+  },
+  {
+   "id": "p0031",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00011935000000000001,
+   "seconds": 1.27
+  },
+  {
+   "id": "p0417",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0022975,
+   "seconds": 52.19
+  },
+  {
+   "id": "p0405",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00044925000000000005,
+   "seconds": 0.89
+  },
+  {
+   "id": "p0459",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.003551,
+   "seconds": 17.7
+  },
+  {
+   "id": "p0052",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00175725,
+   "seconds": 8.58
+  },
+  {
+   "id": "p0432",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0254025,
+   "seconds": 21.58
+  },
+  {
+   "id": "p0175",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.041905000000000005,
+   "seconds": 16.1
+  },
+  {
+   "id": "p0175",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.004758,
+   "seconds": 52.86
+  },
+  {
+   "id": "p0384",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.12024000000000001,
+   "seconds": 37.9
+  },
+  {
+   "id": "p0068",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0012637500000000001,
+   "seconds": 17.43
+  },
+  {
+   "id": "p0079",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00031375,
+   "seconds": 1.87
+  },
+  {
+   "id": "p0196",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00106675,
+   "seconds": 4.83
+  },
+  {
+   "id": "p0417",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "cost": 0.005268,
+   "seconds": 146.31
+  },
+  {
+   "id": "p0459",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0046485,
+   "seconds": 7.43
+  },
+  {
+   "id": "p0355",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.0501325,
+   "seconds": 64.62
+  },
+  {
+   "id": "p0398",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.018146000000000002,
+   "seconds": 37.01
+  },
+  {
+   "id": "p0143",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.028248000000000002,
+   "seconds": 53.78
+  },
+  {
+   "id": "p0111",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.060167500000000006,
+   "seconds": 80.66
+  },
+  {
+   "id": "p0111",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00475625,
+   "seconds": 51.92
+  },
+  {
+   "id": "p0417",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.07608000000000001,
+   "seconds": 27.55
+  },
+  {
+   "id": "p0075",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00016535,
+   "seconds": 1.14
+  },
+  {
+   "id": "p0341",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.03243,
+   "seconds": 38.18
+  },
+  {
+   "id": "p0190",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 1,
+    "instruction_following": 4
+   },
+   "cost": 0.0072640000000000005,
+   "seconds": 14.52
+  },
+  {
+   "id": "p0355",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0037512500000000002,
+   "seconds": 38.11
+  },
+  {
+   "id": "p0077",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0018425000000000002,
+   "seconds": 18.49
+  },
+  {
+   "id": "p0052",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0014077500000000001,
+   "seconds": 2.63
+  },
+  {
+   "id": "p0068",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00126,
+   "seconds": 2.98
+  },
+  {
+   "id": "p0031",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0021514999999999998,
+   "seconds": 8.59
+  },
+  {
+   "id": "p0405",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0033562500000000003,
+   "seconds": 14.44
+  },
+  {
+   "id": "p0398",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.12029000000000001,
+   "seconds": 48.04
+  },
+  {
+   "id": "p0088",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0005603,
+   "seconds": 4.51
+  },
+  {
+   "id": "p0196",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00049725,
+   "seconds": 1.09
+  },
+  {
+   "id": "p0079",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0011557499999999999,
+   "seconds": 5.96
+  },
+  {
+   "id": "p0077",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001726,
+   "seconds": 4.59
+  },
+  {
+   "id": "p0120",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.008078,
+   "seconds": 74.87
+  },
+  {
+   "id": "p0120",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.07681,
+   "seconds": 37.01
+  },
+  {
+   "id": "p0417",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.009086,
+   "seconds": 111.18
+  },
+  {
+   "id": "p0341",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00514125,
+   "seconds": 42.74
+  },
+  {
+   "id": "p0355",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.013446000000000001,
+   "seconds": 45.77
+  },
+  {
+   "id": "p0158",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.12025500000000001,
+   "seconds": 57.32
+  },
+  {
+   "id": "p0075",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00090325,
+   "seconds": 3.68
+  },
+  {
+   "id": "p0031",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000558,
+   "seconds": 1.23
+  },
+  {
+   "id": "p0060",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001909,
+   "seconds": 10.71
+  },
+  {
+   "id": "p0405",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00082,
+   "seconds": 2.65
+  },
+  {
+   "id": "p0459",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.01899125,
+   "seconds": 36.49
+  },
+  {
+   "id": "p0068",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001518,
+   "seconds": 1.61
+  },
+  {
+   "id": "p0432",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "cost": 0.0036650000000000003,
+   "seconds": 65.5
+  },
+  {
+   "id": "p0143",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 5,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.060147500000000007,
+   "seconds": 69.29
+  },
+  {
+   "id": "p0158",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "cost": 0.006185,
+   "seconds": 146.42
+  },
+  {
+   "id": "p0365",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0003282,
+   "seconds": 3.29
+  },
+  {
+   "id": "p0079",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00087375,
+   "seconds": 1.6
+  },
+  {
+   "id": "p0088",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00187975,
+   "seconds": 8.04
+  },
+  {
+   "id": "p0398",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.060145000000000004,
+   "seconds": 67.34
+  },
+  {
+   "id": "p0120",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.008657999999999999,
+   "seconds": 75.69
+  },
+  {
+   "id": "p0077",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002602,
+   "seconds": 3.22
+  },
+  {
+   "id": "p0052",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00799,
+   "seconds": 19.7
+  },
+  {
+   "id": "p0380",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0022500000000000003,
+   "seconds": 17.77
+  },
+  {
+   "id": "p0196",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0024175,
+   "seconds": 15.12
+  },
+  {
+   "id": "p0051",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00022315,
+   "seconds": 1.62
+  },
+  {
+   "id": "p0143",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.006581250000000001,
+   "seconds": 42.48
+  },
+  {
+   "id": "p0075",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00057675,
+   "seconds": 1.28
+  },
+  {
+   "id": "p0158",
+   "model": "xai.grok-4.6",
+   "ok": false,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0,
+   "seconds": 180.01
+  },
+  {
+   "id": "p0111",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.017494,
+   "seconds": 95.95
+  },
+  {
+   "id": "p0459",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.008702,
+   "seconds": 22.32
+  },
+  {
+   "id": "p0405",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000874,
+   "seconds": 1.51
+  },
+  {
+   "id": "p0111",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.12033500000000001,
+   "seconds": 49.38
+  },
+  {
+   "id": "p0190",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 2,
+    "instruction_following": 2
+   },
+   "cost": 0.045115,
+   "seconds": 63.87
+  },
+  {
+   "id": "p0068",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0011899999999999999,
+   "seconds": 2.57
+  },
+  {
+   "id": "p0052",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002378,
+   "seconds": 6.24
+  },
+  {
+   "id": "p0398",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00475375,
+   "seconds": 38.4
+  },
+  {
+   "id": "p0410",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00016375000000000002,
+   "seconds": 1.66
+  },
+  {
+   "id": "p0341",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.015834,
+   "seconds": 40.48
+  },
+  {
+   "id": "p0088",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00113175,
+   "seconds": 2.19
+  },
+  {
+   "id": "p0196",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000982,
+   "seconds": 2.94
+  },
+  {
+   "id": "p0365",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0017265,
+   "seconds": 6.88
+  },
+  {
+   "id": "p0060",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0051112499999999995,
+   "seconds": 22.6
+  },
+  {
+   "id": "p0077",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001914,
+   "seconds": 3.27
+  },
+  {
+   "id": "p0031",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00135,
+   "seconds": 17.9
+  },
+  {
+   "id": "p0380",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00023750000000000003,
+   "seconds": 2.53
+  },
+  {
+   "id": "p0023",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 3.675e-05,
+   "seconds": 0.63
+  },
+  {
+   "id": "p0391",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0002119,
+   "seconds": 5.06
+  },
+  {
+   "id": "p0079",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00147375,
+   "seconds": 16.39
+  },
+  {
+   "id": "p0051",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0015155,
+   "seconds": 6.21
+  },
+  {
+   "id": "p0355",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 2,
+    "instruction_following": 3
+   },
+   "cost": 0.113705,
+   "seconds": 58.9
+  },
+  {
+   "id": "p0432",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.11728500000000001,
+   "seconds": 45.4
+  },
+  {
+   "id": "p0060",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00645975,
+   "seconds": 10.94
+  },
+  {
+   "id": "p0031",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002636,
+   "seconds": 6.79
+  },
+  {
+   "id": "p0052",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.004366,
+   "seconds": 4.2
+  },
+  {
+   "id": "p0405",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0014299999999999998,
+   "seconds": 2.34
+  },
+  {
+   "id": "p0459",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.027275999999999998,
+   "seconds": 24.11
+  },
+  {
+   "id": "p0081",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 6.81e-05,
+   "seconds": 1.17
+  },
+  {
+   "id": "p0413",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0005863,
+   "seconds": 3.89
+  },
+  {
+   "id": "p0075",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0014487500000000002,
+   "seconds": 11.73
+  },
+  {
+   "id": "p0365",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000891,
+   "seconds": 1.61
+  },
+  {
+   "id": "p0380",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0001355,
+   "seconds": 3.56
+  },
+  {
+   "id": "p0158",
+   "model": "xai.grok-4.7",
+   "ok": false,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0,
+   "seconds": 180.01
+  },
+  {
+   "id": "p0196",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001458,
+   "seconds": 1.86
+  },
+  {
+   "id": "p0410",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0010285,
+   "seconds": 4.53
+  },
+  {
+   "id": "p0079",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00168,
+   "seconds": 4.08
+  },
+  {
+   "id": "p0068",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001274,
+   "seconds": 8.12
+  },
+  {
+   "id": "p0391",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0006835500000000001,
+   "seconds": 3.56
+  },
+  {
+   "id": "p0398",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.013522,
+   "seconds": 39.12
+  },
+  {
+   "id": "p0051",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0008445000000000001,
+   "seconds": 1.89
+  },
+  {
+   "id": "p0023",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00032399999999999996,
+   "seconds": 2.04
+  },
+  {
+   "id": "p0103",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 1,
+    "instruction_following": 3
+   },
+   "cost": 0.0016052,
+   "seconds": 8.45
+  },
+  {
+   "id": "p0075",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001136,
+   "seconds": 2.62
+  },
+  {
+   "id": "p0031",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002124,
+   "seconds": 2.54
+  },
+  {
+   "id": "p0459",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.012703999999999998,
+   "seconds": 16.31
+  },
+  {
+   "id": "p0077",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001694,
+   "seconds": 15.31
+  },
+  {
+   "id": "p0413",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0005771,
+   "seconds": 13.36
+  },
+  {
+   "id": "p0405",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0009760000000000001,
+   "seconds": 3.92
+  },
+  {
+   "id": "p0052",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.003954,
+   "seconds": 7.24
+  },
+  {
+   "id": "p0190",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.12086000000000001,
+   "seconds": 69.02
+  },
+  {
+   "id": "p0341",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.12036000000000001,
+   "seconds": 52.47
+  },
+  {
+   "id": "p0410",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000906,
+   "seconds": 1.51
+  },
+  {
+   "id": "p0081",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0007689999999999999,
+   "seconds": 3.89
+  },
+  {
+   "id": "p0088",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00458125,
+   "seconds": 22.06
+  },
+  {
+   "id": "p0380",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001013,
+   "seconds": 5.53
+  },
+  {
+   "id": "p0079",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002066,
+   "seconds": 2.42
+  },
+  {
+   "id": "p0196",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.003054,
+   "seconds": 4.51
+  },
+  {
+   "id": "p0088",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0020380000000000003,
+   "seconds": 5.43
+  },
+  {
+   "id": "p0143",
+   "model": "openai.gpt-5.5",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.12029500000000001,
+   "seconds": 48.9
+  },
+  {
+   "id": "p0371",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0006178000000000001,
+   "seconds": 6.31
+  },
+  {
+   "id": "p0023",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00013350000000000002,
+   "seconds": 0.6
+  },
+  {
+   "id": "p0108",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0016066000000000001,
+   "seconds": 14.98
+  },
+  {
+   "id": "p0413",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0008342000000000001,
+   "seconds": 5.41
+  },
+  {
+   "id": "p0075",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001406,
+   "seconds": 1.59
+  },
+  {
+   "id": "p0413",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002128,
+   "seconds": 32.69
+  },
+  {
+   "id": "p0103",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0008145,
+   "seconds": 17.88
+  },
+  {
+   "id": "p0143",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 2,
+    "instruction_following": 4
+   },
+   "cost": 0.02659,
+   "seconds": 85.59
+  },
+  {
+   "id": "p0190",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 2,
+    "instruction_following": 3
+   },
+   "cost": 0.004410000000000001,
+   "seconds": 88.58
+  },
+  {
+   "id": "p0111",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.010688,
+   "seconds": 68.05
+  },
+  {
+   "id": "p0391",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002248,
+   "seconds": 10.19
+  },
+  {
+   "id": "p0031",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.004699999999999999,
+   "seconds": 4.84
+  },
+  {
+   "id": "p0081",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00030450000000000003,
+   "seconds": 1.11
+  },
+  {
+   "id": "p0427",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0006874,
+   "seconds": 5.25
+  },
+  {
+   "id": "p0088",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00303,
+   "seconds": 5.17
+  },
+  {
+   "id": "p0365",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 4
+   },
+   "cost": 0.007002500000000001,
+   "seconds": 24.04
+  },
+  {
+   "id": "p0371",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0005240999999999999,
+   "seconds": 10.5
+  },
+  {
+   "id": "p0060",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.017965000000000002,
+   "seconds": 38.07
+  },
+  {
+   "id": "p0103",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00233575,
+   "seconds": 10.85
+  },
+  {
+   "id": "p0174",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0003883,
+   "seconds": 2.53
+  },
+  {
+   "id": "p0079",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002038,
+   "seconds": 3.25
+  },
+  {
+   "id": "p0052",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0024159999999999997,
+   "seconds": 13.48
+  },
+  {
+   "id": "p0365",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0024720000000000002,
+   "seconds": 9.21
+  },
+  {
+   "id": "p0380",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002326,
+   "seconds": 11.21
+  },
+  {
+   "id": "p0196",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000774,
+   "seconds": 5.58
+  },
+  {
+   "id": "p0108",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0011425,
+   "seconds": 24.71
+  },
+  {
+   "id": "p0391",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0021284999999999997,
+   "seconds": 3.41
+  },
+  {
+   "id": "p0051",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.006880000000000001,
+   "seconds": 22.63
+  },
+  {
+   "id": "p0075",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0018499999999999999,
+   "seconds": 2.87
+  },
+  {
+   "id": "p0427",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0002698,
+   "seconds": 6.39
+  },
+  {
+   "id": "p0051",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0020740000000000003,
+   "seconds": 5.92
+  },
+  {
+   "id": "p0410",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.004665000000000001,
+   "seconds": 16.21
+  },
+  {
+   "id": "p0023",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0003525,
+   "seconds": 6.44
+  },
+  {
+   "id": "p0328",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 5,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.00019190000000000003,
+   "seconds": 1.94
+  },
+  {
+   "id": "p0174",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0001515,
+   "seconds": 3.89
+  },
+  {
+   "id": "p0380",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0014880000000000002,
+   "seconds": 2.89
+  },
+  {
+   "id": "p0410",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0012000000000000001,
+   "seconds": 3.21
+  },
+  {
+   "id": "p0060",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.013080000000000001,
+   "seconds": 27.97
+  },
+  {
+   "id": "p0365",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0034200000000000003,
+   "seconds": 3.54
+  },
+  {
+   "id": "p0031",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001216,
+   "seconds": 11.7
+  },
+  {
+   "id": "p0088",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.004438,
+   "seconds": 5.45
+  },
+  {
+   "id": "p0371",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00200645,
+   "seconds": 9.86
+  },
+  {
+   "id": "p0122",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0005472000000000001,
+   "seconds": 5.35
+  },
+  {
+   "id": "p0328",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0001692,
+   "seconds": 4.39
+  },
+  {
+   "id": "p0427",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00066385,
+   "seconds": 3.38
+  },
+  {
+   "id": "p0023",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00032,
+   "seconds": 1.98
+  },
+  {
+   "id": "p0108",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00411275,
+   "seconds": 19.47
+  },
+  {
+   "id": "p0079",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001558,
+   "seconds": 9.95
+  },
+  {
+   "id": "p0413",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002754,
+   "seconds": 4.79
+  },
+  {
+   "id": "p0355",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.01129,
+   "seconds": 46.25
+  },
+  {
+   "id": "p0051",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0022280000000000004,
+   "seconds": 3.29
+  },
+  {
+   "id": "p0433",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.0001853,
+   "seconds": 2.27
+  },
+  {
+   "id": "p0081",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 4
+   },
+   "cost": 0.00238625,
+   "seconds": 15.96
+  },
+  {
+   "id": "p0060",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.023334,
+   "seconds": 23.5
+  },
+  {
+   "id": "p0075",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0010559999999999999,
+   "seconds": 5.88
+  },
+  {
+   "id": "p0103",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.004917,
+   "seconds": 19.81
+  },
+  {
+   "id": "p0081",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00035600000000000003,
+   "seconds": 2.26
+  },
+  {
+   "id": "p0410",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001804,
+   "seconds": 1.84
+  },
+  {
+   "id": "p0459",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.013836,
+   "seconds": 53.93
+  },
+  {
+   "id": "p0174",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0014215,
+   "seconds": 7.53
+  },
+  {
+   "id": "p0413",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.006745999999999999,
+   "seconds": 29.97
+  },
+  {
+   "id": "p0433",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 5,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 6.9e-05,
+   "seconds": 2.69
+  },
+  {
+   "id": "p0365",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.003876,
+   "seconds": 5.96
+  },
+  {
+   "id": "p0328",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.00032465,
+   "seconds": 3.55
+  },
+  {
+   "id": "p0103",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.007722,
+   "seconds": 12.8
+  },
+  {
+   "id": "p0317",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.001007,
+   "seconds": 8.21
+  },
+  {
+   "id": "p0023",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000368,
+   "seconds": 0.9
+  },
+  {
+   "id": "p0060",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.013418,
+   "seconds": 24.22
+  },
+  {
+   "id": "p0051",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002732,
+   "seconds": 6.71
+  },
+  {
+   "id": "p0391",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.003758,
+   "seconds": 8.02
+  },
+  {
+   "id": "p0380",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 4
+   },
+   "cost": 0.0057237500000000005,
+   "seconds": 20.41
+  },
+  {
+   "id": "p0122",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0012357,
+   "seconds": 23.93
+  },
+  {
+   "id": "p0391",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.012381250000000002,
+   "seconds": 29.89
+  },
+  {
+   "id": "p0432",
+   "model": "xai.grok-4.7",
+   "ok": false,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0,
+   "seconds": 180.01
+  },
+  {
+   "id": "p0108",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0080175,
+   "seconds": 39.11
+  },
+  {
+   "id": "p0122",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0016849000000000002,
+   "seconds": 9.45
+  },
+  {
+   "id": "p0088",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0018939999999999999,
+   "seconds": 26.37
+  },
+  {
+   "id": "p0174",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0015394999999999999,
+   "seconds": 9.52
+  },
+  {
+   "id": "p0081",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000488,
+   "seconds": 1.07
+  },
+  {
+   "id": "p0384",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 2,
+    "instruction_following": 4
+   },
+   "cost": 0.0012785000000000001,
+   "seconds": 11.85
+  },
+  {
+   "id": "p0371",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.005961,
+   "seconds": 9.51
+  },
+  {
+   "id": "p0371",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.005449,
+   "seconds": 33.48
+  },
+  {
+   "id": "p0108",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.014331,
+   "seconds": 22.73
+  },
+  {
+   "id": "p0433",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00028875000000000005,
+   "seconds": 2.54
+  },
+  {
+   "id": "p0380",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00223,
+   "seconds": 5.3
+  },
+  {
+   "id": "p0410",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0030919999999999997,
+   "seconds": 6.13
+  },
+  {
+   "id": "p0427",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.004346,
+   "seconds": 28.65
+  },
+  {
+   "id": "p0328",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00124625,
+   "seconds": 6.64
+  },
+  {
+   "id": "p0427",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002559,
+   "seconds": 4.79
+  },
+  {
+   "id": "p0023",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00038399999999999996,
+   "seconds": 2.04
+  },
+  {
+   "id": "p0391",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.007632000000000001,
+   "seconds": 5.57
+  },
+  {
+   "id": "p0175",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 1,
+    "instruction_following": 5
+   },
+   "cost": 0.0016172,
+   "seconds": 10.67
+  },
+  {
+   "id": "p0413",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 2,
+    "instruction_following": 3
+   },
+   "cost": 0.009628750000000002,
+   "seconds": 33.8
+  },
+  {
+   "id": "p0317",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001254,
+   "seconds": 24.68
+  },
+  {
+   "id": "p0365",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0015119999999999999,
+   "seconds": 16.88
+  },
+  {
+   "id": "p0174",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0024015,
+   "seconds": 3.49
+  },
+  {
+   "id": "p0417",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 2,
+    "instruction_following": 3
+   },
+   "cost": 0.0015173,
+   "seconds": 11.18
+  },
+  {
+   "id": "p0060",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.007248,
+   "seconds": 33.4
+  },
+  {
+   "id": "p0317",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0022057500000000002,
+   "seconds": 11.55
+  },
+  {
+   "id": "p0081",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0006879999999999999,
+   "seconds": 2.17
+  },
+  {
+   "id": "p0051",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001926,
+   "seconds": 17.5
+  },
+  {
+   "id": "p0380",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00446,
+   "seconds": 5.19
+  },
+  {
+   "id": "p0410",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0012000000000000001,
+   "seconds": 10.18
+  },
+  {
+   "id": "p0175",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.0010822,
+   "seconds": 22.56
+  },
+  {
+   "id": "p0103",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00803,
+   "seconds": 89.17
+  },
+  {
+   "id": "p0158",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 1,
+    "instruction_following": 5
+   },
+   "cost": 0.0016043000000000001,
+   "seconds": 10.95
+  },
+  {
+   "id": "p0103",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.020035,
+   "seconds": 40.75
+  },
+  {
+   "id": "p0328",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00057525,
+   "seconds": 2.36
+  },
+  {
+   "id": "p0384",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0018372999999999998,
+   "seconds": 37.73
+  },
+  {
+   "id": "p0122",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0062935,
+   "seconds": 29.36
+  },
+  {
+   "id": "p0413",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.006672000000000001,
+   "seconds": 38.34
+  },
+  {
+   "id": "p0433",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 5,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.00155625,
+   "seconds": 10.55
+  },
+  {
+   "id": "p0108",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.024522500000000003,
+   "seconds": 41.03
+  },
+  {
+   "id": "p0391",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.006352,
+   "seconds": 7.07
+  },
+  {
+   "id": "p0371",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.012337500000000001,
+   "seconds": 33.13
+  },
+  {
+   "id": "p0413",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.011592,
+   "seconds": 11.44
+  },
+  {
+   "id": "p0120",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "cost": 0.0008941000000000001,
+   "seconds": 8.61
+  },
+  {
+   "id": "p0190",
+   "model": "xai.grok-4.7",
+   "ok": false,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0,
+   "seconds": 180.01
+  },
+  {
+   "id": "p0122",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0040695,
+   "seconds": 6.17
+  },
+  {
+   "id": "p0103",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.01097,
+   "seconds": 39.02
+  },
+  {
+   "id": "p0175",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0024484,
+   "seconds": 12.79
+  },
+  {
+   "id": "p0081",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000592,
+   "seconds": 6.22
+  },
+  {
+   "id": "p0427",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0124525,
+   "seconds": 29.7
+  },
+  {
+   "id": "p0433",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00050025,
+   "seconds": 1.25
+  },
+  {
+   "id": "p0108",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.012014,
+   "seconds": 68.39
+  },
+  {
+   "id": "p0317",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00456275,
+   "seconds": 20.9
+  },
+  {
+   "id": "p0023",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0006,
+   "seconds": 14.29
+  },
+  {
+   "id": "p0405",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 9.09e-05,
+   "seconds": 1.01
+  },
+  {
+   "id": "p0417",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.00305835,
+   "seconds": 16.38
+  },
+  {
+   "id": "p0120",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0014464,
+   "seconds": 29.3
+  },
+  {
+   "id": "p0355",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 2,
+    "instruction_following": 4
+   },
+   "cost": 0.0008946000000000002,
+   "seconds": 8.4
+  },
+  {
+   "id": "p0111",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.0015911000000000002,
+   "seconds": 15.39
+  },
+  {
+   "id": "p0328",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 2
+   },
+   "cost": 0.01008375,
+   "seconds": 22.41
+  },
+  {
+   "id": "p0417",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0014387999999999998,
+   "seconds": 65.44
+  },
+  {
+   "id": "p0317",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00716325,
+   "seconds": 8.99
+  },
+  {
+   "id": "p0384",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.008012,
+   "seconds": 42.16
+  },
+  {
+   "id": "p0341",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.002488,
+   "seconds": 65.36
+  },
+  {
+   "id": "p0371",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.010052,
+   "seconds": 56.96
+  },
+  {
+   "id": "p0174",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.009108750000000002,
+   "seconds": 23.88
+  },
+  {
+   "id": "p0371",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.021272,
+   "seconds": 21.04
+  },
+  {
+   "id": "p0108",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.044072,
+   "seconds": 44.98
+  },
+  {
+   "id": "p0103",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.034032,
+   "seconds": 36.83
+  },
+  {
+   "id": "p0432",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 3
+   },
+   "cost": 0.0014059,
+   "seconds": 10.3
+  },
+  {
+   "id": "p0111",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0014436999999999998,
+   "seconds": 32.87
+  },
+  {
+   "id": "p0108",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 5,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.024430000000000004,
+   "seconds": 83.4
+  },
+  {
+   "id": "p0380",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00556,
+   "seconds": 65.76
+  },
+  {
+   "id": "p0158",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.00148395,
+   "seconds": 34.78
+  },
+  {
+   "id": "p0120",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0021673000000000005,
+   "seconds": 10.41
+  },
+  {
+   "id": "p0391",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.002138,
+   "seconds": 57.14
+  },
+  {
+   "id": "p0103",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.016415999999999997,
+   "seconds": 33.48
+  },
+  {
+   "id": "p0433",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0068962500000000005,
+   "seconds": 19.38
+  },
+  {
+   "id": "p0355",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0007482,
+   "seconds": 15.01
+  },
+  {
+   "id": "p0417",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0080495,
+   "seconds": 30.81
+  },
+  {
+   "id": "p0432",
+   "model": "xai.grok-4.6",
+   "ok": false,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0,
+   "seconds": 180.0
+  },
+  {
+   "id": "p0328",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.002344,
+   "seconds": 5.91
+  },
+  {
+   "id": "p0355",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.00274215,
+   "seconds": 15.68
+  },
+  {
+   "id": "p0433",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0019,
+   "seconds": 5.57
+  },
+  {
+   "id": "p0328",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00109,
+   "seconds": 1.69
+  },
+  {
+   "id": "p0371",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.007448,
+   "seconds": 47.37
+  },
+  {
+   "id": "p0068",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 5.27e-05,
+   "seconds": 0.91
+  },
+  {
+   "id": "p0158",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.00801275,
+   "seconds": 77.64
+  },
+  {
+   "id": "p0143",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0020059,
+   "seconds": 42.77
+  },
+  {
+   "id": "p0158",
+   "model": "openai.gpt-6-luna",
+   "ok": false,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0,
+   "seconds": 180.0
+  },
+  {
+   "id": "p0398",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0016051000000000001,
+   "seconds": 13.34
+  },
+  {
+   "id": "p0427",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.012272,
+   "seconds": 25.77
+  },
+  {
+   "id": "p0111",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.003929650000000001,
+   "seconds": 51.85
+  },
+  {
+   "id": "p0432",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "cost": 0.0019645500000000002,
+   "seconds": 9.56
+  },
+  {
+   "id": "p0108",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.022748,
+   "seconds": 63.56
+  },
+  {
+   "id": "p0384",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0035571,
+   "seconds": 31.24
+  },
+  {
+   "id": "p0341",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "cost": 0.0012950000000000001,
+   "seconds": 12.27
+  },
+  {
+   "id": "p0143",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "cost": 0.015968,
+   "seconds": 64.67
+  },
+  {
+   "id": "p0384",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.018806250000000004,
+   "seconds": 41.44
+  },
+  {
+   "id": "p0122",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.01978,
+   "seconds": 21.88
+  },
+  {
+   "id": "p0174",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.003916,
+   "seconds": 6.06
+  },
+  {
+   "id": "p0459",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0008385,
+   "seconds": 7.31
+  },
+  {
+   "id": "p0120",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.006612,
+   "seconds": 11.37
+  },
+  {
+   "id": "p0175",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 1,
+    "instruction_following": 2
+   },
+   "cost": 0.0047550000000000005,
+   "seconds": 32.33
+  },
+  {
+   "id": "p0122",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 4
+   },
+   "cost": 0.015920000000000004,
+   "seconds": 36.9
+  },
+  {
+   "id": "p0433",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.002066,
+   "seconds": 3.23
+  },
+  {
+   "id": "p0143",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 2,
+    "instruction_following": 4
+   },
+   "cost": 0.0016052,
+   "seconds": 12.15
+  },
+  {
+   "id": "p0355",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00591875,
+   "seconds": 31.64
+  },
+  {
+   "id": "p0341",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0033194,
+   "seconds": 27.47
+  },
+  {
+   "id": "p0068",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 5.7e-05,
+   "seconds": 1.86
+  },
+  {
+   "id": "p0328",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.006946,
+   "seconds": 16.01
+  },
+  {
+   "id": "p0190",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 1,
+    "instruction_following": 3
+   },
+   "cost": 0.0016181000000000001,
+   "seconds": 10.58
+  },
+  {
+   "id": "p0398",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0014188,
+   "seconds": 45.63
+  },
+  {
+   "id": "p0417",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 2,
+    "instruction_following": 3
+   },
+   "cost": 0.01199125,
+   "seconds": 36.6
+  },
+  {
+   "id": "p0317",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.012790000000000001,
+   "seconds": 67.36
+  },
+  {
+   "id": "p0158",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.00461475,
+   "seconds": 83.04
+  },
+  {
+   "id": "p0317",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.022967500000000002,
+   "seconds": 37.17
+  },
+  {
+   "id": "p0427",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0016679999999999998,
+   "seconds": 36.8
+  },
+  {
+   "id": "p0143",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.0050118,
+   "seconds": 26.16
+  },
+  {
+   "id": "p0175",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.00792375,
+   "seconds": 48.49
+  },
+  {
+   "id": "p0175",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.006524,
+   "seconds": 13.04
+  },
+  {
+   "id": "p0111",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.01473825,
+   "seconds": 26.2
+  },
+  {
+   "id": "p0384",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.019476,
+   "seconds": 54.66
+  },
+  {
+   "id": "p0413",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.013616,
+   "seconds": 18.4
+  },
+  {
+   "id": "p0174",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00271,
+   "seconds": 6.46
+  },
+  {
+   "id": "p0410",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 7.45e-05,
+   "seconds": 2.33
+  },
+  {
+   "id": "p0068",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0001506,
+   "seconds": 1.66
+  },
+  {
+   "id": "p0432",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.00803225,
+   "seconds": 37.72
+  },
+  {
+   "id": "p0190",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 2,
+    "instruction_following": 2
+   },
+   "cost": 0.0019321999999999998,
+   "seconds": 45.37
+  },
+  {
+   "id": "p0111",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.00801675,
+   "seconds": 112.27
+  },
+  {
+   "id": "p0317",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.026998,
+   "seconds": 21.01
+  },
+  {
+   "id": "p0158",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 1,
+    "instruction_following": 5
+   },
+   "cost": 0.0016137500000000002,
+   "seconds": 37.34
+  },
+  {
+   "id": "p0174",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001582,
+   "seconds": 16.54
+  },
+  {
+   "id": "p0122",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.017803999999999997,
+   "seconds": 27.23
+  },
+  {
+   "id": "p0433",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0050739999999999995,
+   "seconds": 8.17
+  },
+  {
+   "id": "p0398",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "cost": 0.00408785,
+   "seconds": 19.48
+  },
+  {
+   "id": "p0341",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0012372,
+   "seconds": 165.42
+  },
+  {
+   "id": "p0355",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00776775,
+   "seconds": 12.84
+  },
+  {
+   "id": "p0120",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0062145,
+   "seconds": 162.05
+  },
+  {
+   "id": "p0077",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00012330000000000002,
+   "seconds": 2.61
+  },
+  {
+   "id": "p0417",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 3,
+    "instruction_following": 3
+   },
+   "cost": 0.0078795,
+   "seconds": 157.08
+  },
+  {
+   "id": "p0077",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00028779999999999995,
+   "seconds": 3.01
+  },
+  {
+   "id": "p0432",
+   "model": "openai.gpt-6-luna",
+   "ok": false,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0,
+   "seconds": 180.01
+  },
+  {
+   "id": "p0384",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.015057,
+   "seconds": 19.71
+  },
+  {
+   "id": "p0052",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00029600000000000004,
+   "seconds": 2.72
+  },
+  {
+   "id": "p0432",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00634725,
+   "seconds": 7.69
+  },
+  {
+   "id": "p0190",
+   "model": "openai.gpt-5.4-nano",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 1,
+    "instruction_following": 1
+   },
+   "cost": 0.0017481500000000002,
+   "seconds": 8.41
+  },
+  {
+   "id": "p0328",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.001082,
+   "seconds": 11.49
+  },
+  {
+   "id": "p0405",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 3.45e-05,
+   "seconds": 1.0
+  },
+  {
+   "id": "p0405",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000151,
+   "seconds": 1.56
+  },
+  {
+   "id": "p0122",
+   "model": "openai.gpt-6.1-sol",
+   "ok": false,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0,
+   "seconds": 180.01
+  },
+  {
+   "id": "p0174",
+   "model": "openai.gpt-5.6-terra",
+   "ok": false,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0,
+   "seconds": 180.01
+  },
+  {
+   "id": "p0371",
+   "model": "openai.o3",
+   "ok": false,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0,
+   "seconds": 180.01
+  },
+  {
+   "id": "p0068",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0001572,
+   "seconds": 2.63
+  },
+  {
+   "id": "p0175",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.017098000000000002,
+   "seconds": 15.35
+  },
+  {
+   "id": "p0341",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.008018,
+   "seconds": 35.29
+  },
+  {
+   "id": "p0417",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.014356000000000002,
+   "seconds": 29.38
+  },
+  {
+   "id": "p0077",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 8.38e-05,
+   "seconds": 1.16
+  },
+  {
+   "id": "p0196",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000135,
+   "seconds": 1.29
+  },
+  {
+   "id": "p0317",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.014846,
+   "seconds": 19.62
+  },
+  {
+   "id": "p0433",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 5,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.001106,
+   "seconds": 9.41
+  },
+  {
+   "id": "p0120",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "cost": 0.019016250000000002,
+   "seconds": 41.11
+  },
+  {
+   "id": "p0459",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00047059999999999995,
+   "seconds": 9.84
+  },
+  {
+   "id": "p0341",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.011178,
+   "seconds": 19.15
+  },
+  {
+   "id": "p0384",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.048096,
+   "seconds": 43.0
+  },
+  {
+   "id": "p0077",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00021989999999999998,
+   "seconds": 3.84
+  },
+  {
+   "id": "p0143",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.00801475,
+   "seconds": 34.31
+  },
+  {
+   "id": "p0427",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.005744,
+   "seconds": 10.23
+  },
+  {
+   "id": "p0111",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 2,
+    "instruction_following": 5
+   },
+   "cost": 0.012358750000000002,
+   "seconds": 40.95
+  },
+  {
+   "id": "p0459",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0018084,
+   "seconds": 17.36
+  },
+  {
+   "id": "p0384",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.017816,
+   "seconds": 24.59
+  },
+  {
+   "id": "p0031",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 5.840000000000001e-05,
+   "seconds": 0.85
+  },
+  {
+   "id": "p0398",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.0080145,
+   "seconds": 34.72
+  },
+  {
+   "id": "p0405",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0001704,
+   "seconds": 1.85
+  },
+  {
+   "id": "p0052",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00013189999999999998,
+   "seconds": 3.02
+  },
+  {
+   "id": "p0052",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0003094,
+   "seconds": 3.29
+  },
+  {
+   "id": "p0398",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.019784,
+   "seconds": 73.12
+  },
+  {
+   "id": "p0355",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 2,
+    "instruction_following": 4
+   },
+   "cost": 0.017247500000000002,
+   "seconds": 41.03
+  },
+  {
+   "id": "p0068",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0002768,
+   "seconds": 8.26
+  },
+  {
+   "id": "p0120",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.014638000000000002,
+   "seconds": 41.9
+  },
+  {
+   "id": "p0079",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 7.03e-05,
+   "seconds": 1.19
+  },
+  {
+   "id": "p0196",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 5.91e-05,
+   "seconds": 1.63
+  },
+  {
+   "id": "p0196",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0001422,
+   "seconds": 1.62
+  },
+  {
+   "id": "p0417",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.045732,
+   "seconds": 43.88
+  },
+  {
+   "id": "p0143",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "cost": 0.01804425,
+   "seconds": 25.09
+  },
+  {
+   "id": "p0398",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0110145,
+   "seconds": 15.42
+  },
+  {
+   "id": "p0158",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.021432000000000003,
+   "seconds": 60.6
+  },
+  {
+   "id": "p0432",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 2,
+    "instruction_following": 2
+   },
+   "cost": 0.019168750000000002,
+   "seconds": 33.64
+  },
+  {
+   "id": "p0077",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0003935,
+   "seconds": 9.45
+  },
+  {
+   "id": "p0075",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 5.03e-05,
+   "seconds": 0.7
+  },
+  {
+   "id": "p0190",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 2,
+    "instruction_following": 3
+   },
+   "cost": 0.0076125,
+   "seconds": 10.23
+  },
+  {
+   "id": "p0031",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0001363,
+   "seconds": 2.86
+  },
+  {
+   "id": "p0031",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0002676,
+   "seconds": 2.89
+  },
+  {
+   "id": "p0190",
+   "model": "openai.gpt-5-mini",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.008043,
+   "seconds": 41.9
+  },
+  {
+   "id": "p0122",
+   "model": "xai.grok-4.6",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.005608,
+   "seconds": 64.4
+  },
+  {
+   "id": "p0405",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0006236000000000001,
+   "seconds": 4.23
+  },
+  {
+   "id": "p0158",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.035622,
+   "seconds": 41.35
+  },
+  {
+   "id": "p0175",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.031814,
+   "seconds": 40.1
+  },
+  {
+   "id": "p0068",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00066,
+   "seconds": 3.85
+  },
+  {
+   "id": "p0417",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.026164,
+   "seconds": 25.36
+  },
+  {
+   "id": "p0088",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00021250000000000002,
+   "seconds": 2.34
+  },
+  {
+   "id": "p0052",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0006356999999999999,
+   "seconds": 9.53
+  },
+  {
+   "id": "p0427",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.004156,
+   "seconds": 9.22
+  },
+  {
+   "id": "p0079",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000116,
+   "seconds": 2.47
+  },
+  {
+   "id": "p0175",
+   "model": "openai.gpt-5.4-mini",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.004166250000000001,
+   "seconds": 5.07
+  },
+  {
+   "id": "p0079",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0002558,
+   "seconds": 2.39
+  },
+  {
+   "id": "p0196",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00026519999999999994,
+   "seconds": 3.16
+  },
+  {
+   "id": "p0341",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.0221125,
+   "seconds": 38.05
+  },
+  {
+   "id": "p0077",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0009537500000000002,
+   "seconds": 4.3
+  },
+  {
+   "id": "p0459",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.0018619499999999998,
+   "seconds": 29.59
+  },
+  {
+   "id": "p0355",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.014284000000000002,
+   "seconds": 39.35
+  },
+  {
+   "id": "p0120",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.038056000000000006,
+   "seconds": 38.59
+  },
+  {
+   "id": "p0075",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 5.68e-05,
+   "seconds": 1.97
+  },
+  {
+   "id": "p0075",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0001454,
+   "seconds": 1.8
+  },
+  {
+   "id": "p0060",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.0008752,
+   "seconds": 7.32
+  },
+  {
+   "id": "p0120",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.01386,
+   "seconds": 18.73
+  },
+  {
+   "id": "p0031",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 4
+   },
+   "cost": 0.00036044999999999995,
+   "seconds": 4.95
+  },
+  {
+   "id": "p0405",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000585,
+   "seconds": 2.87
+  },
+  {
+   "id": "p0111",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.024114,
+   "seconds": 64.09
+  },
+  {
+   "id": "p0143",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "cost": 0.024405,
+   "seconds": 42.07
+  },
+  {
+   "id": "p0068",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00135,
+   "seconds": 1.9
+  },
+  {
+   "id": "p0365",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0001678,
+   "seconds": 1.73
+  },
+  {
+   "id": "p0158",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.032102,
+   "seconds": 37.75
+  },
+  {
+   "id": "p0459",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0050324,
+   "seconds": 22.24
+  },
+  {
+   "id": "p0088",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0001104,
+   "seconds": 2.88
+  },
+  {
+   "id": "p0088",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00030900000000000003,
+   "seconds": 3.5
+  },
+  {
+   "id": "p0079",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0002226,
+   "seconds": 2.85
+  },
+  {
+   "id": "p0052",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0019697000000000004,
+   "seconds": 13.78
+  },
+  {
+   "id": "p0196",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0005487000000000001,
+   "seconds": 4.16
+  },
+  {
+   "id": "p0111",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.048134,
+   "seconds": 47.13
+  },
+  {
+   "id": "p0077",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0019960000000000004,
+   "seconds": 3.12
+  },
+  {
+   "id": "p0341",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.015824,
+   "seconds": 36.98
+  },
+  {
+   "id": "p0111",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.015486,
+   "seconds": 24.95
+  },
+  {
+   "id": "p0051",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 4
+   },
+   "cost": 0.00018400000000000003,
+   "seconds": 2.2
+  },
+  {
+   "id": "p0398",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.024873750000000003,
+   "seconds": 40.76
+  },
+  {
+   "id": "p0432",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.022668000000000004,
+   "seconds": 52.71
+  },
+  {
+   "id": "p0075",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0001839,
+   "seconds": 2.63
+  },
+  {
+   "id": "p0355",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 4,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "cost": 0.042902,
+   "seconds": 42.23
+  },
+  {
+   "id": "p0190",
+   "model": "google.gemini-2.5-pro",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 1,
+    "completeness": 1,
+    "instruction_following": 5
+   },
+   "cost": 0.0018062500000000001,
+   "seconds": 35.0
+  },
+  {
+   "id": "p0459",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00267125,
+   "seconds": 11.43
+  },
+  {
+   "id": "p0405",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0007700000000000001,
+   "seconds": 1.76
+  },
+  {
+   "id": "p0052",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0012137500000000002,
+   "seconds": 4.98
+  },
+  {
+   "id": "p0410",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0001452,
+   "seconds": 1.2
+  },
+  {
+   "id": "p0355",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.014846,
+   "seconds": 21.5
+  },
+  {
+   "id": "p0068",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0020025,
+   "seconds": 3.36
+  },
+  {
+   "id": "p0365",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00029759999999999997,
+   "seconds": 2.86
+  },
+  {
+   "id": "p0365",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00012109999999999999,
+   "seconds": 3.63
+  },
+  {
+   "id": "p0432",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.040266,
+   "seconds": 38.47
+  },
+  {
+   "id": "p0031",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.0006539,
+   "seconds": 10.84
+  },
+  {
+   "id": "p0060",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0007049999999999999,
+   "seconds": 14.34
+  },
+  {
+   "id": "p0088",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00038879999999999996,
+   "seconds": 6.06
+  },
+  {
+   "id": "p0023",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 1.8200000000000002e-05,
+   "seconds": 0.5
+  },
+  {
+   "id": "p0079",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0004263,
+   "seconds": 6.79
+  },
+  {
+   "id": "p0077",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0034325000000000002,
+   "seconds": 4.42
+  },
+  {
+   "id": "p0051",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 8.87e-05,
+   "seconds": 2.68
+  },
+  {
+   "id": "p0196",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0006562500000000001,
+   "seconds": 8.05
+  },
+  {
+   "id": "p0051",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0002468,
+   "seconds": 3.39
+  },
+  {
+   "id": "p0060",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0021642,
+   "seconds": 19.87
+  },
+  {
+   "id": "p0459",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.005282,
+   "seconds": 9.3
+  },
+  {
+   "id": "p0405",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0014824999999999999,
+   "seconds": 1.81
+  },
+  {
+   "id": "p0031",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0007300000000000001,
+   "seconds": 3.31
+  },
+  {
+   "id": "p0052",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0018380000000000002,
+   "seconds": 3.24
+  },
+  {
+   "id": "p0081",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 9.17e-05,
+   "seconds": 1.23
+  },
+  {
+   "id": "p0075",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "cost": 0.00022310000000000003,
+   "seconds": 5.38
+  },
+  {
+   "id": "p0023",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 3.7e-05,
+   "seconds": 1.21
+  },
+  {
+   "id": "p0410",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0002164,
+   "seconds": 2.53
+  },
+  {
+   "id": "p0068",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0006875000000000001,
+   "seconds": 7.94
+  },
+  {
+   "id": "p0341",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.048144,
+   "seconds": 44.68
+  },
+  {
+   "id": "p0365",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00042525,
+   "seconds": 6.31
+  },
+  {
+   "id": "p0196",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.000872,
+   "seconds": 1.75
+  },
+  {
+   "id": "p0190",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 2,
+    "completeness": 2,
+    "instruction_following": 3
+   },
+   "cost": 0.013164000000000002,
+   "seconds": 35.14
+  },
+  {
+   "id": "p0398",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.017406,
+   "seconds": 45.6
+  },
+  {
+   "id": "p0081",
+   "model": "openai.gpt-6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 1.5799999999999998e-05,
+   "seconds": 1.63
+  },
+  {
+   "id": "p0023",
+   "model": "openai.gpt-5.6-luna",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 3.68e-05,
+   "seconds": 0.79
+  },
+  {
+   "id": "p0341",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.020935999999999996,
+   "seconds": 28.19
+  },
+  {
+   "id": "p0391",
+   "model": "google.gemini-2.5-flash-lite",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00047010000000000004,
+   "seconds": 4.33
+  },
+  {
+   "id": "p0432",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.032258,
+   "seconds": 39.8
+  },
+  {
+   "id": "p0088",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0014724,
+   "seconds": 14.21
+  },
+  {
+   "id": "p0190",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 2,
+    "instruction_following": 4
+   },
+   "cost": 0.024176,
+   "seconds": 24.84
+  },
+  {
+   "id": "p0079",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0008525000000000001,
+   "seconds": 12.79
+  },
+  {
+   "id": "p0143",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.048118,
+   "seconds": 44.09
+  },
+  {
+   "id": "p0031",
+   "model": "openai.gpt-6-sol",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.001826,
+   "seconds": 2.43
+  },
+  {
+   "id": "p0077",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.00102125,
+   "seconds": 10.63
+  },
+  {
+   "id": "p0405",
+   "model": "xai.grok-4.20-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0006150000000000001,
+   "seconds": 3.69
+  },
+  {
+   "id": "p0051",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 4
+   },
+   "cost": 0.00053025,
+   "seconds": 8.59
+  },
+  {
+   "id": "p0060",
+   "model": "openai.gpt-oss-120b",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 3,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0016412999999999998,
+   "seconds": 25.59
+  },
+  {
+   "id": "p0052",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0049924999999999995,
+   "seconds": 5.83
+  },
+  {
+   "id": "p0143",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.021197999999999998,
+   "seconds": 30.51
+  },
+  {
+   "id": "p0398",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.021996,
+   "seconds": 26.84
+  },
+  {
+   "id": "p0398",
+   "model": "openai.gpt-5.6-terra",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.048116,
+   "seconds": 44.12
+  },
+  {
+   "id": "p0075",
+   "model": "xai.grok-4.20-non-reasoning",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.0007150000000000001,
+   "seconds": 19.01
+  },
+  {
+   "id": "p0068",
+   "model": "xai.grok-4.7",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.003358,
+   "seconds": 18.24
+  },
+  {
+   "id": "p0060",
+   "model": "google.gemini-2.5-flash",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "cost": 0.0050533,
+   "seconds": 25.87
+  },
+  {
+   "id": "p0459",
+   "model": "openai.gpt-5.4",
+   "ok": true,
+   "passed": true,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "cost": 0.02841,
+   "seconds": 33.89
+  },
+  {
+   "id": "p0190",
+   "model": "openai.o3",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.032344,
+   "seconds": 37.0
+  },
+  {
+   "id": "p0143",
+   "model": "openai.gpt-6.1-sol",
+   "ok": true,
+   "passed": false,
+   "scores": {
+    "correctness": 0,
+    "completeness": 0,
+    "instruction_following": 0
+   },
+   "cost": 0.040118,
+   "seconds": 99.72
+  }
+ ]
+}

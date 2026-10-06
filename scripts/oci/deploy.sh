@@ -10,17 +10,25 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 CONF_DIR="$HOME/.config/litellmdemo"
-export KUBECONFIG="$CONF_DIR/kubeconfig"
-[[ -f "$KUBECONFIG" ]] || { echo "ABORT: $KUBECONFIG not found; run scripts/oci/up.sh" >&2; exit 1; }
-export OCI_CLI_AUTH=api_key OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING=True PYTHONWARNINGS=ignore
+# scripts/local/deploy.sh reuses this script for Rancher Desktop with CONTEXT,
+# MANIFEST, COMPARTMENT_ID and AGENT_KEY_FILE set; the defaults are the OKE cluster.
 NS=litellmdemo
-COMP="$(python3 -c "import json; print(json.load(open('$CONF_DIR/oci-state.json'))['compartment'])")"
-k() { kubectl "$@"; }
+MANIFEST="${MANIFEST:-$ROOT/deploy/k8s/litellmdemo.yaml}"
+if [[ -n "${CONTEXT:-}" ]]; then
+  k() { kubectl --context "$CONTEXT" "$@"; }
+  COMP="${COMPARTMENT_ID:?COMPARTMENT_ID is required with CONTEXT}"
+else
+  export KUBECONFIG="$CONF_DIR/kubeconfig"
+  [[ -f "$KUBECONFIG" ]] || { echo "ABORT: $KUBECONFIG not found; run scripts/oci/up.sh" >&2; exit 1; }
+  k() { kubectl "$@"; }
+  COMP="${COMPARTMENT_ID:-$(python3 -c "import json; print(json.load(open('$CONF_DIR/oci-state.json'))['compartment'])")}"
+fi
+export OCI_CLI_AUTH=api_key OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING=True PYTHONWARNINGS=ignore
 apply_cm() {  # server-side: client-side apply keeps a copy in a 256 KB annotation, too small for the ladder
   k create configmap "$1" -n "$NS" "${@:2}" --dry-run=client -o yaml | k apply --server-side --force-conflicts -f - >/dev/null
 }
 
-k apply -f "$ROOT/deploy/k8s/litellmdemo.yaml" >/dev/null
+k apply -f "$MANIFEST" >/dev/null
 apply_cm requirements --from-file="$ROOT/deploy/requirements/classifier.txt" --from-file="$ROOT/deploy/requirements/gateway.txt"
 apply_cm classifier-code --from-file="$ROOT/classifier/__init__.py" --from-file="$ROOT/classifier/router_model.py" \
   --from-file="$ROOT/classifier/serve.py" --from-file="$ROOT/classifier/ladder.py" \
@@ -61,7 +69,7 @@ k rollout status -n "$NS" deployment/litellm-gateway --timeout=15m
 # two demo lanes (oci-chat: tag routing, oci-flaky: fallback), has a budget and a
 # rate limit. Issued inside the gateway pod with the master key from
 # the pod's own environment; the key goes straight into a 0600 file.
-AGENT_KEY="$CONF_DIR/agent_key"
+AGENT_KEY="${AGENT_KEY_FILE:-$CONF_DIR/agent_key}"
 AGENT_MODELS='["oci-auto-trained", "oci-auto", "oci-auto-llm", "oci-chat", "oci-flaky"]'
 issue_key() {
   k exec -n "$NS" deploy/litellm-gateway -c gateway -- env AGENT_MODELS="$AGENT_MODELS" python3 -c '

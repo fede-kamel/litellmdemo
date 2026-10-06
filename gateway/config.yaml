@@ -23,40 +23,63 @@
 x-oci: &oci
   oci_region: os.environ/OCI_REGION
   oci_compartment_id: os.environ/OCI_COMPARTMENT_ID
+# Prices: OCI's public price list where it has one (part numbers in
+# classifier/model_trial.py); otherwise the vendor's list price (OCI publishes
+# no on-demand price for OpenAI's commercial models). LiteLLM's map undercounts
+# OCI Gemini 2.5 Flash about 4x and lacks the newer models entirely, so every
+# deployment states its price.
 x-gemini: &gemini {max_output_tokens: 65535}
+x-gemini-flash: &gemini_flash {max_output_tokens: 65535, input_cost_per_token: 3.0e-07, output_cost_per_token: 2.5e-06}   # OCI B111851/B111853
+x-gemini-lite: &gemini_lite {max_output_tokens: 65535, input_cost_per_token: 1.0e-07, output_cost_per_token: 4.0e-07}    # OCI B111854/B111856
 x-llama4: &llama4 {max_output_tokens: 4096}       # OCI's limit; the model map says 8192
 
 model_list:
   # --- Routes: what the classifiers choose between -------------------------
+  # Chosen by classifier/model_trial.py (evidence/model-trial.json): every
+  # candidate answered the same 40 prompts, graded by the same judge.
   - model_name: oci-fast                      # SIMPLE: quick facts, formatting, short rewrites
-    litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash-lite}
-    model_info: *gemini
+    litellm_params: {<<: *oci, model: oci/openai.gpt-6-luna}           # trial 82% at $0.0006 a request
+    model_info: {input_cost_per_token: 1.0e-07, output_cost_per_token: 5.0e-07, max_input_tokens: 400000}
+  - model_name: oci-fast
+    litellm_params: {<<: *oci, model: oci/openai.gpt-5.4-nano}         # trial 75%
+    model_info: {input_cost_per_token: 2.0e-07, output_cost_per_token: 1.25e-06, max_input_tokens: 400000}
   # Llama 4 Scout is a backup, not a primary: through LiteLLM on OCI it sometimes
   # writes a tool call as text instead of making it, and LiteLLM's pre-call checks
   # do not yet skip deployments without function calling (a TODO in router.py).
   - model_name: oci-fast-backup
+    litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash-lite}
+    model_info: *gemini_lite
+  - model_name: oci-fast-backup
     litellm_params: {<<: *oci, model: oci/meta.llama-4-scout-17b-16e-instruct}
     model_info: *llama4
-  - model_name: oci-fast-backup
-    litellm_params: {<<: *oci, model: oci/openai.gpt-5-nano}
 
   - model_name: oci-balanced                  # MEDIUM: explanations, summaries, everyday analysis
-    litellm_params: {<<: *oci, model: oci/openai.gpt-5-mini}
+    litellm_params: {<<: *oci, model: oci/openai.gpt-5.4-mini}         # trial 78%
+    model_info: {input_cost_per_token: 7.5e-07, output_cost_per_token: 4.5e-06, max_input_tokens: 400000}
   - model_name: oci-balanced
+    litellm_params: {<<: *oci, model: oci/xai.grok-4.20-non-reasoning} # trial 70%
+    model_info: {input_cost_per_token: 1.25e-06, output_cost_per_token: 2.5e-06, max_input_tokens: 1000000}   # OCI B111910/B112076
+  - model_name: oci-balanced-backup
     litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash}
-    model_info: *gemini
+    model_info: *gemini_flash
 
   - model_name: oci-strong                    # COMPLEX: multi-part analysis, careful writing
-    litellm_params: {<<: *oci, model: oci/google.gemini-2.5-pro}
-    model_info: *gemini
+    litellm_params: {<<: *oci, model: oci/openai.gpt-6-sol}            # trial 82% at $0.0067
+    model_info: {input_cost_per_token: 2.0e-06, output_cost_per_token: 1.0e-05, max_input_tokens: 400000}
+  - model_name: oci-strong
+    litellm_params: {<<: *oci, model: oci/openai.gpt-6.1-sol}          # trial 82%
+    model_info: {input_cost_per_token: 2.0e-06, output_cost_per_token: 1.0e-05, max_input_tokens: 400000}
   - model_name: oci-strong-backup
-    litellm_params: {<<: *oci, model: oci/openai.gpt-5.2}
-    model_info: {input_cost_per_token: 1.75e-06, output_cost_per_token: 1.4e-05, max_input_tokens: 272000}
+    litellm_params: {<<: *oci, model: oci/openai.gpt-5.4}
+    model_info: {input_cost_per_token: 2.5e-06, output_cost_per_token: 1.5e-05, max_input_tokens: 400000}
 
   - model_name: oci-reasoning                 # REASONING: proofs, hard math, planning under constraints
-    litellm_params: {<<: *oci, model: oci/xai.grok-4.20-reasoning}
-    model_info: {input_cost_per_token: 1.25e-06, output_cost_per_token: 2.5e-06, max_input_tokens: 1000000}
+    litellm_params: {<<: *oci, model: oci/xai.grok-4.20-reasoning}     # trial 80% at $0.0023
+    model_info: {input_cost_per_token: 1.25e-06, output_cost_per_token: 2.5e-06, max_input_tokens: 1000000}   # OCI B111910/B112076
   - model_name: oci-reasoning
+    litellm_params: {<<: *oci, model: oci/xai.grok-4.7}                # trial 82%, slow on long proofs
+    model_info: {input_cost_per_token: 2.0e-06, output_cost_per_token: 6.0e-06, max_input_tokens: 1000000}    # OCI B113303/B113305
+  - model_name: oci-reasoning-backup
     litellm_params: {<<: *oci, model: oci/openai.o3}
     model_info: {input_cost_per_token: 2.0e-06, output_cost_per_token: 8.0e-06, max_input_tokens: 200000}
   - model_name: oci-reasoning-backup
@@ -68,18 +91,21 @@ model_list:
     model_info: {input_cost_per_token: 1.25e-06, output_cost_per_token: 1.0e-05, max_input_tokens: 272000}
   - model_name: oci-code-backup
     litellm_params: {<<: *oci, model: oci/xai.grok-4.3}
-    model_info: {input_cost_per_token: 1.25e-06, output_cost_per_token: 2.5e-06, max_input_tokens: 1000000}
+    model_info: {input_cost_per_token: 1.25e-06, output_cost_per_token: 2.5e-06, max_input_tokens: 1000000}   # OCI B112080/B112082
 
-  - model_name: oci-vision                    # VISION: an image in the request
-    litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash}
-    model_info: *gemini
+  - model_name: oci-vision                    # VISION: an image in the request (every model here read the
+    litellm_params: {<<: *oci, model: oci/openai.gpt-6-luna}           # demo invoice correctly; see README)
+    model_info: {input_cost_per_token: 1.0e-07, output_cost_per_token: 5.0e-07, max_input_tokens: 400000}
   - model_name: oci-vision
+    litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash}
+    model_info: *gemini_flash
+  - model_name: oci-vision-backup
     litellm_params: {<<: *oci, model: oci/meta.llama-4-maverick-17b-128e-instruct-fp8}
     model_info: *llama4
 
   - model_name: oci-long                      # LONG_CONTEXT: a request beyond ~30k tokens
     litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash}
-    model_info: *gemini
+    model_info: *gemini_flash
   - model_name: oci-long-backup
     litellm_params: {<<: *oci, model: oci/meta.llama-4-maverick-17b-128e-instruct-fp8}
     model_info: *llama4
@@ -88,12 +114,12 @@ model_list:
     litellm_params: {<<: *oci, model: oci/cohere.command-a-03-2025}
   - model_name: oci-multilingual-backup
     litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash}
-    model_info: *gemini
+    model_info: *gemini_flash
 
   # --- Classifier and judge models -----------------------------------------
   - model_name: oci-classifier-llm            # the LLM that grades requests for oci-auto-llm: the fastest model,
     litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash-lite}   # a slow one times out into the heuristic
-    model_info: *gemini
+    model_info: *gemini_lite
   - model_name: oci-judge                     # writes and grades the classifier's training data
     litellm_params: {<<: *oci, model: oci/openai.gpt-5.2}
     model_info: {input_cost_per_token: 1.75e-06, output_cost_per_token: 1.4e-05, max_input_tokens: 272000}
@@ -149,7 +175,7 @@ model_list:
   # --- Tag routing: same group, a premium lane for tagged requests ----------
   - model_name: oci-chat
     litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash, tags: ["default"]}
-    model_info: *gemini
+    model_info: *gemini_flash
   - model_name: oci-chat
     litellm_params: {<<: *oci, model: oci/openai.gpt-5.2, tags: ["premium"]}
     model_info: {input_cost_per_token: 1.75e-06, output_cost_per_token: 1.4e-05, max_input_tokens: 272000}
@@ -172,6 +198,8 @@ router_settings:
   cooldown_time: 30
   fallbacks:
     - {oci-fast: [oci-fast-backup]}
+    - {oci-balanced: [oci-balanced-backup]}
+    - {oci-vision: [oci-vision-backup]}
     - {oci-strong: [oci-strong-backup]}
     - {oci-reasoning: [oci-reasoning-backup]}
     - {oci-code: [oci-code-backup]}
@@ -182,8 +210,9 @@ router_settings:
     - {oci-compact: [oci-long]}
 
 litellm_settings:
-  callbacks: [oci_session_signer.handler, route_headers.handler]
+  callbacks: [oci_session_signer.handler, route_headers.handler, route_headers.console]
   drop_params: true                           # e.g. temperature for GPT-5 reasoning models
+  request_timeout: 300                        # long proofs take minutes; a timeout falls back to the backup group
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY

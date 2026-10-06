@@ -42,6 +42,8 @@ SCENARIOS = [
      "why": "the fast models passed similar password and account requests 47% of the time; the balanced 96%",
      "prompt": "How do I reset my Northwind Cloud console password?"},
     {"id": "support-billing", "use_case": "Customer support", "title": "Billing dispute", "expect": "MEDIUM",
+     "accept": ["SIMPLE", "MEDIUM"],
+     "why": "with the newer models the fast route passed 82% of billing requests (27 of 31 labelled SIMPLE)",
      "prompt": "I was charged twice for September on account NW-4471. Look up our refund policy and draft a short, "
                "polite reply to the customer explaining what happens next."},
     {"id": "support-escalation", "use_case": "Customer support", "title": "Escalation with SLA credits", "expect": "REASONING",

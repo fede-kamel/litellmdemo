@@ -1,8 +1,9 @@
 import clsx from "clsx";
-import { ArrowRight, Box, Check, ChevronDown, CornerDownLeft, KeyRound, Lock, RotateCw, Route as RouteIcon, ShieldAlert, Sparkles } from "lucide-react";
+import { ArrowRight, Box, Check, ChevronDown, CornerDownLeft, ImagePlus, KeyRound, Lock, RotateCw, Route as RouteIcon, ShieldAlert, Sparkles, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { getJSON, postJSON, shortModel, usd, vendor } from "../api";
+import { ROUTE_STYLE, getJSON, postJSON, shortModel, usd, vendor, type RunEvent, type Scenario } from "../api";
 import { ModelChip, Panel, RouteChip } from "./bits";
+import { RouteMap } from "./RouteMap";
 
 type Step = { route: string; pass: number; cost: number; clears: boolean; chosen: boolean };
 type Check_ = { check: string; fired: boolean; saw: string; bar?: number; steps?: Step[] };
@@ -14,7 +15,24 @@ type AskConfig = { examples: string[]; default_bar: number; held_out_curve: Curv
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Ev = Record<string, any> & { type: string };
 type Key = { key_alias: string; models: string[]; max_budget: number; spend: number; rpm_limit: number };
-type Sandbox = { ready: boolean; name: string; gateway: string; key: Key | null };
+type Sandbox = { ready: boolean; name: string; gateway: string; cluster?: string; key: Key | null };
+
+/** Read an image file and shrink it to at most 1600 px on the long side, as JPEG: small enough to send anywhere. */
+function toDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, 1600 / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+      c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(img.src);
+      resolve(c.toDataURL("image/jpeg", 0.85));
+    };
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+}
 
 const NAMES: Record<string, string> = { SIMPLE: "fast", MEDIUM: "balanced", COMPLEX: "strong", REASONING: "reasoning" };
 const CHECK_LABEL: Record<string, string> = { image: "Image rule", length: "Length rule", language: "Language rule", code: "Code check", ladder: "Quality ladder" };
@@ -58,22 +76,37 @@ export function Ask() {
   const [sb, setSb] = useState<Sandbox | null>(null);
   const [bar, setBar] = useState<number | null>(null);
   const [prompt, setPrompt] = useState("");
+  const [image, setImage] = useState<string | null>(null);
+  const fileInput = useRef<HTMLInputElement | null>(null);
+  const attach = async (f?: File | null) => { if (f && f.type.startsWith("image/")) setImage(await toDataUrl(f)); };
   const [events, setEvents] = useState<Ev[]>([]);
   const [running, setRunning] = useState(false);
   const [details, setDetails] = useState(false);
   const [probe, setProbe] = useState<null | "running" | { tries: { target: string; result: string }[] }>(null);
   const es = useRef<EventSource | null>(null);
+  const [scenarios, setScenarios] = useState<Scenario[]>([]);
+  const [picked, setPicked] = useState<Scenario | null>(null);
 
   useEffect(() => {
     getJSON<AskConfig>("/api/ask/config").then((c) => { setCfg(c); setBar(c.default_bar); setPrompt(c.examples[1] ?? ""); });
     getJSON<Sandbox>("/api/sandbox").then(setSb).catch(() => setSb(null));
+    getJSON<Scenario[]>("/api/scenarios").then(setScenarios).catch(() => undefined);
   }, []);
+  const groups = scenarios.reduce<Record<string, Scenario[]>>((g, x) => ((g[x.use_case] ??= []).push(x), g), {});
+  const pick = async (x: Scenario) => {
+    setPicked(x); setPrompt(x.prompt);
+    if (x.image) { const b = await (await fetch("/api/sample-image")).blob(); setImage(await toDataUrl(new File([b], "invoice.png", { type: b.type }))); }
+    else setImage(null);
+  };
 
   const go = async () => {
-    if (!prompt.trim() || running) return;
+    if ((!prompt.trim() && !image) || running) return;
     es.current?.close();
     setEvents([]); setRunning(true); setDetails(false);
-    const { id } = await postJSON<{ id: string }>("/api/runs", { prompt, bar, runtime: "openshell" });
+    // A use case runs exactly as defined (its model group, tags, image); anything typed runs as typed.
+    const body = picked && prompt === picked.prompt ? { scenario: picked.id, bar, runtime: "openshell" }
+      : { prompt, bar, runtime: "openshell", image: image ?? undefined };
+    const { id } = await postJSON<{ id: string }>("/api/runs", body);
     const src = new EventSource(`/api/runs/${id}/stream`);
     es.current = src;
     src.onmessage = (m) => { const e = JSON.parse(m.data) as Ev; if (e.type) setEvents((v) => [...v, e]); };
@@ -92,6 +125,7 @@ export function Ask() {
   const net = events.find((e) => e.type === "sandbox_net")?.events as { verdict: string; destination: string }[] | undefined;
   const key = (events.find((e) => e.type === "key") as Key | undefined) ?? sb?.key ?? undefined;
   const failover = events.find((e) => e.type === "failover");
+  const replay = events.find((e) => e.type === "replay");
   const spend = calls.reduce((a, c) => a + (c.cost ?? 0), 0);
   const ladder = (why?.checks as Check_[] | undefined)?.find((c) => c.check === "ladder");
   const st = (done: boolean, active: boolean) => (done ? "done" : running && active ? "active" : "idle") as "idle" | "active" | "done";
@@ -101,16 +135,48 @@ export function Ask() {
   return (
     <div className="space-y-4">
       <Panel kicker="Ask anything" title="Type a request. The agent runs in an OpenShell sandbox; LiteLLM picks the model and says why.">
-        <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} rows={2}
-          onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) go(); }}
-          className="w-full resize-y rounded-xl border border-line bg-paper px-4 py-3 text-[14px] leading-relaxed outline-none focus:border-oracle/60" />
+        <div className="flex gap-3" onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); attach(e.dataTransfer.files?.[0]); }}>
+          <textarea value={prompt} onChange={(e) => { setPrompt(e.target.value); if (picked && e.target.value !== picked.prompt) setPicked(null); }} rows={2}
+            onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) go(); }}
+            onPaste={(e) => { const f = [...e.clipboardData.files].find((x) => x.type.startsWith("image/")); if (f) { e.preventDefault(); attach(f); } }}
+            placeholder="Type a request; paste, drop or attach an image for a multimodal one"
+            className="w-full resize-y rounded-xl border border-line bg-paper px-4 py-3 text-[14px] leading-relaxed outline-none focus:border-oracle/60" />
+          {image && (
+            <div className="relative shrink-0">
+              <img src={image} alt="attached" className="h-[86px] w-auto rounded-xl border border-line object-cover" />
+              <button onClick={() => setImage(null)} className="absolute -right-2 -top-2 grid size-5 place-items-center rounded-full bg-ink text-white" title="remove the image"><X className="size-3" /></button>
+            </div>
+          )}
+        </div>
+        <input ref={fileInput} type="file" accept="image/*" className="hidden" onChange={(e) => { attach(e.target.files?.[0]); e.target.value = ""; }} />
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <button onClick={go} disabled={running || !prompt.trim()} className="flex items-center gap-2 rounded-xl bg-oracle px-4 py-2 text-[13px] font-semibold text-white disabled:bg-ink-3">
+          <button onClick={go} disabled={running || (!prompt.trim() && !image)} className="flex items-center gap-2 rounded-xl bg-oracle px-4 py-2 text-[13px] font-semibold text-white disabled:bg-ink-3">
             {running ? <RotateCw className="size-4 animate-spin" /> : <CornerDownLeft className="size-4" />} Route it
           </button>
+          <button onClick={() => fileInput.current?.click()} className="flex items-center gap-1.5 rounded-xl border border-line px-3 py-2 text-[12.5px] font-semibold text-ink-2 hover:border-oracle/50">
+            <ImagePlus className="size-4" /> Image
+          </button>
+          <button onClick={async () => { const r = await fetch("/api/sample-image"); const b = await r.blob(); attach(new File([b], "invoice.png", { type: b.type })); setPrompt("Read this invoice: what is the total due and when is it due?"); }}
+            className="rounded-lg border border-line bg-panel px-2.5 py-1 text-[11.5px] text-ink-2 hover:border-oracle/50">sample: an invoice photo</button>
           <span className="text-[11.5px] text-ink-3">try:</span>
           {cfg?.examples.map((e) => <button key={e} onClick={() => setPrompt(e)} className="max-w-[230px] truncate rounded-lg border border-line bg-panel px-2.5 py-1 text-[11.5px] text-ink-2 hover:border-oracle/50">{e}</button>)}
         </div>
+        {scenarios.length > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <span className="text-[11.5px] font-semibold text-ink-2">Use cases:</span>
+            {Object.entries(groups).map(([uc, list]) => (
+              <span key={uc} className="flex items-center gap-1">
+                <span className="text-[10.5px] uppercase tracking-wide text-ink-3">{uc}</span>
+                {list.map((x) => (
+                  <button key={x.id} onClick={() => pick(x)} title={x.prompt.slice(0, 300)}
+                    className={clsx("rounded-lg border px-2 py-0.5 text-[11.5px]", picked?.id === x.id ? "border-oracle bg-oracle-soft text-oracle" : "border-line bg-panel text-ink-2 hover:border-oracle/50")}>
+                    {x.title}
+                  </button>
+                ))}
+              </span>
+            ))}
+          </div>
+        )}
         {cfg && bar !== null && (
           <div className="mt-3 flex flex-wrap items-center gap-3 text-[12px]">
             <span className="font-semibold">Quality bar</span>
@@ -152,7 +218,7 @@ export function Ask() {
         <section className="rounded-2xl border-2 border-indigo/40 bg-[#f3f2fb] p-4">
           <div className="flex items-center gap-2"><RouteIcon className="size-4 text-indigo" /><span className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-indigo">2 · LiteLLM AI Gateway</span></div>
           <div className="mt-1 text-[14px] font-semibold">Decides, routes and signs every call</div>
-          <div className="text-[11.5px] text-ink-3">LiteLLM 1.104 on OKE · complexity router with our classifier plugin</div>
+          <div className="text-[11.5px] text-ink-3">LiteLLM 1.104 on {sb?.cluster === "oke" ? "OKE" : "Kubernetes on this laptop (Rancher Desktop)"} · complexity router with our classifier plugin</div>
           <ol className="mt-3 space-y-3">
             <Stage n={1} title="Key check" sub="virtual key" state={st(!!first, true)}>
               {key ? <><KeyRound className="mr-1 inline size-3.5 text-ink-3" /><span className="font-mono">{key.key_alias}</span>: may call {key.models?.length ?? "?"} model groups only · {usd(key.spend)} of ${key.max_budget} spent · {key.rpm_limit} requests a minute</> : "LiteLLM checks the agent's key: which models, what budget, what rate."}
@@ -168,7 +234,9 @@ export function Ask() {
               {first ? <><span className="font-mono">{first.group === "oci-auto-trained" ? `${first.route}` : first.group}</span> → <span className="font-mono">{shortModel(first.deployment)}</span>{first.fallbacks ? <span className="text-ochre"> · after {first.fallbacks} fallback(s)</span> : " · the fastest healthy deployment"}{calls.length > 1 ? ` · ${calls.length} calls in this run` : ""}</> : "The route names a model group; LiteLLM picks its fastest healthy deployment, with fallbacks."}
             </Stage>
             <Stage n={4} title="Sign" sub="OCI request signing" state={st(!!first, !!decision && !first)}>
-              The gateway signs as its OKE node (instance principal). No OCI key exists in the cluster, or in the sandbox.
+              {sb?.cluster === "oke"
+                ? "The gateway signs as its OKE node (instance principal). No OCI key exists in the cluster, or in the sandbox."
+                : "The gateway signs with the operator's OCI session, a one-hour token kept fresh in a Kubernetes Secret. The sandbox holds no OCI credential."}
             </Stage>
             <Stage n={5} title="Account" sub="cost and spend" state={st(!!answer, !!first && !answer)}>
               {first ? <>this run {usd(spend)}, charged to the agent's key · every decision returned in <span className="font-mono">x-litellm-*</span> headers</> : "Cost per call, spend per key."}
@@ -180,7 +248,7 @@ export function Ask() {
         <section className="rounded-2xl border-2 border-oracle/40 bg-[#fdf4f2] p-4">
           <div className="flex items-center gap-2"><Sparkles className="size-4 text-oracle" /><span className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-oracle">3 · OCI Generative AI</span></div>
           <div className="mt-1 text-[14px] font-semibold">The model that answered</div>
-          <div className="text-[11.5px] text-ink-3">us-chicago-1 · 15 models, 5 vendors</div>
+          <div className="text-[11.5px] text-ink-3">us-chicago-1 · 20 models, 5 vendors</div>
           <div className="mt-4 space-y-3">
             {calls.length ? [...new Set(calls.map((c) => c.deployment as string))].map((d) => (
               <div key={d}><ModelChip deployment={d} lit /><div className="mt-1 text-[11px] text-ink-3">{vendor(d)} · {calls.filter((c) => c.deployment === d).length} call(s)</div></div>
@@ -189,6 +257,29 @@ export function Ask() {
         </section>
       </div>
 
+      {(calls.length > 0 || running) && (
+        <Panel kicker="This run" title={calls.length ? `${calls.length} model call${calls.length > 1 ? "s" : ""}, each routed by LiteLLM` : "routing…"}
+          right={calls.length ? <span className="font-mono text-[11.5px] text-ink-3">{usd(spend)}</span> : null}>
+          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] gap-4">
+            <ol className="space-y-1.5">
+              {events.filter((e) => e.type === "llm" || e.type === "tool").map((e, i) => e.type === "llm" ? (
+                <li key={i} className="flex flex-wrap items-center gap-1.5 text-[12px]">
+                  <span className="grid size-5 place-items-center rounded-full bg-ink text-[10px] font-semibold text-white">{e.call}</span>
+                  {e.route ? <RouteChip route={e.route} /> : <span className="font-mono">{e.group}</span>}
+                  <ArrowRight className="size-3 text-ink-3" /><ModelChip deployment={e.deployment} />
+                  <span className="font-mono text-[11px] text-ink-3">{e.seconds}s · {usd(e.cost)}{e.fallbacks ? ` · fallback ×${e.fallbacks}` : ""}</span>
+                </li>
+              ) : (
+                <li key={i} className="ml-7 font-mono text-[11px] text-ink-3">tool {e.name} {String(e.input).slice(0, 80)}</li>
+              ))}
+            </ol>
+            <RouteMap router={picked?.model ?? "oci-auto-trained"} classifying={running && !answer}
+              calls={calls.map((c) => ({ ...c, route: c.route ?? Object.entries(ROUTE_STYLE).find(([, v]) => v.group === c.group)?.[0] })) as Extract<RunEvent, { type: "llm" }>[]} />
+          </div>
+        </Panel>
+      )}
+
+      {replay && <div className="rounded-xl border-2 border-ochre/60 bg-ochre-soft px-4 py-2 text-[13px] font-semibold text-ochre">REPLAY · a recorded run of this request ({replay.recorded_at}). The live path did not answer: check the network or run scripts/preflight.sh.</div>}
       {failover && <div className="rounded-xl border border-ochre/40 bg-ochre-soft px-4 py-2 text-[12.5px] text-ochre">{failover.from} did not answer; the run moved to {failover.to}.</div>}
       {error && <div className="rounded-xl border border-oracle/40 bg-oracle-soft px-4 py-2 text-[12.5px] text-oracle">{error.message}</div>}
 

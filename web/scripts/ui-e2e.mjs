@@ -15,6 +15,13 @@ const shot = (name) => page.screenshot({ path: `${out}/${name}.png` });
 const visible = (text, timeout = 15000) => page.getByText(text, { exact: false }).first().waitFor({ timeout }).then(() => true, () => false);
 const tab = (label) => page.locator(`nav button:has-text("${label}")`).click();
 const scenario = (title) => page.locator(`aside button:has-text("${title}")`).click();
+const sub = (label) => page.locator(`main button:has-text("${label}")`).first().click();
+const runUseCase = async (title) => {
+  await page.locator(`button:has-text("${title}")`).first().click();
+  await page.locator("button:has-text('Route it')").click();
+  await page.waitForTimeout(800);
+  await page.waitForFunction(() => { const b = [...document.querySelectorAll("button")].find((x) => x.textContent.includes("Route it")); return b && !b.disabled; }, null, { timeout: 300000 });
+};
 const runAndWait = async () => {
   await page.locator("button:has-text('Run through the gateway')").click();
   return page.locator("text=/Answer ·/").first().waitFor({ timeout: 240000 }).then(() => true, () => false);
@@ -23,6 +30,7 @@ const runAndWait = async () => {
 try {
   await page.goto("http://127.0.0.1:8780/", { waitUntil: "networkidle" });
   check("the gateway in use is shown", await visible("gateway: primary") || await visible("gateway: fallback"));
+  check("the OCI session countdown is shown", await visible("OCI session"));
 
   // Ask and explain: any prompt, in the OpenShell sandbox, through LiteLLM, and why
   check("the three stages are shown", await visible("OpenShell sandbox") && await visible("LiteLLM AI Gateway") && await visible("OCI Generative AI"));
@@ -38,47 +46,46 @@ try {
   await page.locator("button:has-text('Try to escape')").click();
   check("the sandbox refuses OCI, a vendor and the admin API", await visible("REFUSED", 120000) && (await page.locator("text=/REFUSED/").count()) >= 3);
   await shot("00-ask-escape");
+  check("the console streams LiteLLM and OpenShell lines", await page.locator("text=/key=openshell-agent|ALLOWED/").count() > 0 || await visible("route=", 20000));
+  await page.locator("button:has-text('sample: an invoice photo')").click();
+  await page.locator("img[alt='attached']").waitFor({ timeout: 15000 });
+  await page.locator("button:has-text('Route it')").click();
+  check("an attached image is routed by the image rule", await visible("carries an image", 300000));
+  await shot("00-ask-image");
+  await page.locator("button[title='remove the image']").click();
   await page.locator("textarea").fill("Bonjour, comment puis-je télécharger ma facture du mois dernier ?");
   await page.locator("button:has-text('Route it')").click();
   check("a French request is explained by the language rule", await visible("written in French", 300000));
   await shot("00-ask-french");
 
-  await tab("Control room");
-  check("control room loads the use cases", await visible("Customer support") && await visible("Coding assistant"));
-  await shot("01-control-room");
-
-  await scenario("Escalation with SLA credits");
-  check("a hard support request answers", await runAndWait());
-  check("route trace shows the route and the criterion", await visible("decided by") && await page.locator("text=/REASONING|COMPLEX/").count() > 0);
-  check("the OCI model that answered is shown", await page.locator("text=/gemini|grok|gpt|llama|o3/").count() > 0);
+  // the use cases, from their chips on the same screen
+  check("the use cases are on the demo screen", await visible("Use cases:") && await visible("Customer support") && await visible("Coding assistant"));
+  await runUseCase("Escalation with SLA credits");
+  check("a hard support request answers, with every model call", await visible("This run") && await page.locator("text=/model calls?, each routed by LiteLLM/").count() > 0);
+  check("the route map shows the route", await page.locator("svg text").filter({ hasText: /SIMPLE|MEDIUM|REASONING/ }).count() > 0);
   await shot("02-escalation");
-
-  await scenario("Japanese request");
-  check("a Japanese request answers", await runAndWait());
-  check("the language rule decided it", await visible("rule: language (ja)"));
+  await runUseCase("Japanese request");
+  check("the language rule decided the Japanese request", await visible("written in Japanese", 30000));
   await shot("03-multilingual");
-
-  await scenario("Read an invoice photo");
-  check("an image request answers", await runAndWait());
-  check("the image rule routed it to VISION", await visible("rule: image"));
+  await runUseCase("Read an invoice photo");
+  check("the image rule routed the invoice photo", await visible("carries an image", 30000));
   await shot("04-vision");
-
-  await scenario("A deployment fails");
-  check("the failing deployment still answers", await runAndWait());
-  check("the trace shows the fallback", await visible("fallback ×"));
+  await runUseCase("A deployment fails");
+  check("the failing deployment still answers, through a fallback", await visible("fallback ×", 30000));
   await shot("05-fallback");
 
-  await tab("Compare routers");
+  await tab("Under the hood");
+  await sub("Compare routers");
   await page.locator("button:has-text('Send to all three')").click();
   check("the three routers answer", await visible("Built-in heuristic", 240000) && (await page.getByText("right route", { exact: true }).count()) + (await page.getByText("different route", { exact: true }).count()) === 3);
   await shot("06-compare");
 
-  await tab("Classifier");
+  await sub("The classifier");
   check("the classifier view shows held-out quality and cost", await visible("unseen prompts") && await visible("always the reasoning models"));
   check("the dial shows every quality bar", await visible("Every quality bar"));
   await shot("07-classifier");
 
-  await tab("Gateway");
+  await sub("The gateway");
   check("the gateway view lists the routes", await visible("oci-multilingual") && await visible("Who classifies"));
   await shot("08-gateway");
 } catch (err) {

@@ -41,13 +41,13 @@ spec:
                         seccompProfile: {type: RuntimeDefault}}
       initContainers:
         - name: prepare-cache
-          image: python:3.12-slim
+          image: ghcr.io/astral-sh/uv:python3.12-bookworm-slim
           command: ["chown", "10001:10001", "/deps"]
           securityContext: {runAsNonRoot: false, runAsUser: 0, allowPrivilegeEscalation: false,
                             capabilities: {drop: [ALL], add: [CHOWN]}}
           volumeMounts: [{name: deps, mountPath: /deps}]
         - name: install
-          image: python:3.12-slim
+          image: ghcr.io/astral-sh/uv:python3.12-bookworm-slim
           command: ["sh", "-c"]
           args:
             - |
@@ -69,7 +69,7 @@ spec:
           resources: {requests: {cpu: 200m, memory: 1Gi}, limits: {memory: 2Gi}}
       containers:
         - name: classifier
-          image: python:3.12-slim
+          image: ghcr.io/astral-sh/uv:python3.12-bookworm-slim
           command: ["/deps/classifier-current/venv/bin/uvicorn", "classifier.serve:app", "--app-dir", "/app", "--host", "0.0.0.0", "--port", "8080"]
           env:
             - {name: HOME, value: /tmp}

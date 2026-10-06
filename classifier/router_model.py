@@ -170,7 +170,8 @@ class RouterModel:
         p = pred["pass"][0]
         route = ladder.ROUTES[int(ladder.choose(self._ladder, pred["pass"], bar)[0])]
         r3 = lambda a: {k: round(float(v), 3) for k, v in zip(ladder.ROUTES, a, strict=True)}  # noqa: E731
-        order = [ladder.ROUTES[i] for i in np.argsort(self._ladder["typical_cost"])]
+        allowed = [str(r) for r in self._ladder.get("routes", ladder.ROUTES)]
+        order = sorted(allowed, key=lambda r: float(self._ladder["typical_cost"][ladder.ROUTES.index(r)]))
         return Decision(route, "ladder", r3(p), _ms(started), {
             "bar": bar, "cost_order": order, "cleared": route in [r for r in order if p[ladder.ROUTES.index(r)] >= bar],
             "logistic": r3(pred["logistic"][0]), "precedent": r3(pred["precedent"][0]),

@@ -13,7 +13,7 @@
 #     agent's LiteLLM virtual key in the OpenShell gateway; the proxy swaps it in
 #     only on requests to the LiteLLM gateway.
 #   - egress: POST /v1/chat/completions and GET /v1/models on the LiteLLM gateway
-#     (192.168.5.2:4100, the host as Rancher Desktop containers see it), for /usr/local/bin/python3.12 only. Nothing else.
+#     (the local Kubernetes node port by default), for /usr/local/bin/python3.12 only. Nothing else.
 #   - no OCI credential and no model key of any kind.
 # Every exec reads stdin from /dev/null (OpenShell 0.1.2 reads piped stdin to EOF).
 set -euo pipefail
@@ -21,8 +21,14 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SB="${LITELLMDEMO_SANDBOX:-litellmdemo-agent}"
 IMAGE="${LITELLMDEMO_SANDBOX_IMAGE:-litellmdemo-agent:0.1}"
 PROVIDER="${LITELLMDEMO_PROVIDER:-litellm-agent}"
-GATEWAY_URL="${LITELLMDEMO_SANDBOX_GATEWAY:-http://192.168.5.2:4100}"
-KEYFILE="$HOME/.config/litellmdemo/agent_key"
+# The gateway the agent may reach: the local Kubernetes node's node port unless set.
+if [[ -z "${LITELLMDEMO_SANDBOX_GATEWAY:-}" ]]; then
+  NODE_IP="$(kubectl --context rancher-desktop get node -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}' 2>/dev/null || true)"
+  LITELLMDEMO_SANDBOX_GATEWAY="http://${NODE_IP:-192.168.5.15}:30400"
+fi
+GATEWAY_URL="$LITELLMDEMO_SANDBOX_GATEWAY"
+GATEWAY_HOSTPORT="${GATEWAY_URL#http://}"
+KEYFILE="${LITELLMDEMO_AGENT_KEY_FILE:-$HOME/.config/litellmdemo/agent_key-local}"
 say() { printf '%s\n' "$*" >&2; }
 step() { printf '\033[1;32m$\033[0m %s\n' "$*" >&2; }
 die() { say "ABORT: $*"; exit 1; }
@@ -34,7 +40,10 @@ provider() {
   # demo owns both, so replace them (the provider first, it depends on the profile).
   openshell provider delete "$PROVIDER" </dev/null >/dev/null 2>&1 || true
   openshell provider profile delete litellm-gateway --global </dev/null >/dev/null 2>&1 || true
-  openshell provider profile import --file "$ROOT/sandbox/profile/litellm-gateway.yaml" --global </dev/null >&2
+  local rendered; rendered="$(mktemp -d)/litellm-gateway.yaml"
+  sed -e "s|__GATEWAY_HOST__|${GATEWAY_HOSTPORT%%:*}|" -e "s|__GATEWAY_PORT__|${GATEWAY_HOSTPORT##*:}|" \
+    "$ROOT/sandbox/profile/litellm-gateway.yaml" > "$rendered"
+  openshell provider profile import --file "$rendered" --global </dev/null >&2
   openshell provider delete "$PROVIDER" </dev/null >/dev/null 2>&1 || true
   # The key goes from its 0600 file into this process's environment; the CLI reads
   # it by name. It is never on a command line and never printed.

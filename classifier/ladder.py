@@ -87,13 +87,19 @@ def predict(params: dict, E: np.ndarray, texts: list[str]) -> dict:
     return {"pass": (logistic + precedent) / 2, "logistic": logistic, "precedent": precedent, "neighbours": idx}
 
 
-def choose(params: dict, pass_probability: np.ndarray, bar: float) -> np.ndarray:
-    """Cheapest route with P(pass) >= bar; the most likely route when none clears it."""
+def choose(params: dict, pass_probability: np.ndarray, bar: float, routes: list[str] | None = None) -> np.ndarray:
+    """Cheapest allowed route with P(pass) >= bar; the most likely allowed route when none clears it.
+
+    `routes` (default: params["routes"] when trained with a route set, else all) limits
+    the ladder: a route that costs as much as a better one is never worth climbing to.
+    """
     p = np.atleast_2d(pass_probability)
-    order = np.argsort(params["typical_cost"])
+    allowed = routes or [str(r) for r in params.get("routes", ROUTES)]
+    idx = [ROUTES.index(r) for r in allowed]
+    order = sorted(idx, key=lambda j: params["typical_cost"][j])
     clears = p[:, order] >= bar
-    first = np.where(clears.any(1), order[np.argmax(clears, axis=1)], np.argmax(p, axis=1))
-    return first
+    best = np.array(idx)[np.argmax(p[:, idx], axis=1)]
+    return np.where(clears.any(1), np.array(order)[np.argmax(clears, axis=1)], best)
 
 
 def save(params: dict, path: Path) -> None:

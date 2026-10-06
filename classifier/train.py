@@ -76,14 +76,22 @@ def fit_ladder(encoder, held: set) -> dict:
         cv_pass[b] = ladder.predict(params, E_tr[b], [t_tr[i] for i in b])["pass"]
     target = P_tr[:, 3].mean()                     # always REASONING, on the training split
     params = ladder.fit(E_tr, t_tr, P_tr, C_tr)
-    curve = [(b, *score(ladder.choose(params, cv_pass, b), P_tr, C_tr)) for b in BARS]
-    good = [c for c in curve if c[1] >= target]
-    bar = min(good, key=lambda c: c[2])[0] if good else max(curve, key=lambda c: c[1])[0]
+    # the route set and the bar, both chosen here: the cheapest combination at least as
+    # good as always-REASONING (a route as costly as a better one is dropped this way)
+    sets = [list(ladder.ROUTES), ["SIMPLE", "MEDIUM", "REASONING"], ["SIMPLE", "REASONING"], ["SIMPLE", "COMPLEX", "REASONING"]]
+    grid = [(tuple(rs), b, *score(ladder.choose(params, cv_pass, b, rs), P_tr, C_tr)) for rs in sets for b in BARS]
+    good = [g for g in grid if g[2] >= target]
+    routes, bar = (min(good, key=lambda g: g[3]) if good else max(grid, key=lambda g: g[2]))[:2]
+    routes = list(routes)
+    params["routes"] = np.array(routes)
+    curve = [(b, q, c) for rs, b, q, c in grid if list(rs) == routes]
 
     ladder.save(params, MODEL_DIR / "ladder.npz")
-    held_choice = ladder.choose(params, ladder.predict(params, E_te, t_te)["pass"], bar)
+    held_choice = ladder.choose(params, ladder.predict(params, E_te, t_te)["pass"], bar, routes)
     n = len(te)
-    result = {"bar": bar, "train_prompts": len(tr), "held_out_prompts": n,
+    result = {"bar": bar, "routes": routes, "train_prompts": len(tr), "held_out_prompts": n,
+              "cv_grid_on_train": [{"routes": list(rs), "bar": b, "quality": round(q, 3), "cost_per_request": round(c, 6)}
+                                   for rs, b, q, c in grid],
               "cv_curve_on_train": [{"bar": b, "quality": round(q, 3), "cost_per_request": round(c, 6)} for b, q, c in curve]}
     held_eval = {"ladder": score(held_choice, P_te, C_te)}
     for j, r in enumerate(ladder.ROUTES):
@@ -93,7 +101,7 @@ def fit_ladder(encoder, held: set) -> dict:
     # reported, never used to choose: how every bar does on the held-out prompts
     held_pass = ladder.predict(params, E_te, t_te)["pass"]
     result["held_out_curve"] = [{"bar": b, **dict(zip(("quality", "cost_per_request"),
-                                 (round(v, 6) for v in score(ladder.choose(params, held_pass, b), P_te, C_te))))} for b in BARS]
+                                 (round(v, 6) for v in score(ladder.choose(params, held_pass, b, routes), P_te, C_te))))} for b in BARS]
     result["held_out_mix"] = {r: round(float((held_choice == j).mean()), 3) for j, r in enumerate(ladder.ROUTES)}
     return result
 
@@ -161,7 +169,7 @@ def main() -> None:
     meta["ladder"] = fit_ladder(encoder, held)
     (MODEL_DIR / "meta.json").write_text(json.dumps(meta, indent=2))
     (DATA / "split.json").write_text(json.dumps({"train": id_tr.tolist(), "held_out": id_te.tolist()}, indent=1))
-    print("ladder:", json.dumps({k: meta["ladder"][k] for k in ("bar", "held_out", "held_out_mix")}, indent=1))
+    print("ladder:", json.dumps({k: meta["ladder"][k] for k in ("routes", "bar", "held_out", "held_out_mix")}, indent=1))
     print(json.dumps({k: meta[k] for k in ("examples", "held_out", "C", "cv_balanced_accuracy",
                                            "held_out_accuracy", "repeated_cv_accuracy", "held_out_recall", "train_seconds")}, indent=1))
     print("confusion (rows true, cols predicted):", labels)

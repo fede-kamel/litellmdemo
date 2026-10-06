@@ -1,0 +1,399 @@
+{
+ "models": 20,
+ "route_pass_rate": {
+  "SIMPLE": 0.7,
+  "MEDIUM": 0.755,
+  "COMPLEX": 0.863,
+  "REASONING": 0.866
+ },
+ "rows": [
+  {
+   "model": "openai.gpt-6-luna",
+   "uses": [
+    {
+     "route": "SIMPLE",
+     "role": "primary",
+     "group": "oci-fast",
+     "route_pass_rate": 0.7000919220055711
+    },
+    {
+     "route": "VISION",
+     "role": "primary",
+     "group": "oci-vision",
+     "route_pass_rate": null
+    }
+   ],
+   "price_per_1m": [
+    0.1,
+    0.5
+   ],
+   "price_source": "vendor list price (OCI publishes none)",
+   "trial_pass_rate": 0.825
+  },
+  {
+   "model": "openai.gpt-5.4-nano",
+   "uses": [
+    {
+     "route": "SIMPLE",
+     "role": "primary",
+     "group": "oci-fast",
+     "route_pass_rate": 0.7000919220055711
+    }
+   ],
+   "price_per_1m": [
+    0.2,
+    1.25
+   ],
+   "price_source": "vendor list price (OCI publishes none)",
+   "trial_pass_rate": 0.75
+  },
+  {
+   "model": "google.gemini-2.5-flash-lite",
+   "uses": [
+    {
+     "route": "SIMPLE",
+     "role": "backup",
+     "group": "oci-fast-backup",
+     "route_pass_rate": 0.7000919220055711
+    },
+    {
+     "route": "LLM classifier",
+     "role": "LiteLLM's oci-auto-llm",
+     "group": "oci-classifier-llm",
+     "route_pass_rate": null
+    }
+   ],
+   "price_per_1m": [
+    0.1,
+    0.4
+   ],
+   "price_source": "OCI price list B111854/B111856",
+   "trial_pass_rate": 0.575
+  },
+  {
+   "model": "meta.llama-4-scout-17b-16e-instruct",
+   "uses": [
+    {
+     "route": "SIMPLE",
+     "role": "backup",
+     "group": "oci-fast-backup",
+     "route_pass_rate": 0.7000919220055711
+    }
+   ],
+   "price_per_1m": [
+    0.72,
+    0.72
+   ],
+   "price_source": "LiteLLM model map; OCI bills per character, the per-token conversion is unverified",
+   "trial_pass_rate": null
+  },
+  {
+   "model": "openai.gpt-5.4-mini",
+   "uses": [
+    {
+     "route": "MEDIUM",
+     "role": "primary",
+     "group": "oci-balanced",
+     "route_pass_rate": 0.7548830083565461
+    }
+   ],
+   "price_per_1m": [
+    0.75,
+    4.5
+   ],
+   "price_source": "vendor list price (OCI publishes none)",
+   "trial_pass_rate": 0.775
+  },
+  {
+   "model": "xai.grok-4.20-non-reasoning",
+   "uses": [
+    {
+     "route": "MEDIUM",
+     "role": "primary",
+     "group": "oci-balanced",
+     "route_pass_rate": 0.7548830083565461
+    }
+   ],
+   "price_per_1m": [
+    1.25,
+    2.5
+   ],
+   "price_source": "OCI price list B111910/B112076",
+   "trial_pass_rate": 0.7
+  },
+  {
+   "model": "google.gemini-2.5-flash",
+   "uses": [
+    {
+     "route": "MEDIUM",
+     "role": "backup",
+     "group": "oci-balanced-backup",
+     "route_pass_rate": 0.7548830083565461
+    },
+    {
+     "route": "VISION",
+     "role": "primary",
+     "group": "oci-vision",
+     "route_pass_rate": null
+    },
+    {
+     "route": "LONG_CONTEXT",
+     "role": "primary",
+     "group": "oci-long",
+     "route_pass_rate": null
+    },
+    {
+     "route": "MULTILINGUAL",
+     "role": "backup",
+     "group": "oci-multilingual-backup",
+     "route_pass_rate": null
+    },
+    {
+     "route": "tag lane",
+     "role": "default / premium",
+     "group": "oci-chat",
+     "route_pass_rate": null
+    }
+   ],
+   "price_per_1m": [
+    0.3,
+    2.5
+   ],
+   "price_source": "OCI price list B111851/B111853",
+   "trial_pass_rate": 0.725
+  },
+  {
+   "model": "openai.gpt-6-sol",
+   "uses": [
+    {
+     "route": "COMPLEX",
+     "role": "primary",
+     "group": "oci-strong",
+     "route_pass_rate": 0.8626100278551531
+    }
+   ],
+   "price_per_1m": [
+    2.0,
+    10.0
+   ],
+   "price_source": "vendor list price (OCI publishes none)",
+   "trial_pass_rate": 0.825
+  },
+  {
+   "model": "openai.gpt-6.1-sol",
+   "uses": [
+    {
+     "route": "COMPLEX",
+     "role": "primary",
+     "group": "oci-strong",
+     "route_pass_rate": 0.8626100278551531
+    }
+   ],
+   "price_per_1m": [
+    2.0,
+    10.0
+   ],
+   "price_source": "vendor list price (OCI publishes none)",
+   "trial_pass_rate": 0.825
+  },
+  {
+   "model": "openai.gpt-5.4",
+   "uses": [
+    {
+     "route": "COMPLEX",
+     "role": "backup",
+     "group": "oci-strong-backup",
+     "route_pass_rate": 0.8626100278551531
+    }
+   ],
+   "price_per_1m": [
+    2.5,
+    15.0
+   ],
+   "price_source": "vendor list price (OCI publishes none)",
+   "trial_pass_rate": 0.825
+  },
+  {
+   "model": "xai.grok-4.20-reasoning",
+   "uses": [
+    {
+     "route": "REASONING",
+     "role": "primary",
+     "group": "oci-reasoning",
+     "route_pass_rate": 0.8662952646239555
+    }
+   ],
+   "price_per_1m": [
+    1.25,
+    2.5
+   ],
+   "price_source": "OCI price list B111910/B112076",
+   "trial_pass_rate": 0.8
+  },
+  {
+   "model": "xai.grok-4.7",
+   "uses": [
+    {
+     "route": "REASONING",
+     "role": "primary",
+     "group": "oci-reasoning",
+     "route_pass_rate": 0.8662952646239555
+    }
+   ],
+   "price_per_1m": [
+    2.0,
+    6.0
+   ],
+   "price_source": "OCI price list B113303/B113305",
+   "trial_pass_rate": 0.825
+  },
+  {
+   "model": "openai.o3",
+   "uses": [
+    {
+     "route": "REASONING",
+     "role": "backup",
+     "group": "oci-reasoning-backup",
+     "route_pass_rate": 0.8662952646239555
+    }
+   ],
+   "price_per_1m": [
+    2.0,
+    8.0
+   ],
+   "price_source": "vendor list price (OCI publishes none)",
+   "trial_pass_rate": 0.8
+  },
+  {
+   "model": "openai.o4-mini",
+   "uses": [
+    {
+     "route": "REASONING",
+     "role": "backup",
+     "group": "oci-reasoning-backup",
+     "route_pass_rate": 0.8662952646239555
+    }
+   ],
+   "price_per_1m": [
+    1.1,
+    4.4
+   ],
+   "price_source": "vendor list price (OCI publishes none)",
+   "trial_pass_rate": null
+  },
+  {
+   "model": "openai.gpt-5.1",
+   "uses": [
+    {
+     "route": "CODE",
+     "role": "primary",
+     "group": "oci-code",
+     "route_pass_rate": null
+    }
+   ],
+   "price_per_1m": [
+    1.25,
+    10.0
+   ],
+   "price_source": "vendor list price (OCI publishes none)",
+   "trial_pass_rate": null
+  },
+  {
+   "model": "xai.grok-4.3",
+   "uses": [
+    {
+     "route": "CODE",
+     "role": "backup",
+     "group": "oci-code-backup",
+     "route_pass_rate": null
+    }
+   ],
+   "price_per_1m": [
+    1.25,
+    2.5
+   ],
+   "price_source": "OCI price list B112080/B112082",
+   "trial_pass_rate": null
+  },
+  {
+   "model": "meta.llama-4-maverick-17b-128e-instruct-fp8",
+   "uses": [
+    {
+     "route": "VISION",
+     "role": "backup",
+     "group": "oci-vision-backup",
+     "route_pass_rate": null
+    },
+    {
+     "route": "LONG_CONTEXT",
+     "role": "backup",
+     "group": "oci-long-backup",
+     "route_pass_rate": null
+    }
+   ],
+   "price_per_1m": [
+    0.72,
+    0.72
+   ],
+   "price_source": "LiteLLM model map; OCI bills per character, the per-token conversion is unverified",
+   "trial_pass_rate": null
+  },
+  {
+   "model": "cohere.command-a-03-2025",
+   "uses": [
+    {
+     "route": "MULTILINGUAL",
+     "role": "primary",
+     "group": "oci-multilingual",
+     "route_pass_rate": null
+    }
+   ],
+   "price_per_1m": [
+    1.56,
+    1.56
+   ],
+   "price_source": "LiteLLM model map; OCI bills per character, the per-token conversion is unverified",
+   "trial_pass_rate": null
+  },
+  {
+   "model": "openai.gpt-5.2",
+   "uses": [
+    {
+     "route": "judge",
+     "role": "labels and grades",
+     "group": "oci-judge",
+     "route_pass_rate": null
+    },
+    {
+     "route": "tag lane",
+     "role": "default / premium",
+     "group": "oci-chat",
+     "route_pass_rate": null
+    }
+   ],
+   "price_per_1m": [
+    1.75,
+    14.0
+   ],
+   "price_source": "vendor list price (OCI publishes none)",
+   "trial_pass_rate": null
+  },
+  {
+   "model": "meta.llama-3.3-70b-instruct",
+   "uses": [
+    {
+     "route": "context-window demo",
+     "role": "primary",
+     "group": "oci-compact",
+     "route_pass_rate": null
+    }
+   ],
+   "price_per_1m": [
+    0.72,
+    0.72
+   ],
+   "price_source": "LiteLLM model map; OCI bills per character, the per-token conversion is unverified",
+   "trial_pass_rate": null
+  }
+ ]
+}

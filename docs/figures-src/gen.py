@@ -164,8 +164,8 @@ f.text(1460, 630, "signed", 16, SUB, weight="600")
 f.panel(1500, 280, 440, 760, RED, fill="#FDF4F2")
 f.logo("oracle.png", 1610, 300, 220)
 f.text(1720, 395, "OCI Generative AI · us-chicago-1", 19, RED, weight="700")
-vendors = [("OpenAI", "gpt-5 nano · mini · 5.1 · 5.2 · o3 · o4-mini"), ("Google", "Gemini 2.5 Flash-Lite · Flash · Pro"),
-           ("Meta", "Llama 4 Scout · Maverick · 3.3 70B"), ("xAI", "Grok 4.20 reasoning · Grok 4.3"), ("Cohere", "Command A")]
+vendors = [("OpenAI", "GPT-6-luna · 6-sol · 5.4 mini · nano · 5.1 · o3"), ("Google", "Gemini 2.5 Flash-Lite · Flash"),
+           ("Meta", "Llama 4 Scout · Maverick · 3.3 70B"), ("xAI", "Grok 4.20 · Grok 4.7 · Grok 4.3"), ("Cohere", "Command A")]
 for i, (v, ms) in enumerate(vendors):
     y = 430 + i * 104
     f.rect(1530, y, 380, 88, stroke=LINE, sw=2)
@@ -224,7 +224,7 @@ cols = [
     ("1", "Generate", NAVY, "classifier/generate.py", ["463 prompts", "18 task families", "+ support · billing · ops", "+ code · 7 languages"]),
     ("2", "Answer", TEAL, "classifier/label.py", ["every route answers", "every prompt, 3 runs", "reasoning route: 1 run", "3,590 real OCI answers"]),
     ("3", "Judge", OCHRE, "GPT-5.2 · anonymised", ["correctness 1–5", "completeness 1–5", "instruction-following 1–5", "pass = all ≥ 4"]),
-    ("4", "Pass rates", RED, "per prompt, per route", ["fast 56% · balanced 79%", "strong 58% · reasoning 86%", "only 63% label-stable", "about $33 in all"]),
+    ("4", "Pass rates", RED, "per prompt, per route", ["fast 70% · balanced 76%", "strong 86% · reasoning 87%", "72% label-stable", "about $18 a labelling"]),
     ("5", "Train", INDIGO, "classifier/train.py", ["e5-small embeddings", "+ difficulty signals", "4 logistic models", "+ precedent · seconds"]),
 ]
 x = 70
@@ -241,8 +241,8 @@ for n, title, c, sub, lines in cols:
     x += 375
 f.panel(70, 880, 1860, 190, RED)
 f.text(1000, 935, "WHAT THE LABELS SAID", 21, RED, weight="700", spacing="4")
-f.text(1000, 985, "Labelled three times, only 63% of prompts got the same cheapest passing route every time.", 25, INK, weight="700")
-f.text(1000, 1030, "So the router predicts each route's chance of a good answer, and Gemini 2.5 Pro (58%, at 5x the balanced cost) is never the pick.", 20, SUB)
+f.text(1000, 985, "Labelled three times, 72% of prompts got the same cheapest passing route every time.", 25, INK, weight="700")
+f.text(1000, 1030, "So the router predicts each route's chance of a good answer: the cheapest model is good enough for most requests, it escalates the rest.", 20, SUB)
 f.save("figure3-mini-training.svg")
 
 
@@ -257,7 +257,7 @@ if os.path.exists(_ev_path):
     f.header("FIGURE 4 · DOES ROUTING PAY", "Quality against cost, on the same held-out requests",
              f"{ev['held_out_difficulty']} held-out prompts; every answer a real OCI call graded by the judge", accent=RED)
     X0, X1, Y0, Y1 = 220, 1640, 980, 300
-    max_cost = max(p["cost_usd"] for p in ev["policies"]) * 1.1
+    max_cost = max(p["cost_usd"] for p in ev["policies"]) * 1.2
     f.e.append(f'<rect x="{X0}" y="{Y1}" width="{X1 - X0}" height="{Y0 - Y1}" fill="#FAFAFB" stroke="{LINE}" stroke-width="2"/>')
     for q in (0.5, 0.6, 0.7, 0.8, 0.9, 1.0):
         y = Y0 - (q - 0.45) / 0.6 * (Y0 - Y1)
@@ -273,7 +273,7 @@ if os.path.exists(_ev_path):
     style = {"trained": (RED, "our ladder router"), "oracle": (OKG, "the labelled route"),
              "heuristic": (MUT, "LiteLLM heuristic"), "llm": (INDIGO, "LiteLLM LLM classifier"),
              "always SIMPLE": (SUB, "always the fast models"), "always MEDIUM": (SUB, "always the balanced models"),
-             "always COMPLEX": (SUB, "always Gemini 2.5 Pro"), "always REASONING": (SUB, "always the reasoning models")}
+             "always COMPLEX": (SUB, "always the strong models"), "always REASONING": (SUB, "always the reasoning models")}
     for name, (color, label) in style.items():
         p = pol.get(name)
         if not p:
@@ -282,8 +282,8 @@ if os.path.exists(_ev_path):
         y = Y0 - (p["quality"] - 0.45) / 0.6 * (Y0 - Y1)
         r = 22 if name == "trained" else 15
         dx, dy, anchor = {"always SIMPLE": (30, 48, "start"), "heuristic": (30, -34, "start"),
-                          "always COMPLEX": (-30, -10, "end"), "oracle": (-30, -44, "end"),
-                          "always MEDIUM": (-30, 44, "end"), "trained": (34, 30, "start")}.get(name, (30, -10, "start"))
+                          "always COMPLEX": (-30, 48, "end"), "oracle": (-30, -44, "end"), "always REASONING": (-30, -40, "end"),
+                          "llm": (-30, -12, "end"), "always MEDIUM": (30, 44, "start"), "trained": (34, 30, "start")}.get(name, (30, -10, "start"))
         f.e.append(f'<circle cx="{x}" cy="{y}" r="{r}" fill="{color}" opacity="0.9"/>')
         f.text(x + dx, y + dy, label, 19 if name != "trained" else 22, color, anchor=anchor, weight="700")
         f.text(x + dx, y + dy + 28, f"{int(round(p['quality'] * 100))}% · ${p['cost_usd']:.3f}", 17, SUB, anchor=anchor, mono=True)
@@ -348,7 +348,7 @@ f.text(1480, 505, "signed", 16, SUB, weight="600")
 f.panel(1520, 280, 420, 760, RED, fill="#FDF4F2")
 f.logo("oracle.png", 1620, 300, 220)
 f.text(1730, 400, "OCI Generative AI", 22, RED, weight="700")
-f.text(1730, 430, "us-chicago-1 · 15 models", 18, SUB)
+f.text(1730, 430, "us-chicago-1 · 20 models", 18, SUB)
 f.rect(1560, 470, 340, 180, stroke=RED, sw=2)
 f.text(1730, 515, "OpenAI · Google · Meta", 19, INK, weight="600")
 f.text(1730, 550, "xAI · Cohere", 19, INK, weight="600")
@@ -373,7 +373,7 @@ f.header("FIGURE 6 · ISOLATION", "The agent holds nothing; LiteLLM decides, sig
 # sandbox
 f.panel(60, 270, 520, 760, GREEN)
 f.text(320, 322, "OPENSHELL SANDBOX", 22, "#4C7A00", weight="700", spacing="4")
-f.text(320, 354, "litellmdemo-agent · on the operator's machine", 16, SUB, mono=True)
+f.text(320, 354, "litellmdemo-agent · on the operator's laptop", 16, SUB, mono=True)
 f.rect(100, 385, 440, 150, stroke="#4C7A00", sw=2)
 f.text(320, 430, "the langchain-oci agent", 22, INK, weight="700")
 f.text(320, 465, "create_oci_agent · tools · the control room's", 16, SUB)
@@ -394,12 +394,12 @@ f.text(630, 490, "the agent's", 15, SUB, weight="600")
 f.text(630, 560, "virtual key", 15, SUB, weight="600")
 # LiteLLM on OKE
 f.panel(680, 270, 820, 760, INDIGO, fill="#F3F2FB")
-f.text(1090, 322, "LITELLM AI GATEWAY · OKE", 22, INDIGO, weight="700", spacing="3")
+f.text(1090, 322, "LITELLM AI GATEWAY · KUBERNETES", 22, INDIGO, weight="700", spacing="3")
 f.text(1090, 354, "official image ghcr.io/berriai/litellm-database:v1.104.0", 16, SUB, mono=True)
 steps6 = [("1", "Key check", "virtual key openshell-agent: 5 model groups, $5 / 30 days, 30 rpm (Postgres)"),
           ("2", "Classify", "complexity router → classifier_type: custom → route-classifier (the ladder)"),
           ("3", "Route", "route → model group → fastest healthy deployment · fallbacks · retries"),
-          ("4", "Sign", "OCI request signing as the OKE node (instance principal)"),
+          ("4", "Sign", "OCI request signing: on OKE as the node (instance principal); on the laptop with the OCI session"),
           ("5", "Account", "cost per call, spend per key · x-litellm-route-decision explains the route")]
 for i, (n, t, d) in enumerate(steps6):
     y = 390 + i * 118
@@ -407,7 +407,7 @@ for i, (n, t, d) in enumerate(steps6):
     f.badge(762, y + 50, n, INDIGO, r=19)
     f.text(800, y + 42, t, 21, INDIGO, anchor="start", weight="700")
     f.text(800, y + 74, d, 15.5, SUB, anchor="start")
-f.text(1090, 1000, "pods: litellm-gateway · route-classifier · postgres  (one Ampere A1 node)", 15, MUT)
+f.text(1090, 1000, "pods: litellm-gateway · route-classifier · postgres  (OKE, or Rancher Desktop on the laptop)", 15, MUT)
 f.arrow(1500, 520, 1580, 520, color=RED, sw=4)
 f.text(1540, 490, "signed", 15, SUB, weight="600")
 # OCI
@@ -426,7 +426,7 @@ f.text(1760, 920, "use generative-ai-family", 15, SUB, mono=True)
 f.panel(60, 1060, 1880, 200, NAVY)
 f.text(1000, 1105, "WHO HOLDS WHICH SECRET", 20, NAVY, weight="700", spacing="4")
 cols6 = [("the agent, in the sandbox", "nothing: a placeholder", OKG), ("the OpenShell gateway", "the agent's LiteLLM virtual key", "#4C7A00"),
-         ("LiteLLM", "its master key · Postgres: keys, budgets, spend", INDIGO), ("OCI", "no stored key: the node's identity", RED)]
+         ("LiteLLM", "its master key · Postgres: keys, budgets, spend", INDIGO), ("OCI", "OKE: the node's identity · laptop: a 1-hour session", RED)]
 for i, (who, what, c) in enumerate(cols6):
     x = 120 + i * 455
     f.text(x + 200, 1160, who, 19, c, weight="700")

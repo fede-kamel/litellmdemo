@@ -24,11 +24,16 @@ KEYFILE = Path(os.environ.get("LITELLMDEMO_CONFIG", Path.home() / ".config/litel
 
 LONG = " ".join(["The quarterly operations review covers capacity, incidents, spend and hiring."] * 260)
 
+# The fast route's models, from the gateway config, so the probe follows the portfolio.
+FAST_MODELS = {d["litellm_params"]["model"].replace("oci/", "")
+               for d in __import__("yaml").safe_load((Path(__file__).resolve().parents[1] / "gateway" / "config.yaml").read_text())["model_list"]
+               if d["model_name"] == "oci-fast"}
+
 PROBES = [
     # name, model group, prompt, extra body, expectation(headers) -> bool, what it shows
     ("complexity: simple", "oci-auto", "What is the capital of France?", {},
      lambda h: h.get("x-litellm-complexity-router-tier") == "SIMPLE" and int(h.get("x-litellm-attempted-fallbacks") or 0) == 0
-              and any(m in h.get("x-litellm-model-name", "") for m in ("flash-lite", "llama-4-scout")),
+              and h.get("x-litellm-model-name", "").replace("oci/", "") in FAST_MODELS,
      "a one-line fact goes to the cheapest tier"),
     ("complexity: proof (heuristic)", "oci-auto",
      "Prove step by step that the square root of 2 is irrational, then explain why the proof generalises to every non-square integer.", {},

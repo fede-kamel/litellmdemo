@@ -23,12 +23,12 @@ credentials:
 discovery:
   credentials: [api_key]
 endpoints:
-  # The OKE gateway, reached through scripts/oci/forward.sh on the host, at the
-  # host's address as Rancher Desktop containers see it. An exact IP: OpenShell
-  # refuses host aliases (host.docker.internal) unless the Docker driver's
-  # callback is itself an IP literal, and allows a declared private address.
-  - host: "192.168.5.2"
-    port: 4100
+  # The LiteLLM gateway: scripts/openshell.sh renders __GATEWAY_HOST__ and
+  # __GATEWAY_PORT__ (by default the local Kubernetes node and node port 30400).
+  # An exact IP: OpenShell refuses host aliases (host.docker.internal) unless the
+  # Docker driver's callback is itself an IP literal, and allows a declared address.
+  - host: "__GATEWAY_HOST__"
+    port: __GATEWAY_PORT__
     protocol: rest
     enforcement: enforce
     rules:

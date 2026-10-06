@@ -40,7 +40,12 @@ class ClassifyRequest(BaseModel):
 @app.post("/classify")
 async def classify(req: ClassifyRequest) -> dict:
     decision = await asyncio.to_thread(shared().classify, req.messages, req.bar)
-    return decision.as_dict()
+    d = decision.as_dict()
+    odds = " ".join(f"{k}={v:.2f}" for k, v in d["probabilities"].items()) if d["probabilities"] else ""
+    bar = d["details"].get("bar")
+    print(f"CLASSIFY route={d['route']} criterion=\"{d['criterion']}\"" + (f" bar={bar:.2f}" if bar else "")
+          + (f" {odds}" if odds else "") + f" {d['milliseconds']:.0f}ms", flush=True)
+    return d
 
 
 @app.get("/healthz")

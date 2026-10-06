@@ -12,8 +12,14 @@
 # Touches only the demo's own route-classifier Deployment.
 set -euo pipefail
 CONF_DIR="$HOME/.config/litellmdemo"
-export KUBECONFIG="$CONF_DIR/kubeconfig"
-GATEWAY="${LITELLM_GATEWAY:-http://127.0.0.1:4100}"
+# The local Rancher Desktop cluster by default; LITELLMDEMO_CLUSTER=oke for OKE.
+if [[ "${LITELLMDEMO_CLUSTER:-local}" == oke ]]; then
+  export KUBECONFIG="$CONF_DIR/kubeconfig"; kubectl() { command kubectl "$@"; }
+  GATEWAY="${LITELLM_GATEWAY:-http://127.0.0.1:4100}"
+else
+  kubectl() { command kubectl --context rancher-desktop "$@"; }
+  GATEWAY="${LITELLM_GATEWAY:-http://127.0.0.1:30400}"
+fi
 KEY="$(cat "$CONF_DIR/master_key")"
 PROMPT="Write a Python function that merges overlapping intervals, with tests."
 
