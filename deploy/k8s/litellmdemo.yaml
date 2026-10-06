@@ -1,0 +1,169 @@
+# LiteLLM routing demo on OKE: the gateway and the trained classifier as two
+# services in one namespace.
+#
+#   route-classifier  FastAPI around classifier/router_model.py (rules + e5 + head)
+#   litellm-gateway   LiteLLM proxy; calls route-classifier for oci-auto-trained,
+#                     signs OCI calls as the node (instance principal)
+#
+# Both run the stock python:3.12-slim image. An init container installs pinned
+# packages into a pod-local volume; the code, the gateway config and the 7 KB
+# classifier head come from ConfigMaps that scripts/oci/deploy.sh builds from
+# this repository. The only Secret is the gateway's master key and the
+# compartment; no OCI key or token is stored in the cluster.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: litellmdemo
+  labels: {app.kubernetes.io/part-of: litellmdemo}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: route-classifier
+  namespace: litellmdemo
+  labels: {app: route-classifier}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}   # one small node: replace, do not surge
+  selector: {matchLabels: {app: route-classifier}}
+  template:
+    metadata:
+      labels: {app: route-classifier}
+    spec:
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, fsGroup: 10001,
+                        seccompProfile: {type: RuntimeDefault}}
+      initContainers:
+        - name: install
+          image: python:3.12-slim
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+              python -m venv /deps/venv
+              /deps/venv/bin/pip install -q --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch==2.14.1
+              /deps/venv/bin/pip install -q --no-cache-dir -r /reqs/classifier.txt
+              /deps/venv/bin/python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('intfloat/multilingual-e5-small')"
+          env: [{name: HOME, value: /tmp}, {name: HF_HOME, value: /deps/hf}]
+          volumeMounts: [{name: deps, mountPath: /deps}, {name: reqs, mountPath: /reqs}, {name: tmp, mountPath: /tmp}]
+          securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+          resources: {requests: {cpu: 200m, memory: 1Gi}, limits: {memory: 2Gi}}
+      containers:
+        - name: classifier
+          image: python:3.12-slim
+          command: ["/deps/venv/bin/uvicorn", "classifier.serve:app", "--app-dir", "/app", "--host", "0.0.0.0", "--port", "8080"]
+          env:
+            - {name: HOME, value: /tmp}
+            - {name: HF_HOME, value: /deps/hf}
+            - {name: HF_HUB_OFFLINE, value: "1"}
+            - {name: OMP_NUM_THREADS, value: "1"}
+          ports: [{name: http, containerPort: 8080}]
+          readinessProbe: {httpGet: {path: /healthz, port: http}, periodSeconds: 5}
+          startupProbe: {httpGet: {path: /healthz, port: http}, periodSeconds: 5, failureThreshold: 60}
+          livenessProbe: {httpGet: {path: /healthz, port: http}, periodSeconds: 20}
+          volumeMounts:
+            - {name: deps, mountPath: /deps}
+            - {name: code, mountPath: /app/classifier}
+            - {name: tmp, mountPath: /tmp}
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          resources: {requests: {cpu: 250m, memory: 900Mi}, limits: {memory: 2Gi}}
+      volumes:
+        - {name: deps, emptyDir: {}}
+        - {name: tmp, emptyDir: {}}
+        - {name: reqs, configMap: {name: requirements}}
+        - name: code
+          configMap:
+            name: classifier-code
+            items:
+              - {key: __init__.py, path: __init__.py}
+              - {key: router_model.py, path: router_model.py}
+              - {key: serve.py, path: serve.py}
+              - {key: head.joblib, path: model/head.joblib}
+              - {key: meta.json, path: model/meta.json}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: route-classifier
+  namespace: litellmdemo
+spec:
+  selector: {app: route-classifier}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: litellm-gateway
+  namespace: litellmdemo
+  labels: {app: litellm-gateway}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}   # one small node: replace, do not surge
+  selector: {matchLabels: {app: litellm-gateway}}
+  template:
+    metadata:
+      labels: {app: litellm-gateway}
+    spec:
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, fsGroup: 10001,
+                        seccompProfile: {type: RuntimeDefault}}
+      initContainers:
+        - name: install
+          image: python:3.12-slim
+          command: ["sh", "-c", "python -m venv /deps/venv && /deps/venv/bin/pip install -q --no-cache-dir -r /reqs/gateway.txt"]
+          env: [{name: HOME, value: /tmp}]
+          volumeMounts: [{name: deps, mountPath: /deps}, {name: reqs, mountPath: /reqs}, {name: tmp, mountPath: /tmp}]
+          securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+          resources: {requests: {cpu: 200m, memory: 512Mi}, limits: {memory: 1536Mi}}
+      containers:
+        - name: gateway
+          image: python:3.12-slim
+          workingDir: /app/gateway
+          command: ["/deps/venv/bin/litellm", "--config", "/app/gateway/config.yaml", "--host", "0.0.0.0", "--port", "4000"]
+          env:
+            - {name: HOME, value: /tmp}
+            - {name: OCI_AUTH, value: instance_principal}
+            - {name: OCI_REGION, value: us-chicago-1}
+            - {name: ROUTE_CLASSIFIER_URL, value: "http://route-classifier:8080"}
+            - {name: ROUTE_DECISIONS_LOG, value: /tmp/route-decisions.jsonl}
+            - {name: LITELLM_LOG, value: ERROR}
+            - name: OCI_COMPARTMENT_ID
+              valueFrom: {secretKeyRef: {name: gateway, key: compartment_id}}
+            - name: LITELLM_MASTER_KEY
+              valueFrom: {secretKeyRef: {name: gateway, key: master_key}}
+          ports: [{name: http, containerPort: 4000}]
+          readinessProbe: {httpGet: {path: /health/readiness, port: http}, periodSeconds: 5}
+          startupProbe: {httpGet: {path: /health/liveliness, port: http}, periodSeconds: 5, failureThreshold: 60}
+          livenessProbe: {httpGet: {path: /health/liveliness, port: http}, periodSeconds: 20}
+          volumeMounts:
+            - {name: deps, mountPath: /deps}
+            - {name: code, mountPath: /app/gateway}
+            - {name: tmp, mountPath: /tmp}
+          securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+          resources: {requests: {cpu: 250m, memory: 768Mi}, limits: {memory: 1536Mi}}
+      volumes:
+        - {name: deps, emptyDir: {}}
+        - {name: tmp, emptyDir: {}}
+        - {name: reqs, configMap: {name: requirements}}
+        - {name: code, configMap: {name: gateway-code}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: litellm-gateway
+  namespace: litellmdemo
+spec:
+  selector: {app: litellm-gateway}
+  ports: [{name: http, port: 4000, targetPort: http}]
+---
+# Only the gateway may call the classifier. (Flannel does not enforce
+# NetworkPolicy; on a cluster with an enforcing CNI this holds as written.)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: route-classifier-from-gateway
+  namespace: litellmdemo
+spec:
+  podSelector: {matchLabels: {app: route-classifier}}
+  policyTypes: [Ingress]
+  ingress:
+    - from: [{podSelector: {matchLabels: {app: litellm-gateway}}}]
+      ports: [{port: 8080}]

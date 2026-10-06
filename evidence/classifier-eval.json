@@ -1,0 +1,4486 @@
+{
+ "held_out_difficulty": 42,
+ "held_out_task_type": 24,
+ "policies": [
+  {
+   "policy": "always SIMPLE",
+   "quality": 0.619,
+   "cost_usd": 0.0154,
+   "classifier_cost_usd": 0.0,
+   "route_match": 0.619,
+   "task_type_accuracy": null
+  },
+  {
+   "policy": "always COMPLEX",
+   "quality": 0.524,
+   "cost_usd": 0.79378,
+   "classifier_cost_usd": 0.0,
+   "route_match": 0.0,
+   "task_type_accuracy": null
+  },
+  {
+   "policy": "always REASONING",
+   "quality": 0.857,
+   "cost_usd": 0.36352,
+   "classifier_cost_usd": 0.0,
+   "route_match": 0.167,
+   "task_type_accuracy": null
+  },
+  {
+   "policy": "heuristic",
+   "quality": 0.643,
+   "cost_usd": 0.04121,
+   "classifier_cost_usd": 0.0,
+   "route_match": 0.571,
+   "task_type_accuracy": 0.0
+  },
+  {
+   "policy": "llm",
+   "quality": 0.81,
+   "cost_usd": 0.36538,
+   "classifier_cost_usd": 0.00129,
+   "route_match": 0.333,
+   "task_type_accuracy": 0.0
+  },
+  {
+   "policy": "trained",
+   "quality": 0.81,
+   "cost_usd": 0.21123,
+   "classifier_cost_usd": 0.0,
+   "route_match": 0.667,
+   "task_type_accuracy": 1.0
+  },
+  {
+   "policy": "oracle",
+   "quality": 0.881,
+   "cost_usd": 0.23507,
+   "classifier_cost_usd": 0.0,
+   "route_match": 1.0,
+   "task_type_accuracy": 1.0
+  }
+ ],
+ "rows": [
+  {
+   "id": "p0190",
+   "family": "planning",
+   "route_hint": "REASONING",
+   "difficulty": 4,
+   "prompt": "I’m organizing a wedding weekend with 42 guests, two venues, and transportation constraints. Events: welcome dinner Fri 7–10pm, ceremony Sat 3–4pm, reception Sat 5–11pm, farewell brunch Sun 10am–12pm. Constraints: venue A is 25 minutes from venue B; we have one shuttle (14 seats) that can do continuous loops but must have a 10-minute loading buffer at each stop; 10 guests are staying at a hotel near venue A, 20 near venue B, 12 at an Airbnb halfway (15 minutes from both). Everyone must arrive by event start; no one should wait more than 30 minutes after an event ends for a ride. Build a shuttle timetable for all events and tell me how many trips are needed in each window.",
+   "route": "REASONING",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.00085608,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 2,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.007372999999999999,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 1,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.03858625,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 1,
+      "instruction_following": 1
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "cost": 0.03175000000000001,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 2,
+      "instruction_following": 2
+     },
+     "passed": false
+    }
+   ],
+   "judge_cost": 0.00411775,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 11.205479860305786,
+     "ok": true
+    },
+    "llm": {
+     "route": "COMPLEX",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "classifier_cost": 4.005e-05,
+     "seconds": 36.594712018966675,
+     "ok": true
+    },
+    "trained": {
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "classifier_cost": 0.0,
+     "seconds": 162.49683713912964,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0044",
+   "family": "rewrite",
+   "route_hint": "SIMPLE",
+   "difficulty": 4,
+   "prompt": "Rewrite these two sentences for an executive audience: concise, neutral, and risk-aware. “If we don’t change the current process soon, we’re going to keep missing deadlines. The team is stretched thin and morale is dropping.”",
+   "route": "MEDIUM",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "cost": 8.197499999999999e-05,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 4,
+      "instruction_following": 3
+     },
+     "passed": false
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.000735,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.01635125,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 4,
+      "instruction_following": 3
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.0015359999999999998,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.00234675,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 2.215620994567871,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 2.9849999999999997e-05,
+     "seconds": 5.186091899871826,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 1.3537421226501465,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0075",
+   "family": "summary",
+   "route_hint": "MEDIUM",
+   "difficulty": 3,
+   "prompt": "Summarize the paragraph below, but make sure to capture the timeline and the key decisions.\n\nParagraph:\nAfter a decade of planning, the coastal city approved a new flood protection strategy. Instead of building one massive seawall, officials chose a layered approach: restoring wetlands, elevating roads, and adding removable barriers near the harbor. Construction will begin next spring with drainage upgrades in the most vulnerable neighborhood, followed by wetland restoration over the next two years. Business groups supported the plan because it avoids blocking waterfront views, while some residents worry the project will take too long. The city will reassess progress annually using updated sea-level projections.",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.00020808,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00075725,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.01494875,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 4,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.001522,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.00206675,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 1.3500328063964844,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/google.gemini-2.5-flash",
+     "classifier_cost": 3.57e-05,
+     "seconds": 6.570279121398926,
+     "ok": true
+    },
+    "trained": {
+     "route": "REASONING",
+     "deployment": "oci/openai.o3",
+     "classifier_cost": 0.0,
+     "seconds": 3.3858680725097656,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0175",
+   "family": "logic",
+   "route_hint": "REASONING",
+   "difficulty": 4,
+   "prompt": "There are 7 people in a logic club. Each person is either a “day-knight” (truthful on weekdays, lies on weekends) or a “night-knave” (lies on weekdays, truthful on weekends). Today is either Friday, Saturday, or Sunday. They make these statements:\nP: “Today is Saturday.”\nQ: “R is a night-knave.”\nR: “S is a day-knight.”\nS: “T is a day-knight.”\nT: “U is a night-knave.”\nU: “P is a night-knave.”\nV: “Today is Friday.”\nAssuming at least one statement is true and at least one is false, determine what day it is and classify each person if possible, or explain why it’s underdetermined.",
+   "route": "MEDIUM",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.00096408,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 2,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.0076057500000000005,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.035535000000000004,
+     "ok": true,
+     "scores": {
+      "correctness": 2,
+      "completeness": 1,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "cost": 0.006613750000000001,
+     "ok": true,
+     "scores": {
+      "correctness": 2,
+      "completeness": 3,
+      "instruction_following": 5
+     },
+     "passed": false
+    }
+   ],
+   "judge_cost": 0.00551425,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 9.047075033187866,
+     "ok": true
+    },
+    "llm": {
+     "route": "REASONING",
+     "deployment": "oci/openai.o3",
+     "classifier_cost": 3.9674999999999995e-05,
+     "seconds": 39.564666986465454,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 12.574420928955078,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0155",
+   "family": "math",
+   "route_hint": "REASONING",
+   "difficulty": 3,
+   "prompt": "A fair coin is flipped until two consecutive heads occur. What is the expected number of flips? Show your reasoning.",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.00049248,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.0014812500000000001,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.038388750000000006,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 1,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "cost": 0.00178625,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.0031675,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 4.554280996322632,
+     "ok": true
+    },
+    "llm": {
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "classifier_cost": 2.8499999999999998e-05,
+     "seconds": 10.125648975372314,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 3.841670036315918,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0110",
+   "family": "analysis",
+   "route_hint": "COMPLEX",
+   "difficulty": 4,
+   "prompt": "As CTO, I need a build-vs-buy decision for an internal data platform: ingestion, catalog, governance, and self-serve analytics for 500+ users. Compare an all-in-one managed suite vs assembling best-of-breed (Kafka + dbt + Snowflake + data catalog). Provide a 12-month roadmap, staffing needs, risks, and TCO model assumptions.",
+   "route": "REASONING",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "cost": 0.0012063,
+     "ok": true,
+     "scores": {
+      "correctness": 3,
+      "completeness": 2,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00802075,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 1,
+      "instruction_following": 1
+     },
+     "passed": false
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.021705000000000002,
+     "ok": true,
+     "scores": {
+      "correctness": 3,
+      "completeness": 2,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "cost": 0.007266250000000001,
+     "ok": true,
+     "scores": {
+      "correctness": 3,
+      "completeness": 4,
+      "instruction_following": 5
+     },
+     "passed": false
+    }
+   ],
+   "judge_cost": 0.0058519999999999996,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 7.03521203994751,
+     "ok": true
+    },
+    "llm": {
+     "route": "COMPLEX",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "classifier_cost": 3.2775e-05,
+     "seconds": 41.60497808456421,
+     "ok": true
+    },
+    "trained": {
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "classifier_cost": 0.0,
+     "seconds": 60.248116970062256,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0119",
+   "family": "comparison",
+   "route_hint": "COMPLEX",
+   "difficulty": 2,
+   "prompt": "I need a project management tool for a 6-person marketing team: Trello, Asana, or ClickUp. Compare on learning curve, automation, reporting, and cost. Recommend one for us.",
+   "route": "MEDIUM",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.0006516,
+     "ok": true,
+     "scores": {
+      "correctness": 2,
+      "completeness": 5,
+      "instruction_following": 4
+     },
+     "passed": false
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.0043437499999999995,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.020072500000000004,
+     "ok": true,
+     "scores": {
+      "correctness": 3,
+      "completeness": 3,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "cost": 0.0036462500000000006,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.0072257499999999995,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 7.828385829925537,
+     "ok": true
+    },
+    "llm": {
+     "route": "REASONING",
+     "deployment": "oci/openai.o3",
+     "classifier_cost": 2.9925e-05,
+     "seconds": 21.327260971069336,
+     "ok": true
+    },
+    "trained": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 16.84067416191101,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0127",
+   "family": "comparison",
+   "route_hint": "COMPLEX",
+   "difficulty": 4,
+   "prompt": "We’re migrating from on-prem Kubernetes to the cloud and must pick between EKS, GKE, and AKS. Compare them for: cluster reliability, security/IAM ergonomics, networking complexity, observability, cost controls, and team skill fit (we’re strong in AWS but want portability). Recommend one and give a phased migration strategy.",
+   "route": "REASONING",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "cost": 0.000987075,
+     "ok": true,
+     "scores": {
+      "correctness": 2,
+      "completeness": 1,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00801875,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 1,
+      "instruction_following": 1
+     },
+     "passed": false
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.022766250000000002,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 2,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.024134,
+     "ok": true,
+     "scores": {
+      "correctness": 3,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": false
+    }
+   ],
+   "judge_cost": 0.00449575,
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 48.28530287742615,
+     "ok": true
+    },
+    "llm": {
+     "route": "REASONING",
+     "deployment": "oci/openai.o3",
+     "classifier_cost": 3.195e-05,
+     "seconds": 34.487370014190674,
+     "ok": true
+    },
+    "trained": {
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "classifier_cost": 0.0,
+     "seconds": 48.175508975982666,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0093",
+   "family": "email",
+   "route_hint": "MEDIUM",
+   "difficulty": 4,
+   "prompt": "Write a message to a cross-functional group (Sales, Legal, Finance) to align on a complex deal that has nonstandard payment terms and data-processing addendum requirements. Ask for specific approvals and deadlines, and keep it concise.",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.000216,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.002759,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.01533,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 4,
+      "instruction_following": 3
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.00324,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.003696,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 1.7281239032745361,
+     "ok": true
+    },
+    "llm": {
+     "route": "COMPLEX",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "classifier_cost": 3.0075e-05,
+     "seconds": 25.19980001449585,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 1.6434881687164307,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0039",
+   "family": "rewrite",
+   "route_hint": "SIMPLE",
+   "difficulty": 2,
+   "prompt": "Can you rewrite this to be concise and confident? “I’m not entirely sure, but I believe the issue might be related to the settings.”",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 8.999999999999999e-05,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 4,
+      "instruction_following": 4
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00042675000000000005,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 4,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.0123675,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.000286,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.00160475,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 0.93778395652771,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/google.gemini-2.5-flash",
+     "classifier_cost": 2.8424999999999996e-05,
+     "seconds": 8.346426963806152,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 0.7914271354675293,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0074",
+   "family": "summary",
+   "route_hint": "MEDIUM",
+   "difficulty": 3,
+   "prompt": "Can you summarize this paragraph in ~80 words, making it sound neutral and report-like?\n\nParagraph:\nA mid-sized hospital introduced an AI tool to help prioritize radiology scans, flagging images that might show internal bleeding or a collapsed lung. Doctors said it sometimes sped up care for critical patients, especially overnight, but they also reported false alarms that disrupted workflow. The vendor trained the model on data from large academic centers, and staff worried it might miss patterns common in their local population. The hospital created a review committee, required human sign-off for all decisions, and began tracking error rates by age and ethnicity to check for bias.",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.0001728,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.000517,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.0124925,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.00844,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.00196875,
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/google.gemini-2.5-flash",
+     "classifier_cost": 0.0,
+     "seconds": 3.351444959640503,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/google.gemini-2.5-flash",
+     "classifier_cost": 3.5925e-05,
+     "seconds": 4.494287014007568,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 1.4585630893707275,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0104",
+   "family": "analysis",
+   "route_hint": "COMPLEX",
+   "difficulty": 3,
+   "prompt": "Design a pricing experiment for a B2B SaaS with three tiers. We want to increase ARPA without hurting conversion. Propose experiment variants, segment strategy, success metrics, guardrails, sample size considerations, and risks like sales-channel conflict and customer backlash.",
+   "route": "REASONING",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "cost": 0.000974475,
+     "ok": true,
+     "scores": {
+      "correctness": 3,
+      "completeness": 2,
+      "instruction_following": 4
+     },
+     "passed": false
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00801475,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 1,
+      "instruction_following": 1
+     },
+     "passed": false
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.021206250000000003,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 3,
+      "instruction_following": 4
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.014438,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.0057085,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 5.395658016204834,
+     "ok": true
+    },
+    "llm": {
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "classifier_cost": 3.075e-05,
+     "seconds": 77.707603931427,
+     "ok": true
+    },
+    "trained": {
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "classifier_cost": 0.0,
+     "seconds": 52.13866710662842,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0152",
+   "family": "math",
+   "route_hint": "REASONING",
+   "difficulty": 3,
+   "prompt": "Let f(x) = x^3 - 6x^2 + 9x + 1. Find all critical points, determine where f is increasing/decreasing, and classify any local maxima/minima.",
+   "route": "MEDIUM",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.00058104,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 4,
+      "instruction_following": 3
+     },
+     "passed": false
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00121025,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.020856250000000003,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.006618,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.004992750000000001,
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/google.gemini-2.5-flash",
+     "classifier_cost": 0.0,
+     "seconds": 11.680174112319946,
+     "ok": true
+    },
+    "llm": {
+     "route": "REASONING",
+     "deployment": "oci/openai.o3",
+     "classifier_cost": 3.0149999999999998e-05,
+     "seconds": 7.977487087249756,
+     "ok": true
+    },
+    "trained": {
+     "route": "CODE",
+     "deployment": "oci/openai.gpt-5.1",
+     "classifier_cost": 0.0,
+     "seconds": 6.015142202377319,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0021",
+   "family": "formatting",
+   "route_hint": "SIMPLE",
+   "difficulty": 2,
+   "prompt": "Format the following as a markdown checklist: \"Pack passport, charge phone, confirm hotel booking, print boarding pass\"",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 5.04e-05,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00033124999999999995,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.00906875,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.000914,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.00140875,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 0.6486120223999023,
+     "ok": true
+    },
+    "llm": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 2.7899999999999997e-05,
+     "seconds": 1.0686750411987305,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.355180025100708,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0099",
+   "family": "analysis",
+   "route_hint": "COMPLEX",
+   "difficulty": 1,
+   "prompt": "We’re choosing between sending marketing emails through Mailchimp or using AWS SES. Explain the trade-offs in deliverability, cost at 50k emails/month, ease of templates/automation, and how much engineering effort each needs.",
+   "route": "MEDIUM",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.0006969599999999999,
+     "ok": true,
+     "scores": {
+      "correctness": 2,
+      "completeness": 4,
+      "instruction_following": 5
+     },
+     "passed": false
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.007684749999999999,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 5,
+      "instruction_following": 4
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.021052500000000002,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 4,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.012702,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.007623,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 6.5498340129852295,
+     "ok": true
+    },
+    "llm": {
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "classifier_cost": 3.0524999999999997e-05,
+     "seconds": 43.20374298095703,
+     "ok": true
+    },
+    "trained": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 28.724848985671997,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0236",
+   "family": "code",
+   "route_hint": "CODE",
+   "difficulty": 1,
+   "prompt": "In Java, how do I get the current timestamp in milliseconds?",
+   "route": "CODE",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 4.2187089920043945,
+     "ok": true
+    },
+    "llm": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 2.715e-05,
+     "seconds": 2.6861939430236816,
+     "ok": true
+    },
+    "trained": {
+     "route": "CODE",
+     "deployment": "oci/openai.gpt-5.1",
+     "classifier_cost": 0.0,
+     "seconds": 1.131608009338379,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0096",
+   "family": "analysis",
+   "route_hint": "COMPLEX",
+   "difficulty": 1,
+   "prompt": "I run a small online store and I’m deciding between Shopify and WooCommerce. Compare the setup time, monthly costs, and flexibility for custom features, and tell me which is better if I have limited tech skills but want room to grow.",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.00058104,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 4,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.004073499999999999,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.017740000000000002,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 3,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.01014,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.007164500000000001,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 7.2574989795684814,
+     "ok": true
+    },
+    "llm": {
+     "route": "REASONING",
+     "deployment": "oci/openai.o3",
+     "classifier_cost": 3.0375e-05,
+     "seconds": 18.810200929641724,
+     "ok": true
+    },
+    "trained": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 17.201356887817383,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0020",
+   "family": "formatting",
+   "route_hint": "SIMPLE",
+   "difficulty": 2,
+   "prompt": "Convert this into JSON with keys name, role, and location: \"Mina Patel — Product Designer — Austin, TX\"",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 5.4e-05,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 4
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00020974999999999998,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.004611250000000001,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.0009419999999999999,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.001435,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.3941349983215332,
+     "ok": true
+    },
+    "llm": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 2.8049999999999997e-05,
+     "seconds": 2.79215407371521,
+     "ok": true
+    },
+    "trained": {
+     "route": "CODE",
+     "deployment": "oci/openai.gpt-5.1",
+     "classifier_cost": 0.0,
+     "seconds": 0.9038920402526855,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0240",
+   "family": "code",
+   "route_hint": "CODE",
+   "difficulty": 2,
+   "prompt": "Review this SQL and suggest indexes for performance:\n\nSELECT o.id, o.created_at, u.email\nFROM orders o\nJOIN users u ON u.id = o.user_id\nWHERE o.created_at >= NOW() - INTERVAL '30 days'\n  AND o.status = 'PAID'\nORDER BY o.created_at DESC\nLIMIT 100;",
+   "route": "CODE",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 21.51606583595276,
+     "ok": true
+    },
+    "llm": {
+     "route": "COMPLEX",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "classifier_cost": 3.2925e-05,
+     "seconds": 31.024116039276123,
+     "ok": true
+    },
+    "trained": {
+     "route": "CODE",
+     "deployment": "oci/openai.gpt-5.1",
+     "classifier_cost": 0.0,
+     "seconds": 6.613394021987915,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0060",
+   "family": "explanation",
+   "route_hint": "MEDIUM",
+   "difficulty": 4,
+   "prompt": "Explain the difference between frequentist and Bayesian inference for a statistics PhD qualifier prep: focus on priors, likelihood, posterior, and decision-theoretic framing, with one concise worked example.",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.0005882400000000001,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 4,
+      "instruction_following": 4
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00488725,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.020985,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 3,
+      "instruction_following": 3
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.01109,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.007803249999999999,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 5.119723081588745,
+     "ok": true
+    },
+    "llm": {
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "classifier_cost": 2.9474999999999998e-05,
+     "seconds": 28.172975778579712,
+     "ok": true
+    },
+    "trained": {
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "classifier_cost": 0.0,
+     "seconds": 33.83275008201599,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0210",
+   "family": "code",
+   "route_hint": "CODE",
+   "difficulty": 1,
+   "prompt": "Generate a SQL query to select all rows from users where status = 'active' ordered by created_at descending.",
+   "route": "CODE",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 1.9094700813293457,
+     "ok": true
+    },
+    "llm": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 2.7899999999999997e-05,
+     "seconds": 3.539144992828369,
+     "ok": true
+    },
+    "trained": {
+     "route": "CODE",
+     "deployment": "oci/openai.gpt-5.1",
+     "classifier_cost": 0.0,
+     "seconds": 0.8095548152923584,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0037",
+   "family": "rewrite",
+   "route_hint": "SIMPLE",
+   "difficulty": 2,
+   "prompt": "Make this more formal but not stiff: “Sorry I missed your call. I’ll ring you back later today.”",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 9.792e-05,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00102925,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.014520000000000002,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.0013379999999999998,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.00192675,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 1.6699628829956055,
+     "ok": true
+    },
+    "llm": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 2.7975e-05,
+     "seconds": 2.9217419624328613,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 1.2386178970336914,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0251",
+   "family": "code",
+   "route_hint": "CODE",
+   "difficulty": 4,
+   "prompt": "In Java, debug this deadlock and suggest a redesign. Two threads occasionally freeze:\n\nclass A {\n  final Object lock1 = new Object();\n  final Object lock2 = new Object();\n  void m1() { synchronized(lock1) { synchronized(lock2) { /*...*/ } } }\n  void m2() { synchronized(lock2) { synchronized(lock1) { /*...*/ } } }\n}",
+   "route": "CODE",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 13.000324010848999,
+     "ok": true
+    },
+    "llm": {
+     "route": "REASONING",
+     "deployment": "oci/openai.o3",
+     "classifier_cost": 3.3525e-05,
+     "seconds": 10.967314958572388,
+     "ok": true
+    },
+    "trained": {
+     "route": "CODE",
+     "deployment": "oci/openai.gpt-5.1",
+     "classifier_cost": 0.0,
+     "seconds": 8.506431818008423,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0199",
+   "family": "quantitative",
+   "route_hint": "REASONING",
+   "difficulty": 2,
+   "prompt": "I bought 150 shares at $28.40, paid a $6.95 commission, then sold all shares at $31.10 with another $6.95 commission. What’s my total profit and percentage return on my initial cost?",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "cost": 0.00014654999999999998,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.0016357499999999998,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.0157925,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.005621999999999999,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.00286125,
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 5.3856000900268555,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 3.0524999999999997e-05,
+     "seconds": 7.776971101760864,
+     "ok": true
+    },
+    "trained": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 11.62909197807312,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0072",
+   "family": "summary",
+   "route_hint": "MEDIUM",
+   "difficulty": 3,
+   "prompt": "Summarize the paragraph below in 4-6 sentences, preserving the argument and any important numbers.\n\nParagraph:\nIn 2024, several universities reported a sharp increase in students seeking mental health support, with some counseling centers booking appointments three weeks out. Administrators blamed a mix of academic pressure, financial stress, and lingering social disruption from the pandemic years. To respond, campuses expanded group therapy, trained faculty to recognize warning signs, and contracted with telehealth providers for after-hours care. Critics argue that outsourcing can fragment support and raise privacy concerns. Early data from one campus showed a 18% drop in crisis walk-ins after adding same-day triage, but wait times for regular therapy remained a challenge.",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.00020808,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.000549,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.012712500000000002,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.001464,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.00212625,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 1.1504528522491455,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 3.7124999999999994e-05,
+     "seconds": 4.33058500289917,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 1.13100004196167,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0231",
+   "family": "code",
+   "route_hint": "CODE",
+   "difficulty": 4,
+   "prompt": "I’m seeing a rare race condition in this Rust code using Arc<Mutex<...>> where the program occasionally panics with 'already borrowed' or deadlocks when a callback tries to re-lock. Explain the problem and redesign using channels or interior mutability safely.\n\nlet state = Arc::new(Mutex::new(State::new()));\nlet s2 = state.clone();\nregister_callback(move || {\n    let mut st = s2.lock().unwrap();\n    st.on_event();\n    st.emit(|msg| {\n        // called synchronously\n        let mut st2 = s2.lock().unwrap();\n        st2.log(msg);\n    });\n});",
+   "route": "CODE",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 18.63958501815796,
+     "ok": true
+    },
+    "llm": {
+     "route": "COMPLEX",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "classifier_cost": 3.78e-05,
+     "seconds": 40.8500919342041,
+     "ok": true
+    },
+    "trained": {
+     "route": "CODE",
+     "deployment": "oci/openai.gpt-5.1",
+     "classifier_cost": 0.0,
+     "seconds": 20.559412002563477,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0184",
+   "family": "planning",
+   "route_hint": "REASONING",
+   "difficulty": 3,
+   "prompt": "I need a 2-week rotating shift plan for a small café with 6 employees. Shifts daily: Open (6am–2pm) and Close (2pm–10pm). Constraints: each person works 5 shifts per week, no more than 3 consecutive days, at least 12 hours between shifts, everyone must do at least 2 opens and 2 closes across the 2 weeks, and weekends must be fairly shared (no one works both Saturday and Sunday in the same week). Provide a schedule table.",
+   "route": "REASONING",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "cost": 0.00057825,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 2,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.0038144999999999997,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 2,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.038497500000000004,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 1,
+      "instruction_following": 1
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.048228,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 1,
+      "instruction_following": 1
+     },
+     "passed": false
+    }
+   ],
+   "judge_cost": 0.005796000000000001,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 11.09415316581726,
+     "ok": true
+    },
+    "llm": {
+     "route": "COMPLEX",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "classifier_cost": 3.4725e-05,
+     "seconds": 41.95611906051636,
+     "ok": true
+    },
+    "trained": {
+     "route": "REASONING",
+     "deployment": "oci/openai.o3",
+     "classifier_cost": 0.0,
+     "seconds": 33.45624399185181,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0059",
+   "family": "explanation",
+   "route_hint": "MEDIUM",
+   "difficulty": 3,
+   "prompt": "Explain how the immune system distinguishes self from non-self for undergraduate biology majors; include key mechanisms and one clinical example.",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.00042696,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 4,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00380725,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.01644,
+     "ok": true,
+     "scores": {
+      "correctness": 3,
+      "completeness": 2,
+      "instruction_following": 3
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.012042,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.006569500000000001,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 8.029197931289673,
+     "ok": true
+    },
+    "llm": {
+     "route": "REASONING",
+     "deployment": "oci/openai.o3",
+     "classifier_cost": 2.8575e-05,
+     "seconds": 19.56896996498108,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 6.604979991912842,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0040",
+   "family": "rewrite",
+   "route_hint": "SIMPLE",
+   "difficulty": 3,
+   "prompt": "Rewrite these two sentences for a customer email: more empathetic and less blamey. “You entered the wrong address, so your package was returned. You need to place a new order.”",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.00014184,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.0017889999999999998,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.014656250000000001,
+     "ok": true,
+     "scores": {
+      "correctness": 3,
+      "completeness": 5,
+      "instruction_following": 4
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.00228,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.00263725,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 2.1746890544891357,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 2.895e-05,
+     "seconds": 6.577147960662842,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 1.061263084411621,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0192",
+   "family": "quantitative",
+   "route_hint": "REASONING",
+   "difficulty": 1,
+   "prompt": "I have $120 and I want to split it equally among 5 friends, but I also want to keep $15 for myself. How much does each friend get?",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 7.704000000000001e-05,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.000246,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.00381625,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.001704,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.001568,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.7069079875946045,
+     "ok": true
+    },
+    "llm": {
+     "route": "REASONING",
+     "deployment": "oci/openai.o3",
+     "classifier_cost": 2.955e-05,
+     "seconds": 5.628785133361816,
+     "ok": true
+    },
+    "trained": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 1.6821610927581787,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0148",
+   "family": "math",
+   "route_hint": "REASONING",
+   "difficulty": 2,
+   "prompt": "A train travels 180 km in 2.5 hours at a constant speed. What is its speed in km/h, and how long would it take to go 324 km at the same speed?",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "cost": 7.125e-05,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00037975,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.0160875,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.001102,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.002044,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 1.2783699035644531,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 2.9625e-05,
+     "seconds": 3.52817702293396,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 1.1410119533538818,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0041",
+   "family": "rewrite",
+   "route_hint": "SIMPLE",
+   "difficulty": 3,
+   "prompt": "Make this message shorter and more formal while keeping a cooperative tone: “I looked over the contract and I have a few concerns. Can we hop on a call to go through them?”",
+   "route": "MEDIUM",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "cost": 4.6575e-05,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 4,
+      "instruction_following": 3
+     },
+     "passed": false
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00045075000000000003,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.01433625,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 4,
+      "instruction_following": 3
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.0009019999999999999,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.00174475,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.6298160552978516,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 2.895e-05,
+     "seconds": 4.02826189994812,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.4853999614715576,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0010",
+   "family": "factual",
+   "route_hint": "SIMPLE",
+   "difficulty": 3,
+   "prompt": "Name the cranial nerve responsible for olfaction.",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "cost": 8.475e-06,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00020224999999999998,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.005931250000000001,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.000258,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.0013912500000000001,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 0.642888069152832,
+     "ok": true
+    },
+    "llm": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 2.685e-05,
+     "seconds": 0.7083849906921387,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.16310691833496094,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0156",
+   "family": "math",
+   "route_hint": "REASONING",
+   "difficulty": 4,
+   "prompt": "Let a,b,c be positive real numbers with abc=1. Prove that (a/(1+a)) + (b/(1+b)) + (c/(1+c)) >= 3/2.",
+   "route": "REASONING",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.00077256,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 2,
+      "instruction_following": 4
+     },
+     "passed": false
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.008012,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 1,
+      "instruction_following": 1
+     },
+     "passed": false
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.0384675,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 1,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.048096,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 1,
+      "instruction_following": 1
+     },
+     "passed": false
+    }
+   ],
+   "judge_cost": 0.00340725,
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 80.26484799385071,
+     "ok": true
+    },
+    "llm": {
+     "route": "REASONING",
+     "deployment": "oci/openai.o3",
+     "classifier_cost": 3.0225e-05,
+     "seconds": 33.56522607803345,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 9.602824926376343,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0228",
+   "family": "code",
+   "route_hint": "CODE",
+   "difficulty": 4,
+   "prompt": "We have a Kafka consumer in Python that sometimes reprocesses messages after a rebalance, causing duplicates in the DB. Sketch an idempotent processing design and show code patterns for committing offsets safely (at-least-once but effectively-once).",
+   "route": "CODE",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 41.972768783569336,
+     "ok": true
+    },
+    "llm": {
+     "route": "COMPLEX",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "classifier_cost": 2.9999999999999997e-05,
+     "seconds": 41.59126114845276,
+     "ok": true
+    },
+    "trained": {
+     "route": "CODE",
+     "deployment": "oci/openai.gpt-5.1",
+     "classifier_cost": 0.0,
+     "seconds": 18.742642879486084,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0253",
+   "family": "code",
+   "route_hint": "CODE",
+   "difficulty": 4,
+   "prompt": "Please review and debug this Node.js code that leaks memory under load. It’s an Express endpoint using a global cache; after a few hours RSS grows steadily.\n\nconst cache = {};\napp.get('/data/:id', async (req, res) => {\n  const id = req.params.id;\n  if (cache[id]) return res.json(cache[id]);\n  const data = await fetchData(id);\n  cache[id] = data;\n  res.json(data);\n});",
+   "route": "CODE",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 17.752075910568237,
+     "ok": true
+    },
+    "llm": {
+     "route": "COMPLEX",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "classifier_cost": 3.4949999999999996e-05,
+     "seconds": 31.33768105506897,
+     "ok": true
+    },
+    "trained": {
+     "route": "CODE",
+     "deployment": "oci/openai.gpt-5.1",
+     "classifier_cost": 0.0,
+     "seconds": 10.10893201828003,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0254",
+   "family": "code",
+   "route_hint": "CODE",
+   "difficulty": 4,
+   "prompt": "In Python, I’m using asyncio with a shared client session and occasionally get 'Session is closed' errors in concurrent tasks. Show a robust pattern for managing the session lifecycle and limiting concurrency.",
+   "route": "CODE",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 23.861958980560303,
+     "ok": true
+    },
+    "llm": {
+     "route": "COMPLEX",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "classifier_cost": 2.94e-05,
+     "seconds": 33.278116941452026,
+     "ok": true
+    },
+    "trained": {
+     "route": "CODE",
+     "deployment": "oci/openai.gpt-5.1",
+     "classifier_cost": 0.0,
+     "seconds": 9.693170070648193,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0169",
+   "family": "logic",
+   "route_hint": "REASONING",
+   "difficulty": 3,
+   "prompt": "A logic grid puzzle: There are four houses in a row (1–4). Each house has a different color (red, blue, green, yellow) and a different pet (cat, dog, fish, bird). Clues: The green house is immediately to the right of the red house. The dog is in house 1. The blue house is somewhere left of the yellow house. The cat lives in the red house. The fish is not in house 4. Determine the color and pet for each house.",
+   "route": "MEDIUM",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.00070344,
+     "ok": true,
+     "scores": {
+      "correctness": 2,
+      "completeness": 4,
+      "instruction_following": 5
+     },
+     "passed": false
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.002554,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.0385025,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 1,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.022024,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.00355775,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 3.4633419513702393,
+     "ok": true
+    },
+    "llm": {
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "classifier_cost": 3.4725e-05,
+     "seconds": 31.870131969451904,
+     "ok": true
+    },
+    "trained": {
+     "route": "CODE",
+     "deployment": "oci/openai.gpt-5.1",
+     "classifier_cost": 0.0,
+     "seconds": 11.753211975097656,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0102",
+   "family": "analysis",
+   "route_hint": "COMPLEX",
+   "difficulty": 2,
+   "prompt": "I’m setting up analytics for a SaaS product: should we use client-side tracking (Segment/GA4) or server-side tracking? Compare accuracy, privacy/compliance, implementation complexity, and how it affects attribution. Recommend a hybrid plan if appropriate.",
+   "route": "MEDIUM",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "cost": 0.000777975,
+     "ok": true,
+     "scores": {
+      "correctness": 2,
+      "completeness": 2,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00708025,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.02373625,
+     "ok": true,
+     "scores": {
+      "correctness": 3,
+      "completeness": 2,
+      "instruction_following": 3
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.01829,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.007794499999999999,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 11.018186807632446,
+     "ok": true
+    },
+    "llm": {
+     "route": "REASONING",
+     "deployment": "oci/openai.o3",
+     "classifier_cost": 3.075e-05,
+     "seconds": 31.43173098564148,
+     "ok": true
+    },
+    "trained": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 38.11924195289612,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0018",
+   "family": "formatting",
+   "route_hint": "SIMPLE",
+   "difficulty": 1,
+   "prompt": "Put this into a simple two-column table (Item | Quantity): \"Apples x4, Bananas x6, Oranges x3\"",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 6.408e-05,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.0006087499999999999,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.0052475,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.0009499999999999999,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.00148575,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.4536559581756592,
+     "ok": true
+    },
+    "llm": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 2.8424999999999996e-05,
+     "seconds": 1.3240408897399902,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 0.7449231147766113,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0082",
+   "family": "email",
+   "route_hint": "MEDIUM",
+   "difficulty": 1,
+   "prompt": "Help me write a brief thank-you email to a recruiter after a phone screen yesterday.",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "cost": 8.445e-05,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.0012097499999999997,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.012282500000000002,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.0014219999999999999,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.0028262499999999998,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 1.2159309387207031,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 2.7524999999999998e-05,
+     "seconds": 6.104039907455444,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 0.8955850601196289,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0241",
+   "family": "code",
+   "route_hint": "CODE",
+   "difficulty": 2,
+   "prompt": "In Go, refactor this to return an error instead of panicking:\n\nfunc MustAtoi(s string) int {\n    n, err := strconv.Atoi(s)\n    if err != nil { panic(err) }\n    return n\n}",
+   "route": "CODE",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 6.711153984069824,
+     "ok": true
+    },
+    "llm": {
+     "route": "COMPLEX",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "classifier_cost": 3.06e-05,
+     "seconds": 24.912616968154907,
+     "ok": true
+    },
+    "trained": {
+     "route": "CODE",
+     "deployment": "oci/openai.gpt-5.1",
+     "classifier_cost": 0.0,
+     "seconds": 1.6307868957519531,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0004",
+   "family": "factual",
+   "route_hint": "SIMPLE",
+   "difficulty": 2,
+   "prompt": "What is the SI unit of electric current?",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 1.872e-05,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 4,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00035575,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.009891250000000002,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.000294,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.001414,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 0.7031610012054443,
+     "ok": true
+    },
+    "llm": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 2.685e-05,
+     "seconds": 1.3219759464263916,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 0.8247530460357666,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0019",
+   "family": "formatting",
+   "route_hint": "SIMPLE",
+   "difficulty": 1,
+   "prompt": "Rewrite this as a single concise sentence: \"The meeting is on Friday. It starts at 2 PM. Please be on time.\"",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 3.96e-05,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00018225,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.02054375,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.000338,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.0013405000000000001,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.26218104362487793,
+     "ok": true
+    },
+    "llm": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 2.8199999999999998e-05,
+     "seconds": 1.1056349277496338,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.27705907821655273,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0162",
+   "family": "logic",
+   "route_hint": "REASONING",
+   "difficulty": 1,
+   "prompt": "If all roses are flowers and some flowers fade quickly, can I conclude that some roses fade quickly? Explain the logic.",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "cost": 0.00015719999999999997,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.0019575,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.015130000000000001,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.008067999999999999,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.00371,
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 15.151685953140259,
+     "ok": true
+    },
+    "llm": {
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "classifier_cost": 2.8575e-05,
+     "seconds": 10.592890977859497,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 1.8648037910461426,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0012",
+   "family": "factual",
+   "route_hint": "SIMPLE",
+   "difficulty": 4,
+   "prompt": "What is the half-life of carbon-14 in years (approx.)?",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "cost": 6.974999999999999e-06,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00047925,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.005801250000000001,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.000754,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.0014315,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 0.6793818473815918,
+     "ok": true
+    },
+    "llm": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 2.7449999999999996e-05,
+     "seconds": 1.2478690147399902,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.8819618225097656,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0217",
+   "family": "code",
+   "route_hint": "CODE",
+   "difficulty": 2,
+   "prompt": "Write a SQL query to get the top 5 customers by total order amount in the last 30 days. Tables: customers(id,name), orders(id,customer_id,total,created_at).",
+   "route": "CODE",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 11.148206949234009,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 2.9549999999999997e-05,
+     "seconds": 11.301920890808105,
+     "ok": true
+    },
+    "trained": {
+     "route": "CODE",
+     "deployment": "oci/openai.gpt-5.1",
+     "classifier_cost": 0.0,
+     "seconds": 1.3935160636901855,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0128",
+   "family": "longform",
+   "route_hint": "COMPLEX",
+   "difficulty": 1,
+   "prompt": "Draft a simple one-page remote work policy for a small business (under 25 people). Include eligibility, core hours, communication expectations, equipment, and a short section on security basics.",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "cost": 0.00036142499999999996,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.0020807499999999997,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.01588875,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.00611,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.005816999999999999,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 4.0421459674835205,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 2.91e-05,
+     "seconds": 10.864034175872803,
+     "ok": true
+    },
+    "trained": {
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "classifier_cost": 0.0,
+     "seconds": 19.91478395462036,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0146",
+   "family": "math",
+   "route_hint": "REASONING",
+   "difficulty": 1,
+   "prompt": "What is 35% of 200? Please show the steps.",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "cost": 0.000118275,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00034500000000000004,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.018351250000000003,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.000936,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.0026267499999999997,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.5869479179382324,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 2.7449999999999996e-05,
+     "seconds": 2.6177399158477783,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.6044900417327881,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0188",
+   "family": "planning",
+   "route_hint": "REASONING",
+   "difficulty": 4,
+   "prompt": "Create an exam timetable for 28 students and 6 exams over 3 days with two slots per day (9–12, 1–4). Constraints: no student can have two exams in one day; each exam needs a room with capacity 15, and we have two rooms; proctors: 3 available per slot, each exam requires 1 proctor per room used; some students need extra time so they must be assigned to Room B only. I’ll give you a matrix of which students take which exams—tell me exactly what data you need, then propose an algorithm and produce a sample feasible schedule using placeholder IDs.",
+   "route": "REASONING",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.0007581599999999999,
+     "ok": true,
+     "scores": {
+      "correctness": 2,
+      "completeness": 3,
+      "instruction_following": 3
+     },
+     "passed": false
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.008033750000000001,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 1,
+      "instruction_following": 1
+     },
+     "passed": false
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.03610625,
+     "ok": true,
+     "scores": {
+      "correctness": 3,
+      "completeness": 2,
+      "instruction_following": 2
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.022725999999999996,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 4,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.00374325,
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 67.80123090744019,
+     "ok": true
+    },
+    "llm": {
+     "route": "COMPLEX",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "classifier_cost": 3.645e-05,
+     "seconds": 37.215205907821655,
+     "ok": true
+    },
+    "trained": {
+     "route": "REASONING",
+     "deployment": "oci/openai.o3",
+     "classifier_cost": 0.0,
+     "seconds": 41.21369791030884,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0064",
+   "family": "summary",
+   "route_hint": "MEDIUM",
+   "difficulty": 1,
+   "prompt": "Can you summarize this paragraph in 2-3 sentences?\n\nParagraph:\nOur community garden started as a vacant lot filled with weeds and broken glass. A few neighbors met on a Saturday, brought gloves and trash bags, and cleared the space. Over the next months we built raised beds from reclaimed wood, tested the soil, and planted tomatoes, beans, and herbs. People who had never spoken before began swapping tools and recipes. Kids painted signs for each plot, and older residents taught pruning and composting. The harvest wasn’t huge, but it changed the block: fewer people littered, more people walked by, and the lot became a place to talk rather than avoid.",
+   "route": "SIMPLE",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "cost": 2.4e-05,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 4,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00029325,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.013250000000000001,
+     "ok": true,
+     "scores": {
+      "correctness": 4,
+      "completeness": 4,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.0009299999999999998,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.0017325,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 0.6843090057373047,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 3.6374999999999996e-05,
+     "seconds": 3.489638090133667,
+     "ok": true
+    },
+    "trained": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.6946310997009277,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0178",
+   "family": "planning",
+   "route_hint": "REASONING",
+   "difficulty": 1,
+   "prompt": "Set up a simple study plan for tonight: 2 hours total, with a 10-minute break every 50 minutes. I can start any time after 6:30pm and want to finish by 10pm.",
+   "route": "MEDIUM",
+   "label_source": "outcome",
+   "tiers": [
+    {
+     "tier": "SIMPLE",
+     "group": "oci-fast",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "cost": 0.00026064,
+     "ok": true,
+     "scores": {
+      "correctness": 1,
+      "completeness": 2,
+      "instruction_following": 3
+     },
+     "passed": false
+    },
+    {
+     "tier": "MEDIUM",
+     "group": "oci-balanced",
+     "deployment": "oci/openai.gpt-5-mini",
+     "cost": 0.00225675,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "cost": 0.0237225,
+     "ok": true,
+     "scores": {
+      "correctness": 2,
+      "completeness": 2,
+      "instruction_following": 3
+     },
+     "passed": false
+    },
+    {
+     "tier": "REASONING",
+     "group": "oci-reasoning",
+     "deployment": "oci/openai.o3",
+     "cost": 0.010573999999999998,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
+     },
+     "passed": true
+    }
+   ],
+   "judge_cost": 0.0031815,
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 1.6766462326049805,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 2.9925e-05,
+     "seconds": 11.339447975158691,
+     "ok": true
+    },
+    "trained": {
+     "route": "REASONING",
+     "deployment": "oci/openai.o3",
+     "classifier_cost": 0.0,
+     "seconds": 8.666566848754883,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0276",
+   "family": "multilingual-german",
+   "route_hint": "MULTILINGUAL",
+   "difficulty": 3,
+   "prompt": "Ich habe eine CSV-Datei mit den Spalten: datum, kanal, spend, conversions. Bitte zeig mir (mit Beispiel-Python/Pandas-Code), wie ich die Conversion-Rate pro Kanal berechne, Ausreißer entferne (IQR) und das Ergebnis als sortierte Tabelle exportiere.",
+   "route": "MULTILINGUAL",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 0.0,
+     "seconds": 13.727174043655396,
+     "ok": true
+    },
+    "llm": {
+     "route": "COMPLEX",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "classifier_cost": 3.1275e-05,
+     "seconds": 38.06722807884216,
+     "ok": true
+    },
+    "trained": {
+     "route": "MULTILINGUAL",
+     "deployment": "oci/cohere.command-a-03-2025",
+     "classifier_cost": 0.0,
+     "seconds": 39.617955923080444,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0277",
+   "family": "multilingual-german",
+   "route_hint": "MULTILINGUAL",
+   "difficulty": 3,
+   "prompt": "Wir wollen ein kleines internes Wiki aufsetzen. Vergleiche Confluence, Notion und MediaWiki für ein Team von 30 Leuten mit Fokus auf Rechteverwaltung, Suche, Integrationen und Kosten. Am Ende eine klare Empfehlung mit Begründung.",
+   "route": "MULTILINGUAL",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 5.7082679271698,
+     "ok": true
+    },
+    "llm": {
+     "route": "COMPLEX",
+     "deployment": "oci/google.gemini-2.5-pro",
+     "classifier_cost": 3.0375e-05,
+     "seconds": 40.821300983428955,
+     "ok": true
+    },
+    "trained": {
+     "route": "MULTILINGUAL",
+     "deployment": "oci/cohere.command-a-03-2025",
+     "classifier_cost": 0.0,
+     "seconds": 52.60933303833008,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0280",
+   "family": "multilingual-japanese",
+   "route_hint": "MULTILINGUAL",
+   "difficulty": 1,
+   "prompt": "今日の天気に合わせて、通勤に持っていくと便利な持ち物を3つ教えて。",
+   "route": "MULTILINGUAL",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 1.1928789615631104,
+     "ok": true
+    },
+    "llm": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 2.7449999999999996e-05,
+     "seconds": 3.5196540355682373,
+     "ok": true
+    },
+    "trained": {
+     "route": "MULTILINGUAL",
+     "deployment": "oci/cohere.command-a-03-2025",
+     "classifier_cost": 0.0,
+     "seconds": 11.903037071228027,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0281",
+   "family": "multilingual-japanese",
+   "route_hint": "MULTILINGUAL",
+   "difficulty": 1,
+   "prompt": "冷蔵庫に卵・キャベツ・ツナ缶しかないんだけど、10分くらいで作れる簡単レシピある？",
+   "route": "MULTILINGUAL",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 3.7110989093780518,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 2.8049999999999997e-05,
+     "seconds": 12.695288896560669,
+     "ok": true
+    },
+    "trained": {
+     "route": "MULTILINGUAL",
+     "deployment": "oci/cohere.command-a-03-2025",
+     "classifier_cost": 0.0,
+     "seconds": 17.18396496772766,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0288",
+   "family": "multilingual-portuguese",
+   "route_hint": "MULTILINGUAL",
+   "difficulty": 1,
+   "prompt": "Você pode me dizer que horas são agora em Lisboa e em São Paulo?",
+   "route": "MULTILINGUAL",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 1.465080976486206,
+     "ok": true
+    },
+    "llm": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 2.73e-05,
+     "seconds": 1.8437480926513672,
+     "ok": true
+    },
+    "trained": {
+     "route": "MULTILINGUAL",
+     "deployment": "oci/cohere.command-a-03-2025",
+     "classifier_cost": 0.0,
+     "seconds": 9.805031061172485,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0289",
+   "family": "multilingual-portuguese",
+   "route_hint": "MULTILINGUAL",
+   "difficulty": 1,
+   "prompt": "Me ajuda a escrever uma mensagem curta e educada para cancelar um almoço hoje à tarde?",
+   "route": "MULTILINGUAL",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.8025000095367432,
+     "ok": true
+    },
+    "llm": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 2.7599999999999997e-05,
+     "seconds": 0.7624251842498779,
+     "ok": true
+    },
+    "trained": {
+     "route": "MULTILINGUAL",
+     "deployment": "oci/cohere.command-a-03-2025",
+     "classifier_cost": 0.0,
+     "seconds": 7.813043117523193,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0296",
+   "family": "multilingual-italian",
+   "route_hint": "MULTILINGUAL",
+   "difficulty": 1,
+   "prompt": "Mi riscrivi questo messaggio in modo più gentile e breve? \"Non posso venire domani, ho già un impegno.\"",
+   "route": "MULTILINGUAL",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.36761903762817383,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 2.7899999999999997e-05,
+     "seconds": 5.659195899963379,
+     "ok": true
+    },
+    "trained": {
+     "route": "MULTILINGUAL",
+     "deployment": "oci/cohere.command-a-03-2025",
+     "classifier_cost": 0.0,
+     "seconds": 2.6455349922180176,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0297",
+   "family": "multilingual-italian",
+   "route_hint": "MULTILINGUAL",
+   "difficulty": 1,
+   "prompt": "Qual è la differenza tra \"appuntamento\" e \"incontro\"? Fammi anche 3 esempi d’uso per ciascuna parola.",
+   "route": "MULTILINGUAL",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 3.5291337966918945,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 2.8199999999999998e-05,
+     "seconds": 9.205415964126587,
+     "ok": true
+    },
+    "trained": {
+     "route": "MULTILINGUAL",
+     "deployment": "oci/cohere.command-a-03-2025",
+     "classifier_cost": 0.0,
+     "seconds": 16.05540704727173,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0304",
+   "family": "multilingual-chinese",
+   "route_hint": "MULTILINGUAL",
+   "difficulty": 1,
+   "prompt": "帮我把“See you tomorrow at 3pm”翻译成中文，口吻自然一点。",
+   "route": "MULTILINGUAL",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 1.062704086303711,
+     "ok": true
+    },
+    "llm": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 2.7749999999999997e-05,
+     "seconds": 0.6684539318084717,
+     "ok": true
+    },
+    "trained": {
+     "route": "MULTILINGUAL",
+     "deployment": "oci/cohere.command-a-03-2025",
+     "classifier_cost": 0.0,
+     "seconds": 0.6134250164031982,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0305",
+   "family": "multilingual-chinese",
+   "route_hint": "MULTILINGUAL",
+   "difficulty": 1,
+   "prompt": "我冰箱里有鸡蛋、番茄和一小把青菜，给我一个10分钟内能做完的简单晚饭做法。",
+   "route": "MULTILINGUAL",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 3.7979071140289307,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 2.8424999999999996e-05,
+     "seconds": 11.429165124893188,
+     "ok": true
+    },
+    "trained": {
+     "route": "MULTILINGUAL",
+     "deployment": "oci/cohere.command-a-03-2025",
+     "classifier_cost": 0.0,
+     "seconds": 15.080125093460083,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0256",
+   "family": "multilingual-spanish",
+   "route_hint": "MULTILINGUAL",
+   "difficulty": 1,
+   "prompt": "¿Puedes decirme el pronóstico del tiempo para mañana en Madrid y recomendarme qué ropa llevar?",
+   "route": "MULTILINGUAL",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 0.0,
+     "seconds": 4.0260009765625,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 2.7675e-05,
+     "seconds": 11.449471950531006,
+     "ok": true
+    },
+    "trained": {
+     "route": "MULTILINGUAL",
+     "deployment": "oci/cohere.command-a-03-2025",
+     "classifier_cost": 0.0,
+     "seconds": 35.62776303291321,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0257",
+   "family": "multilingual-spanish",
+   "route_hint": "MULTILINGUAL",
+   "difficulty": 1,
+   "prompt": "Reescribe este mensaje para que suene más amable y claro: “No puedo hoy. Hablamos luego.”",
+   "route": "MULTILINGUAL",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.9483058452606201,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 2.7975e-05,
+     "seconds": 14.78678297996521,
+     "ok": true
+    },
+    "trained": {
+     "route": "MULTILINGUAL",
+     "deployment": "oci/cohere.command-a-03-2025",
+     "classifier_cost": 0.0,
+     "seconds": 2.8143739700317383,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0264",
+   "family": "multilingual-french",
+   "route_hint": "MULTILINGUAL",
+   "difficulty": 1,
+   "prompt": "Peux-tu me proposer trois idées de dîner rapides (moins de 20 minutes) avec des ingrédients simples ?",
+   "route": "MULTILINGUAL",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 3.775303840637207,
+     "ok": true
+    },
+    "llm": {
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5-mini",
+     "classifier_cost": 2.8049999999999997e-05,
+     "seconds": 11.209304094314575,
+     "ok": true
+    },
+    "trained": {
+     "route": "MULTILINGUAL",
+     "deployment": "oci/cohere.command-a-03-2025",
+     "classifier_cost": 0.0,
+     "seconds": 42.29354500770569,
+     "ok": true
+    }
+   }
+  },
+  {
+   "id": "p0265",
+   "family": "multilingual-french",
+   "route_hint": "MULTILINGUAL",
+   "difficulty": 1,
+   "prompt": "Rédige un message court et poli pour demander à mon voisin de baisser un peu la musique ce soir.",
+   "route": "MULTILINGUAL",
+   "label_source": "task type",
+   "routed": {
+    "heuristic": {
+     "route": "SIMPLE",
+     "deployment": "oci/meta.llama-4-scout-17b-16e-instruct",
+     "classifier_cost": 0.0,
+     "seconds": 0.6469459533691406,
+     "ok": true
+    },
+    "llm": {
+     "route": "SIMPLE",
+     "deployment": "oci/google.gemini-2.5-flash-lite",
+     "classifier_cost": 2.7899999999999997e-05,
+     "seconds": 2.362985849380493,
+     "ok": true
+    },
+    "trained": {
+     "route": "MULTILINGUAL",
+     "deployment": "oci/cohere.command-a-03-2025",
+     "classifier_cost": 0.0,
+     "seconds": 2.7449240684509277,
+     "ok": true
+    }
+   }
+  }
+ ]
+}

@@ -73,12 +73,25 @@ async def main() -> None:
             by_lang.setdefault(r["family"], []).append(r)
     held += [r for rows_ in by_lang.values() for r in rows_[:2]]
 
+    # REASONING answers and their verdicts are reused from an earlier run when
+    # present, so re-running the routers does not pay for them twice.
+    previous = {}
+    if OUT.exists():
+        for r in json.loads(OUT.read_text()).get("rows", []):
+            t = next((x for x in r.get("tiers", []) if x["tier"] == "REASONING"), None)
+            if t:
+                previous[r["id"]] = t
+
     async def one(row: dict) -> dict:
         jobs = {name: routed(group, row["prompt"]) for name, group in ROUTERS.items()}
         if row["route"] in DIFFICULTY:
-            results = await asyncio.gather(reasoning_tier(row), *jobs.values())
-            row = {**row, "tiers": row["tiers"] + [results[0]]}
-            routes = dict(zip(jobs, results[1:], strict=True))
+            reasoning = previous.get(row["id"])
+            pending = [] if reasoning else [reasoning_tier(row)]
+            results = await asyncio.gather(*pending, *jobs.values())
+            if not reasoning:
+                reasoning, results = results[0], results[1:]
+            row = {**row, "tiers": row["tiers"] + [reasoning]}
+            routes = dict(zip(jobs, results, strict=True))
         else:
             routes = dict(zip(jobs, await asyncio.gather(*jobs.values()), strict=True))
         return {**row, "routed": routes}

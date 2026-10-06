@@ -10,6 +10,11 @@ The signer is rebuilt from the session token file at most once a minute, so
 `oci session authenticate` refreshes the gateway without a restart. The token
 and the key stay on the gateway host; applications only hold a gateway key.
 
+On Kubernetes (OCI_AUTH=instance_principal) the gateway signs as the OKE node
+it runs on instead: an IAM dynamic group and policy allow that node to use
+Generative AI, and no key or token is stored in the cluster. The OCI SDK
+refreshes the instance-principal token itself.
+
     litellm_settings:
       callbacks: oci_session_signer.handler
 """
@@ -23,6 +28,7 @@ import time
 from litellm.integrations.custom_logger import CustomLogger
 
 PROFILE = os.environ.get("OCI_CONFIG_PROFILE", "DEFAULT")
+AUTH = os.environ.get("OCI_AUTH", "session")      # "session" or "instance_principal"
 REFRESH_SECONDS = 60
 
 
@@ -35,6 +41,12 @@ class OCISessionSigner(CustomLogger):
 
     def signer(self):
         with self._lock:
+            if AUTH == "instance_principal":
+                if self._signer is None:
+                    import oci
+
+                    self._signer = oci.auth.signers.InstancePrincipalsSecurityTokenSigner()
+                return self._signer
             if self._signer is None or time.monotonic() - self._loaded_at > REFRESH_SECONDS:
                 import oci
 

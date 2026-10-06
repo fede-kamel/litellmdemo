@@ -88,8 +88,9 @@ model_list:
     model_info: *gemini
 
   # --- Classifier and judge models -----------------------------------------
-  - model_name: oci-classifier-llm            # the LLM that grades requests for oci-auto-llm
-    litellm_params: {<<: *oci, model: oci/openai.gpt-5-nano}
+  - model_name: oci-classifier-llm            # the LLM that grades requests for oci-auto-llm: the fastest model,
+    litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash-lite}   # a slow one times out into the heuristic
+    model_info: *gemini
   - model_name: oci-judge                     # writes and grades the classifier's training data
     litellm_params: {<<: *oci, model: oci/openai.gpt-5.2}
     model_info: {input_cost_per_token: 1.75e-06, output_cost_per_token: 1.4e-05, max_input_tokens: 272000}
@@ -106,7 +107,7 @@ model_list:
       model: auto_router/complexity_router
       complexity_router_config:
         classifier_type: llm
-        classifier_llm_config: {model: oci-classifier-llm}
+        classifier_llm_config: {model: oci-classifier-llm, timeout_ms: 8000}
         tiers: {SIMPLE: oci-fast, MEDIUM: oci-balanced, COMPLEX: oci-strong, REASONING: oci-reasoning}
 
   - model_name: oci-auto-trained              # 3. our mini-trained classifier

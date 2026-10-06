@@ -1,0 +1,19 @@
+{
+  "encoder": "intfloat/multilingual-e5-small",
+  "device": "mps",
+  "train_prompts": 204,
+  "held_out": 52,
+  "epochs": 12,
+  "encoder_parameters": 117653760,
+  "frozen": {
+    "trained": "logistic regression head only",
+    "held_out_accuracy": 0.731,
+    "held_out_balanced_accuracy": 0.73
+  },
+  "fine_tuned": {
+    "trained": "every encoder weight, then the same head",
+    "held_out_accuracy": 0.808,
+    "held_out_balanced_accuracy": 0.769,
+    "fine_tune_seconds": 47.1
+  }
+}

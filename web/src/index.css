@@ -37,3 +37,9 @@ body { @apply bg-paper text-ink font-sans antialiased; font-feature-settings: "c
 .live-dot { animation: pulse-ring 1.6s infinite; }
 @keyframes lit { from { background-color: var(--color-oracle-soft); } to { background-color: transparent; } }
 .lit { animation: lit 2.4s ease-out; }
+
+/* The live routing map: the newest call's path flows; the classifier pulses while it decides. */
+@keyframes dash { to { stroke-dashoffset: -28; } }
+.flow { stroke-dasharray: 10 4; animation: dash 0.9s linear infinite; }
+@keyframes pulse-box { 0%, 100% { stroke-width: 2; } 50% { stroke-width: 5; } }
+.pulse-box { animation: pulse-box 1s ease-in-out infinite; }

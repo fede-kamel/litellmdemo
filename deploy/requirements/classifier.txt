@@ -1,0 +1,9 @@
+# route-classifier pod (torch comes from the CPU index first; see deploy/k8s/litellmdemo.yaml)
+sentence-transformers==6.1.0
+transformers==5.18.0
+scikit-learn==1.9.1
+joblib==1.6.0
+numpy==2.5.3
+py3langid==0.4.0
+fastapi==0.142.2
+uvicorn==0.54.0

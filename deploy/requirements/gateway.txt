@@ -1,0 +1,4 @@
+# litellm-gateway pod
+litellm[proxy]==1.104.0
+oci==2.187.2
+httpx==0.28.1

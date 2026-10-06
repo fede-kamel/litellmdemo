@@ -3,6 +3,7 @@ import { ArrowRight, Calculator, CircleAlert, Cpu, FileSearch, Play, RotateCw, S
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ROUTE_STYLE, getJSON, postJSON, usd, type RunEvent, type Scenario } from "../api";
 import { ModelChip, Panel, RouteChip } from "./bits";
+import { RouteMap } from "./RouteMap";
 
 const ROUTERS = [
   { id: "oci-auto-trained", label: "Trained classifier", note: "ours: rules + mini-trained model, 8 routes" },
@@ -50,8 +51,15 @@ export function ControlRoom({ onCall }: { onCall: () => void }) {
   let pending: Extract<RunEvent, { type: "classify" }> | undefined;
   for (const e of events) {
     if (e.type === "classify") pending = e;
-    if (e.type === "llm") { calls.push({ ...e, classify: pending }); pending = undefined; }
+    if (e.type === "llm") {
+      // A group asked for directly has no classifier tier: place it on its route by group.
+      const byGroup = Object.entries(ROUTE_STYLE).find(([, v]) => v.group === e.group)?.[0];
+      calls.push({ ...e, route: e.route ?? byGroup, classify: pending });
+      pending = undefined;
+    }
   }
+  const lastEvent = events[events.length - 1];
+  const classifying = running && (!lastEvent || lastEvent.type === "classify" || lastEvent.type === "tool_result");
   const answer = events.find((e) => e.type === "answer") as Extract<RunEvent, { type: "answer" }> | undefined;
   const error = events.find((e) => e.type === "error") as Extract<RunEvent, { type: "error" }> | undefined;
   const spend = calls.reduce((s, c) => s + (c.cost ?? 0), 0);
@@ -104,6 +112,11 @@ export function ControlRoom({ onCall }: { onCall: () => void }) {
             </button>
           </div>
           <div className="mt-2 text-[11px] text-ink-3">The agent (langchain-oci <span className="font-mono">create_oci_agent</span>) asks the gateway for a model group, never a vendor model. Enter runs; Shift+Enter for a new line.</div>
+        </Panel>
+
+        <Panel kicker="Live routing" title="Request → classifier → route → OCI model, as the gateway decides"
+          right={<span className="font-mono text-[11px] text-ink-3">{calls.length} calls · moving path = the latest call · ochre = after a fallback</span>}>
+          <RouteMap calls={calls} classifying={classifying} router={fixedModel ? selected!.model! : router} />
         </Panel>
 
         <Panel kicker="Route trace" title={calls.length ? `${calls.length} model call${calls.length > 1 ? "s" : ""}, each routed by the gateway` : "Every model call, as the gateway routed it"}

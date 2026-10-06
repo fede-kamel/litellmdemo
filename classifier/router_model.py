@@ -36,10 +36,25 @@ def learned_label(route: str) -> str | None:
     return {"COMPLEX": "REASONING"}.get(route, route) if route in (*LEARNED, "COMPLEX") else None
 
 
-def language(text: str) -> str:
-    import py3langid
+_identifier = None
 
-    return py3langid.classify(text[:2000])[0]
+
+def language(text: str) -> str:
+    """ISO code of the text's language; "en" unless the identifier is confident.
+
+    Short or mostly numeric text ("What is 18 percent of 4,217.50?") gives
+    py3langid little to go on, so the language rule needs a few words and 50%
+    confidence before it overrides the model.
+    """
+    global _identifier
+    if sum(ch.isalpha() for ch in text) < 12:
+        return "en"
+    if _identifier is None:
+        from py3langid.langid import MODEL_FILE, LanguageIdentifier
+
+        _identifier = LanguageIdentifier.from_model_file(MODEL_FILE, norm_probs=True)
+    lang, confidence = _identifier.classify(text[:2000])
+    return lang if lang == "en" or confidence >= 0.5 else "en"
 
 
 @dataclass
@@ -54,10 +69,16 @@ class Decision:
 
 
 def text_of(messages: list[dict]) -> tuple[str, bool]:
-    """The user-visible text of a chat request, and whether it carries an image."""
+    """The user's text in a chat request, and whether it carries an image.
+
+    Only user turns count: an agent's system prompt and its tool-call turns are
+    the same for every request and would drown the request itself.
+    """
     parts: list[str] = []
     image = False
     for m in messages:
+        if m.get("role", "user") not in ("user", "human"):
+            continue
         content = m.get("content")
         if isinstance(content, str):
             parts.append(content)

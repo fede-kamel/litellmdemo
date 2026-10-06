@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.12"
 dependencies = [
+    "accelerate>=1.15.0",
+    "datasets>=5.1.0",
     "joblib>=1.6.0",
     "langchain-oci>=0.3.2",
     "langchain-openai>=1.6.7",

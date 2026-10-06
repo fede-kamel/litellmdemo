@@ -34,10 +34,12 @@ PROBES = [
      "Prove step by step that the square root of 2 is irrational, then explain why the proof generalises to every non-square integer.", {},
      lambda h: bool(h.get("x-litellm-complexity-router-tier")),
      "the built-in heuristic's tier for a proof: the baseline the trained classifier must beat"),
-    ("trained: proof", "oci-auto-trained",
-     "Prove step by step that the square root of 2 is irrational, then explain why the proof generalises to every non-square integer.", {},
+    ("trained: constrained planning", "oci-auto-trained",
+     "Our GPU spend grew 12%, 9%, 15% and 11% over the last four quarters from $1.2M. Next year the budget is $7.5M with a "
+     "hard cap of $2.1M in any quarter. Model three growth scenarios, show for each whether and when the cap binds, and "
+     "recommend which workloads to defer, with the arithmetic.", {},
      lambda h: h.get("x-litellm-complexity-router-tier") == "REASONING" and h.get("x-litellm-complexity-router-cause") == "classifier_plugin",
-     "our classifier sends the proof the heuristic called MEDIUM to REASONING"),
+     "a multi-constraint plan goes to REASONING (planning prompts were mostly REASONING by outcome)"),
     ("trained: code", "oci-auto-trained",
      "My Go program increments a shared counter from goroutines and the total is wrong. Explain and fix it with sync/atomic.", {},
      lambda h: h.get("x-litellm-complexity-router-tier") == "CODE",

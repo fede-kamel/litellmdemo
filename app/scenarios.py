@@ -41,7 +41,7 @@ SCENARIOS = [
     {"id": "support-billing", "use_case": "Customer support", "title": "Billing dispute", "expect": "MEDIUM",
      "prompt": "I was charged twice for September on account NW-4471. Look up our refund policy and draft a short, "
                "polite reply to the customer explaining what happens next."},
-    {"id": "support-escalation", "use_case": "Customer support", "title": "Escalation with SLA credits", "expect": "COMPLEX",
+    {"id": "support-escalation", "use_case": "Customer support", "title": "Escalation with SLA credits", "expect": "REASONING",
      "prompt": "Enterprise customer NW-0093 had three outages last month (2h10m, 45m, 3h30m) against a 99.9% SLA. "
                "Using our SLA policy, work out the credit, explain the calculation, and propose a remediation plan "
                "with owners and dates for the account team."},

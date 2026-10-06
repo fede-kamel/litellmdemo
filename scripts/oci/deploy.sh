@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Deploy the gateway and the classifier to the demo's OKE cluster.
+#
+#   scripts/oci/deploy.sh             # build ConfigMaps from this repo, apply, wait
+#   scripts/oci/deploy.sh --forward   # then port-forward the gateway to 127.0.0.1:4100
+#
+# Targets only the kubeconfig scripts/oci/up.sh wrote for the cluster it
+# created. The master key comes from ~/.config/litellmdemo/master_key and the
+# compartment from the state file; both go into one Kubernetes Secret.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+CONF_DIR="$HOME/.config/litellmdemo"
+export KUBECONFIG="$CONF_DIR/kubeconfig"
+[[ -f "$KUBECONFIG" ]] || { echo "ABORT: $KUBECONFIG not found; run scripts/oci/up.sh" >&2; exit 1; }
+export OCI_CLI_AUTH=api_key OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING=True PYTHONWARNINGS=ignore
+NS=litellmdemo
+COMP="$(python3 -c "import json; print(json.load(open('$CONF_DIR/oci-state.json'))['compartment'])")"
+k() { kubectl "$@"; }
+apply_cm() { k create configmap "$1" -n "$NS" "${@:2}" --dry-run=client -o yaml | k apply -f - >/dev/null; }
+
+k apply -f "$ROOT/deploy/k8s/litellmdemo.yaml" >/dev/null
+apply_cm requirements --from-file="$ROOT/deploy/requirements/classifier.txt" --from-file="$ROOT/deploy/requirements/gateway.txt"
+apply_cm classifier-code --from-file="$ROOT/classifier/__init__.py" --from-file="$ROOT/classifier/router_model.py" \
+  --from-file="$ROOT/classifier/serve.py" --from-file="$ROOT/classifier/model/head.joblib" --from-file="$ROOT/classifier/model/meta.json"
+apply_cm gateway-code --from-file="$ROOT/gateway/config.yaml" --from-file="$ROOT/gateway/oci_session_signer.py" \
+  --from-file="$ROOT/gateway/trained_classifier.py"
+# --from-file keeps the key file's trailing newline, and LiteLLM would then
+# never match the master key; strip it through a private temp file.
+KEYTMP="$(mktemp)"; chmod 600 "$KEYTMP"; trap 'rm -f "$KEYTMP"' EXIT
+tr -d '\r\n' < "$CONF_DIR/master_key" > "$KEYTMP"
+k create secret generic gateway -n "$NS" --from-file=master_key="$KEYTMP" \
+  --from-literal=compartment_id="$COMP" --dry-run=client -o yaml | k apply -f - >/dev/null
+# ConfigMaps do not restart pods by themselves: stamp each pod template with a
+# hash of what it mounts, so pods restart exactly when their code or config changes.
+stamp() {  # deployment files...
+  local h; h="$(cat "${@:2}" | shasum -a 256 | cut -c1-16)"
+  k patch deployment "$1" -n "$NS" --type merge \
+    -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"litellmdemo/config-hash\":\"$h\"}}}}}" >/dev/null
+}
+stamp route-classifier "$ROOT"/deploy/requirements/classifier.txt "$ROOT"/classifier/{__init__.py,router_model.py,serve.py} "$ROOT"/classifier/model/*
+stamp litellm-gateway "$ROOT"/deploy/requirements/gateway.txt "$ROOT"/gateway/{config.yaml,oci_session_signer.py,trained_classifier.py} "$KEYTMP" <(echo "$COMP")
+echo "applied; waiting for both deployments (first start installs packages: a few minutes)"
+k rollout status -n "$NS" deployment/route-classifier --timeout=15m
+k rollout status -n "$NS" deployment/litellm-gateway --timeout=15m
+k get pods -n "$NS" -o wide
+if [[ "${1:-}" == "--forward" ]]; then
+  echo "gateway on http://127.0.0.1:4100  (LITELLM_GATEWAY=http://127.0.0.1:4100)"
+  exec kubectl port-forward -n "$NS" svc/litellm-gateway 4100:4000
+fi
+echo "DEPLOY OK"

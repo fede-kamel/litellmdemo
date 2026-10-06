@@ -48,7 +48,7 @@ try {
 
   await tab("Compare routers");
   await page.locator("button:has-text('Send to all three')").click();
-  check("the three routers answer", await visible("Built-in heuristic", 240000) && await page.locator("text=/right route|different route/").count() === 3);
+  check("the three routers answer", await visible("Built-in heuristic", 240000) && (await page.getByText("right route", { exact: true }).count()) + (await page.getByText("different route", { exact: true }).count()) === 3);
   await shot("06-compare");
 
   await tab("The classifier");
