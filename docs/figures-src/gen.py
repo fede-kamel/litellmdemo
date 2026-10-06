@@ -202,7 +202,7 @@ for n, title, c, lines in steps:
     if x < 1600:
         f.arrow(x + 294, 525, x + 316, 525, color=MUT, sw=4)
     x += 314
-f.text(1000, 820, "classifier_type: custom  ·  classifier_plugin: trained_classifier.plugin  ·  async classify(context) → route name", 21, INDIGO, mono=True, weight="600")
+f.text(1000, 820, "LiteLLM's complexity router asks our classifier, and gets back the name of a route", 23, INDIGO, weight="600")
 f.panel(70, 870, 1860, 260, INDIGO)
 f.text(1000, 925, "WHAT COMES BACK WITH EVERY RESPONSE", 21, INDIGO, weight="700", spacing="4")
 heads = [("x-litellm-complexity-router-tier", "REASONING"), ("x-litellm-complexity-router-cause", "classifier_plugin"),
@@ -432,3 +432,50 @@ for i, (who, what, c) in enumerate(cols6):
     f.text(x + 200, 1160, who, 19, c, weight="700")
     f.text(x + 200, 1195, what, 16, SUB)
 f.save("figure6-isolation.svg")
+
+
+# ===================================================== Figure 7 · one request, in order
+f = Fig(2000, 1500)
+f.header("FIGURE 7 · SEQUENCE", "One request, from the sandbox to the model and back",
+         "what LiteLLM does in between: check the key, classify, route, sign, call, fall back, account", accent=INDIGO)
+lanes = [("Agent", "OpenShell sandbox", "#4C7A00"), ("OpenShell proxy", "the sandbox's egress", "#4C7A00"),
+         ("LiteLLM gateway", "key check · router · hooks", INDIGO), ("Classifier service", "the ladder", VIOLET),
+         ("OCI Generative AI", "us-chicago-1", RED)]
+X = [180, 560, 990, 1420, 1800]
+for (title, sub, c), x in zip(lanes, X):
+    f.rect(x - 150, 250, 300, 86, stroke=c, sw=2.5)
+    f.text(x, 287, title, 22, c, weight="700")
+    f.text(x, 318, sub, 15, SUB)
+    f.e.append(f'<line x1="{x}" y1="336" x2="{x}" y2="1440" stroke="{LINE}" stroke-width="2.5" stroke-dasharray="8 8"/>')
+
+def msg(y, a, b, label, sub=None, color=SUB, dash=None):
+    x1, x2 = X[a], X[b]
+    f.arrow(x1 + (8 if x2 > x1 else -8), y, x2 - (10 if x2 > x1 else -10), y, color=color, sw=3, dash=dash)
+    mid = (x1 + x2) / 2
+    f.text(mid, y - 12, label, 17, INK if color == SUB else color, weight="600")
+    if sub:
+        f.text(mid, y + 26, sub, 14.5, SUB, mono=True)
+
+def note(y, lane, label, color, w=330):
+    x = X[lane]
+    f.rect(x - w / 2, y - 26, w, 52, fill="#F7F8FA", stroke=color, sw=2, rx=10)
+    f.text(x, y + 6, label, 15.5, color, weight="600")
+
+msg(390, 0, 1, "POST /v1/chat/completions", "Authorization: placeholder")
+note(455, 1, "policy: the one allowed endpoint", "#4C7A00")
+msg(520, 1, 2, "same request, real virtual key", "Authorization: sk-… (openshell-agent)", color="#4C7A00")
+note(585, 2, "1 · key check: models, budget, rpm", INDIGO)
+msg(650, 2, 3, "POST /classify (complexity router plugin)", "messages, quality bar")
+msg(715, 3, 2, "route + P(good answer) per route", "SIMPLE · fast 92% ≥ bar 75%", color=VIOLET, dash="8 6")
+note(780, 2, "2 · route → group → deployment", INDIGO)
+note(845, 2, "3 · pre-call hook: sign the request", INDIGO)
+msg(910, 2, 4, "signed OCI request", "openai.gpt-6-luna · tools · max_tokens", color=RED)
+msg(975, 4, 2, "error (429 / 5xx / timeout)", None, color=OCHRE, dash="8 6")
+note(1040, 2, "4 · fallback: next deployment or group", OCHRE)
+msg(1105, 2, 4, "signed OCI request (fallback)", "the backup group's model", color=RED)
+msg(1170, 4, 2, "answer + token usage", None, color=RED, dash="8 6")
+note(1235, 2, "5 · cost, spend on the key, ROUTE log line", INDIGO, w=420)
+msg(1300, 2, 1, "answer + x-litellm-* headers", "tier · model · cost · route-decision", color=INDIGO, dash="8 6")
+msg(1365, 1, 0, "answer (headers intact)", None, color="#4C7A00", dash="8 6")
+f.text(1000, 1470, "gateway/route_headers.py · gateway/trained_classifier.py · gateway/oci_session_signer.py · sandbox/profile/litellm-gateway.yaml", 16, MUT, mono=True)
+f.save("figure7-sequence.svg")

@@ -57,7 +57,7 @@ export default function App() {
         <div className="ml-auto flex items-center gap-3 text-[11.5px]">
           {sess && <span title={`session refresher: ${sess.refresher}`} className={clsx("whitespace-nowrap rounded-full px-2.5 py-1 font-semibold",
             sess.minutes_left > 15 ? "bg-moss-soft text-moss" : sess.minutes_left > 0 ? "bg-ochre-soft text-ochre" : "bg-oracle-soft text-oracle")}>
-            OCI session {sess.minutes_left > 0 ? `${sess.minutes_left} min` : "expired"}</span>}
+            OCI session {sess.minutes_left > 0 ? `${sess.minutes_left} min` : "expired"}{sess.refresher === "needs-login" ? " · log in again" : ""}</span>}
           {gw && <span title={gw.active} className={clsx("whitespace-nowrap rounded-full px-2.5 py-1 font-semibold", gw.role === "primary" ? "bg-indigo-soft text-indigo" : "bg-ochre-soft text-ochre")}>
             gateway: {gw.role === "primary" ? "primary" : "fallback"} · {gw.active.replace("http://127.0.0.1:", ":")}</span>}
           <span className="flex items-center gap-1.5 whitespace-nowrap rounded-full bg-moss-soft px-2.5 py-1 font-semibold text-moss"><Activity className="size-3.5" />{stats?.calls ?? 0} routed calls</span>

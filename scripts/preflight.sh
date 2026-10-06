@@ -25,7 +25,7 @@ import base64, configparser, json, os, sys, time
 c = configparser.ConfigParser(); c.read(os.path.expanduser("~/.oci/config"))
 t = open(os.path.expanduser(c[sys.argv[1]]["security_token_file"])).read().split(".")[1]; t += "=" * (-len(t) % 4)
 left = int((json.loads(base64.urlsafe_b64decode(t))["exp"] - time.time()) / 60)
-print(f"{left} min left"); sys.exit(0 if left > 10 else 1)
+print(f"{left} min left" + ("  (at its maximum lifetime: a refresh cannot extend it)" if 0 < left < 45 else "")); sys.exit(0 if left > 30 else 1)
 PY
 }
 rd() { rdctl shell -- true >/dev/null 2>&1 && kubectl --context rancher-desktop get nodes --request-timeout=10s -o name | head -1; }
@@ -38,6 +38,11 @@ gateway_db() { curl -sf -m 10 http://127.0.0.1:30400/health/readiness | python3 
 signs() {  # a real model call, signed with the session
   curl -sf -m 60 -o /dev/null -w "%{http_code}" http://127.0.0.1:30400/v1/chat/completions -H "Authorization: Bearer $(cat "$CONF_DIR/master_key")" \
     -H 'Content-Type: application/json' -d '{"model":"oci-fast","max_tokens":5,"messages":[{"role":"user","content":"say ok"}]}'
+}
+codex() {   # the CODE route goes through the Responses provider (gateway/oci_responses.py)
+  curl -sf -m 120 -D - -o /dev/null http://127.0.0.1:30400/v1/chat/completions -H "Authorization: Bearer $(cat "$CONF_DIR/master_key")" \
+    -H 'Content-Type: application/json' -d '{"model":"oci-code","max_tokens":200,"messages":[{"role":"user","content":"Write is_even(n) in Python. Code only."}]}' \
+    | tr -d '\r' | awk -F': ' 'tolower($1)=="x-litellm-model-name"{m=$2} END{print m; exit (m ~ /codex/ ? 0 : 1)}'
 }
 agent_key() {
   [[ -s "$CONF_DIR/agent_key-local" ]] || { echo "no agent key file"; return 1; }
@@ -59,11 +64,12 @@ laptop() { curl -sf -m 5 -o /dev/null http://127.0.0.1:4000/health/liveliness &&
 ui() { curl -sf -m 5 http://127.0.0.1:8780/api/gateways | python3 -c "import json,sys; d=json.load(sys.stdin); print('primary', d['active']); sys.exit(0 if '30400' in d['active'] else 1)"; }
 recordings() { n=$(ls "$ROOT/out/recordings" 2>/dev/null | wc -l | tr -d ' '); echo "$n recorded runs"; [[ "$n" -ge 5 ]]; }
 
-check "OCI session ($PROFILE)" "oci session authenticate --profile-name $PROFILE --region us-ashburn-1   (then scripts/local/push-session.sh)" session
+check "OCI session, more than 30 min" "oci session authenticate --profile-name $PROFILE --region us-ashburn-1   (then scripts/local/push-session.sh); do it right before the talk" session
 check "Rancher Desktop and its Kubernetes" "rdctl start   (or open Rancher Desktop), then scripts/demo-up.sh" rd
 check "local cluster pods" "scripts/local/deploy.sh" pods
 check "LiteLLM gateway and its database" "kubectl --context rancher-desktop rollout restart -n litellmdemo deploy/litellm-gateway" gateway_db
 check "LiteLLM signs to OCI (a real call)" "scripts/local/push-session.sh   (a stale session in the cluster), then retry" signs
+check "the CODE route answers with Codex" "kubectl --context rancher-desktop logs -n litellmdemo deploy/litellm-gateway -c gateway --tail=40" codex
 check "the agent's virtual key" "scripts/local/deploy.sh   (re-issues it), then scripts/openshell.sh provider && scripts/openshell.sh down && scripts/openshell.sh up" agent_key
 check "OpenShell gateway" "brew services restart openshell" openshell_gw
 check "OpenShell sandbox" "scripts/openshell.sh up" sandbox_ready

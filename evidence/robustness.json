@@ -1,0 +1,112 @@
+{
+ "fresh": {
+  "prompts": 150,
+  "writer": "openai.gpt-5.5",
+  "judges": [
+   "gpt-5.2",
+   "gemini-2.5-pro"
+  ],
+  "judge_agreement": 0.893,
+  "policies_by_judge": {
+   "gpt-5.2": {
+    "always SIMPLE": {
+     "quality": 0.8467,
+     "cost_usd": 0.1266
+    },
+    "always MEDIUM": {
+     "quality": 0.8267,
+     "cost_usd": 0.4385
+    },
+    "always COMPLEX": {
+     "quality": 0.9133,
+     "cost_usd": 0.7931
+    },
+    "always REASONING": {
+     "quality": 0.88,
+     "cost_usd": 0.9153
+    },
+    "ladder (ours)": {
+     "quality": 0.8733,
+     "cost_usd": 0.4028
+    },
+    "LiteLLM heuristic": {
+     "quality": 0.84,
+     "cost_usd": 0.2505
+    },
+    "LiteLLM LLM classifier": {
+     "quality": 0.8933,
+     "cost_usd": 0.8892
+    },
+    "oracle": {
+     "quality": 0.98,
+     "cost_usd": 0.2343
+    }
+   },
+   "gemini-2.5-pro": {
+    "always SIMPLE": {
+     "quality": 0.84,
+     "cost_usd": 0.1266
+    },
+    "always MEDIUM": {
+     "quality": 0.8867,
+     "cost_usd": 0.4385
+    },
+    "always COMPLEX": {
+     "quality": 0.9933,
+     "cost_usd": 0.7931
+    },
+    "always REASONING": {
+     "quality": 0.96,
+     "cost_usd": 0.9153
+    },
+    "ladder (ours)": {
+     "quality": 0.8867,
+     "cost_usd": 0.4028
+    },
+    "LiteLLM heuristic": {
+     "quality": 0.8533,
+     "cost_usd": 0.2505
+    },
+    "LiteLLM LLM classifier": {
+     "quality": 0.9333,
+     "cost_usd": 0.8892
+    },
+    "oracle": {
+     "quality": 1.0,
+     "cost_usd": 0.1988
+    }
+   }
+  },
+  "ladder_mix": {
+   "MEDIUM": 0.207,
+   "SIMPLE": 0.467,
+   "REASONING": 0.313,
+   "CODE": 0.013
+  }
+ },
+ "code": {
+  "tasks": 20,
+  "pass_rate": {
+   "GPT-5.3-codex (CODE route)": {
+    "gpt-5.2": 1.0,
+    "gemini-2.5-pro": 1.0
+   },
+   "GPT-5.1": {
+    "gpt-5.2": 0.95,
+    "gemini-2.5-pro": 1.0
+   },
+   "GPT-6-luna": {
+    "gpt-5.2": 1.0,
+    "gemini-2.5-pro": 1.0
+   }
+  }
+ },
+ "vision": {
+  "images": 8,
+  "exact_answer_rate": {
+   "GPT-6-luna": 1.0,
+   "Gemini 2.5 Flash": 0.875,
+   "Llama 4 Maverick": 0.875
+  }
+ }
+}

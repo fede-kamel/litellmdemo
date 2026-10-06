@@ -1,12 +1,13 @@
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { Maximize2, Minimize2, Minus, Plus, RotateCcw } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { ROUTES, ROUTE_STYLE, getJSON, shortModel, vendor, type RunEvent } from "../api";
 
 type Gateway = { groups: Record<string, { model: string }[]>; fallbacks: Record<string, string[]>[] };
 type Call = Extract<RunEvent, { type: "llm" }>;
 
-const W = 980, H = 470;
-const COL = { req: 70, clf: 250, route: 470, model: 760 };
+const W = 1040;
+const COL = { req: 70, clf: 250, route: 470, model: 770 };
 const ROUTE_COLOR: Record<string, string> = {
   SIMPLE: "#5f7d4f", MEDIUM: "#2c5967", COMPLEX: "#3d3a8f", REASONING: "#c74634",
   CODE: "#6b4fa0", VISION: "#b07d1f", LONG_CONTEXT: "#6f6964", MULTILINGUAL: "#2c7a7b",
@@ -26,6 +27,7 @@ export function RouteMap({ calls, classifying, router }: { calls: Call[]; classi
     for (const d of g.groups[group] ?? []) if (!models.some((m) => m.model === d.model)) models.push({ model: d.model, route: r, backup: false });
     for (const b of fb[group] ?? []) for (const d of g.groups[b] ?? []) if (!models.some((m) => m.model === d.model)) models.push({ model: d.model, route: r, backup: true });
   }
+  const H = Math.max(470, 60 + models.length * 27);    // one row per model, however many the gateway serves
   const routeY = (r: string) => 40 + ROUTES.indexOf(r as (typeof ROUTES)[number]) * ((H - 80) / (ROUTES.length - 1));
   const modelY = (m: string) => 18 + models.findIndex((x) => x.model === m) * ((H - 64) / Math.max(1, models.length - 1));
   const last = calls[calls.length - 1];
@@ -37,8 +39,8 @@ export function RouteMap({ calls, classifying, router }: { calls: Call[]; classi
   const curve = (x1: number, y1: number, x2: number, y2: number) => `M${x1},${y1} C${(x1 + x2) / 2},${y1} ${(x1 + x2) / 2},${y2} ${x2},${y2}`;
 
   return (
-    <div className="relative">
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+    <ZoomFrame height={H}>
+      <svg viewBox={`0 0 ${W} ${H}`} className="mx-auto block h-full w-full" preserveAspectRatio="xMidYMid meet">
         <defs>
           <filter id="glow"><feGaussianBlur stdDeviation="3" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
         </defs>
@@ -92,23 +94,70 @@ export function RouteMap({ calls, classifying, router }: { calls: Call[]; classi
           const on = m.model === last?.deployment, n = used.get(m.model) ?? 0;
           return (
             <g key={m.model}>
-              <rect x={COL.model} y={modelY(m.model) - 12} width={210} height={24} rx={7} fill={on ? "#161513" : n ? "#f1efed" : "#fff"} stroke={on ? "#161513" : "#e7e2de"} />
+              <rect x={COL.model} y={modelY(m.model) - 12} width={250} height={24} rx={7} fill={on ? "#161513" : n ? "#f1efed" : "#fff"} stroke={on ? "#161513" : "#e7e2de"} />
               <text x={COL.model + 9} y={modelY(m.model) + 4} fontSize={10.5} fontWeight={700} fill={on ? "#f0cc71" : "#6f6964"}>{vendor(m.model)}</text>
-              <text x={COL.model + 62} y={modelY(m.model) + 4} fontSize={10.5} fontFamily="JetBrains Mono" fill={on ? "#fff" : "#3f3a36"}>{shortModel(m.model).slice(0, 22)}</text>
-              {m.backup && <text x={COL.model + 204} y={modelY(m.model) + 4} textAnchor="end" fontSize={9} fill={on ? "#bdb6b0" : "#a8a19b"}>backup</text>}
+              <text x={COL.model + 62} y={modelY(m.model) + 4} fontSize={10.5} fontFamily="JetBrains Mono" fill={on ? "#fff" : "#3f3a36"}>{shortModel(m.model).slice(0, 26)}</text>
+              {m.backup && <text x={COL.model + 244} y={modelY(m.model) + 4} textAnchor="end" fontSize={9} fill={on ? "#bdb6b0" : "#a8a19b"}>backup</text>}
             </g>
           );
         })}
         <text x={COL.req} y={H - 6} textAnchor="middle" fontSize={10} fill="#a8a19b">app</text>
         <text x={COL.clf} y={H - 6} textAnchor="middle" fontSize={10} fill="#a8a19b">LiteLLM gateway</text>
         <text x={COL.route + 56} y={H - 6} textAnchor="middle" fontSize={10} fill="#a8a19b">8 routes</text>
-        <text x={COL.model + 105} y={H - 6} textAnchor="middle" fontSize={10} fill="#a8a19b">OCI Generative AI</text>
+        <text x={COL.model + 125} y={H - 6} textAnchor="middle" fontSize={10} fill="#a8a19b">OCI Generative AI</text>
       </svg>
       {last && (
-        <div className={clsx("absolute left-2 top-2 rounded-lg bg-ink/90 px-3 py-1.5 font-mono text-[11px] text-white", last.fallbacks ? "ring-2 ring-ochre" : "")}>
+        <div className={clsx("pointer-events-none absolute left-3 top-3 z-10 rounded-lg bg-ink/90 px-3 py-1.5 font-mono text-[11px] text-white", last.fallbacks ? "ring-2 ring-ochre" : "")}>
           call {last.call}: {last.route ?? last.group} → {shortModel(last.deployment)} · {last.seconds}s{last.fallbacks ? ` · fallback ×${last.fallbacks}` : ""}
         </div>
       )}
+    </ZoomFrame>
+  );
+}
+
+/** Zoom (buttons, wheel, around the cursor), pan (drag) and full screen for a diagram. */
+function ZoomFrame({ height, children }: { height: number; children: React.ReactNode }) {
+  const box = useRef<HTMLDivElement | null>(null);
+  const [z, setZ] = useState({ s: 1, x: 0, y: 0 });
+  const [full, setFull] = useState(false);
+  const drag = useRef<{ x: number; y: number } | null>(null);
+  useEffect(() => {
+    const on = () => { setFull(document.fullscreenElement === box.current); setZ({ s: 1, x: 0, y: 0 }); };
+    document.addEventListener("fullscreenchange", on);
+    return () => document.removeEventListener("fullscreenchange", on);
+  }, []);
+  useEffect(() => {   // a non-passive wheel listener, so zooming does not scroll the page
+    const el = box.current;
+    if (!el) return;
+    const wheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const r = el.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+      setZ((v) => { const s = Math.min(4, Math.max(0.6, v.s * (e.deltaY < 0 ? 1.12 : 1 / 1.12))); return { s, x: mx - ((mx - v.x) * s) / v.s, y: my - ((my - v.y) * s) / v.s }; });
+    };
+    el.addEventListener("wheel", wheel, { passive: false });
+    return () => el.removeEventListener("wheel", wheel);
+  }, []);
+  const step = (f: number) => setZ((v) => {
+    const r = box.current!.getBoundingClientRect(), cx = r.width / 2, cy = r.height / 2, s = Math.min(4, Math.max(0.6, v.s * f));
+    return { s, x: cx - ((cx - v.x) * s) / v.s, y: cy - ((cy - v.y) * s) / v.s };
+  });
+  const btn = "grid size-7 place-items-center rounded-md border border-line bg-panel/95 text-ink-2 shadow-sm hover:border-oracle/50";
+  return (
+    <div ref={box} className={clsx("relative overflow-hidden rounded-xl", full ? "bg-paper p-6" : "bg-paper/40")}
+      style={{ height: full ? "100vh" : Math.min(640, Math.max(420, height * 0.9)), cursor: drag.current ? "grabbing" : "grab" }}
+      onPointerDown={(e) => { drag.current = { x: e.clientX - z.x, y: e.clientY - z.y }; (e.target as Element).setPointerCapture?.(e.pointerId); }}
+      onPointerMove={(e) => { if (drag.current) setZ((v) => ({ ...v, x: e.clientX - drag.current!.x, y: e.clientY - drag.current!.y })); }}
+      onPointerUp={() => { drag.current = null; }} onDoubleClick={() => setZ({ s: 1, x: 0, y: 0 })}>
+      <div className="h-full w-full origin-top-left" style={{ transform: `translate(${z.x}px, ${z.y}px) scale(${z.s})` }}>{children}</div>
+      <div className="absolute right-3 top-3 z-10 flex gap-1" onPointerDown={(e) => e.stopPropagation()}>
+        <button className={btn} onClick={() => step(1 / 1.25)} title="zoom out"><Minus className="size-3.5" /></button>
+        <span className="grid h-7 min-w-[46px] place-items-center rounded-md border border-line bg-panel/95 font-mono text-[11px] text-ink-2">{Math.round(z.s * 100)}%</span>
+        <button className={btn} onClick={() => step(1.25)} title="zoom in"><Plus className="size-3.5" /></button>
+        <button className={btn} onClick={() => setZ({ s: 1, x: 0, y: 0 })} title="reset (or double-click)"><RotateCcw className="size-3.5" /></button>
+        <button className={btn} title={full ? "exit full screen" : "full screen"}
+          onClick={() => (full ? document.exitFullscreen() : box.current?.requestFullscreen())}>{full ? <Minimize2 className="size-3.5" /> : <Maximize2 className="size-3.5" />}</button>
+      </div>
+      <div className="pointer-events-none absolute bottom-2 right-3 text-[10.5px] text-ink-3">scroll to zoom · drag to move · double-click to reset</div>
     </div>
   );
 }

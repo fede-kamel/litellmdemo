@@ -1,0 +1,39 @@
+{
+ "before": {
+  "coding_to_CODE": 0.719,
+  "not_coding_to_CODE": 0.0,
+  "coding": 32,
+  "not_coding": 32,
+  "missed": [
+   "I need a SQL query to flag accounts for review. Pull the `account_id`, `mrr`, and `plan_tier` from the `subscriptions` table for any customers who have had more than 3 `type = 'CREDIT'` adjustments in the `ledger_entries` table in the last 60 days. Also, join with the `support_tickets` table and give me a count of tickets with `category = 'Billing Dispute'` for each of those accounts in the same period. We're trying to find customers who are repeatedly asking for credits instead of upgrading their plan.",
+   "Hey, can you write me a Python function called `calculate_ndr`? It should take a pandas DataFrame as an argument. The DataFrame has columns `customer_id`, `mrr_date` (first day of the month), and `mrr_amount`. The function needs to calculate our quarterly Net Dollar Retention. It should identify the customer cohort from 12 months ago, find their total MRR then (Beginning ARR), and then find the total MRR for that *same group* of customers in the most recent quarter (Current ARR). Make sure it correctly accounts for expansion, contraction, and churned customers who now have an MRR of zero. The final output should just be the NDR percentage.",
+   "I need a SQL query to pull our Q2 actuals vs. budget for the P&L review deck. Can you join our `gl_transactions` table with `department_master` and `fy24_budget`? I need to see `department_name`, `gl_account_name`, the sum of `transaction_amount_usd` as `actual_spend`, and the corresponding `budget_amount`. Only pull transactions where `transaction_date` is between '2024-04-01' and '2024-06-30'. Group everything by department and GL account. Oh, and please exclude any intercompany accounts, which are GL codes between 8500 and 8999.",
+   "My formula for prorating first-month subscription revenue is broken and I'm staring at a `#VALUE!` error. I'm trying to calculate the recognized revenue for an invoice based on its `start_date`. For a $36,000 annual contract in `A2` starting on Jan 16, 2024 in `B2`, it should recognize `(36000/366) * (31-16+1)` days of revenue in January. My formula in cell C2 is `= (A2/366) * (DAY(EOMONTH(B2,0)) - DAY(B2) + 1)`. It works for mid-month starts but it's not handling leap years automatically and I think the logic is flawed for contracts that start on the 1st of the month. Can you fix this Excel formula for me?",
+   "I need a Python function called `calculate_q3_commission`. It should take `deal_size_in_arr`, `rep_quota_attainment_percent`, and `product_line` as arguments. For the 'Core Platform' product line, the commission is 10% of ARR. For 'Expansion Analytics', it's 12%. If the rep's attainment is over 110%, apply a 1.5x accelerator to the entire commission for that deal. The function should return the final commission amount.",
+   "I need an Excel formula for my territory planning sheet. In cell C5, I need to check the value of B5, which is a state abbreviation. If B5 is 'CA', 'OR', or 'WA', I want C5 to say 'West'. If B5 is 'NY', 'MA', or 'NJ', it should say 'East'. If it's 'TX' or 'IL', it should say 'Central'. Otherwise, it should be blank.",
+   "Hey, my bonus calculation formula in Excel isn't working right. I'm using `=IF(C4>='Quotas'!$B$2, E4*0.1, 0)` where C4 is the employee's sales total and E4 is their base salary. The idea is that if they meet the Q2 quota in cell B2 on the 'Quotas' sheet, they get a 10% bonus. But it's giving a bonus to people who are a few dollars short of the quota, and I think it's a floating point issue. How can I fix the formula to be exact?",
+   "My javascript for calculating our volume discount for 'Staples Advantage' orders isn't working right. The top tier discount isn't applying. If the quantity is over 5000 units, it should be a 12% discount, but my code seems to be stuck applying the 8% discount for the 1000+ tier. Can you fix this logic? Here is the broken function: \n\n```javascript\nfunction getStaplesDiscount(quantity) {\n  let unitPrice = 2.50;\n  let discount = 0.0;\n  if (quantity >= 250) {\n    discount = 0.05; // 5% for 250+\n  } else if (quantity >= 1000) {\n    discount = 0.08; // 8% for 1000+\n  } else if (quantity >= 5000) {\n    discount = 0.12; // 12% for 5000+\n  }\n  return (unitPrice * quantity) * (1 - discount);\n}\n```",
+   "My JavaScript function for calculating annual quota attainment credits is wrong. It's supposed to calculate a 5% bonus credit *only on the portion* of an invoice total that exceeds our enterprise threshold of $50,000. Right now, if an invoice is $60,000, my code is incorrectly calculating 5% of the whole $60k instead of 5% of $10k. Can you fix this snippet? `function calculateEnterpriseCredit(invoiceTotal) { if (invoiceTotal > 50000) { return invoiceTotal * 0.05; } return 0; }`"
+  ],
+  "false_alarms": [],
+  "held_out_labels": {
+   "CODE_recall": 1.0,
+   "non_CODE_to_CODE": 0.014
+  }
+ },
+ "after": {
+  "coding_to_CODE": 1.0,
+  "not_coding_to_CODE": 0.031,
+  "coding": 32,
+  "not_coding": 32,
+  "missed": [],
+  "false_alarms": [
+   "What is the specific formula used to calculate the 'First Response Time' SLA achievement for enterprise-tier accounts? I need to know the variables our system uses, like ticket creation time and first agent public comment, not a calculation for a specific ticket."
+  ],
+  "held_out_labels": {
+   "CODE_recall": 0.9,
+   "non_CODE_to_CODE": 0.014
+  }
+ },
+ "note": "'before' is the router before code_gap.py; the intermediate run with coding rows only (no counter-examples) scored coding_to_CODE 1.0, not_coding_to_CODE 0.312, held-out CODE recall 0.9 and was not shipped; 'after' is the shipped model (coding rows plus 64 not-code-business counter-examples). Held-out code and language prompts used by evaluate.py: 23 of 24 routed correctly after, 24 of 24 before. The ladder (outcome rows only) is unchanged: same bar, routes and held-out numbers."
+}

@@ -42,8 +42,10 @@ def main() -> None:
         if m.startswith("auto_router") or "retired" in m or d["model_name"] not in ROUTE_OF_GROUP:
             continue
         route, role = ROUTE_OF_GROUP[d["model_name"]]
+        if d["model_name"] == "oci-chat":
+            route, role = "tag lane", (d["litellm_params"].get("tags") or ["default"])[0]
         mi = d.get("model_info") or {}
-        name = m.replace("oci/", "")
+        name = m.split("/", 1)[1]          # oci/<model> or oci-responses/<model>
         src = next((ln for ln in lines if re.search(rf"model: oci/{re.escape(name)}[,}}\s]", ln)), "")
         nxt = lines[lines.index(src) + 1] if src in lines else ""
         oci = re.search(r"OCI (B\d+/B\d+)", src + nxt)

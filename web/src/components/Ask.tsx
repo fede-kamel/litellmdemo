@@ -127,6 +127,8 @@ export function Ask() {
   const failover = events.find((e) => e.type === "failover");
   const replay = events.find((e) => e.type === "replay");
   const spend = calls.reduce((a, c) => a + (c.cost ?? 0), 0);
+  const plan = events.find((e) => e.type === "plan")?.steps as { step: number; title: string; instruction: string }[] | undefined;
+  const planned = plan || events.some((e) => e.type === "llm" && e.step === 0);
   const ladder = (why?.checks as Check_[] | undefined)?.find((c) => c.check === "ladder");
   const st = (done: boolean, active: boolean) => (done ? "done" : running && active ? "active" : "idle") as "idle" | "active" | "done";
   const point = cfg?.held_out_curve.reduce<CurvePoint | null>((b, p) => (b === null || Math.abs(p.bar - (bar ?? 0)) < Math.abs(b.bar - (bar ?? 0)) ? p : b), null);
@@ -257,25 +259,54 @@ export function Ask() {
         </section>
       </div>
 
+      {planned && (
+        <Panel kicker="The plan" title={plan ? `${plan.length} tasks, each routed by LiteLLM on its own` : "planning…"}
+          right={plan ? <span className="font-mono text-[11.5px] text-ink-3">{new Set(calls.map((c) => c.deployment)).size} models · {usd(spend)}</span> : null}>
+          <ol data-testid="plan" className="space-y-2">
+            {[{ step: 0, title: "Plan the work", instruction: "Split the request into tasks." }, ...(plan ?? [])].map((st) => {
+              const sc = calls.filter((c) => c.step === st.step);
+              const done = st.step === 0 ? !!plan : events.some((e) => e.type === "step_done" && e.step === st.step);
+              const active = !done && (sc.length > 0 || events.some((e) => e.type === "step" && e.step === st.step));
+              return (
+                <li key={st.step} className={clsx("grid grid-cols-[28px_1fr_auto] items-start gap-3 rounded-lg border px-3 py-2",
+                  active ? "border-indigo/50 bg-indigo/5" : "border-line bg-paper")}>
+                  <span className={clsx("grid size-6 place-items-center rounded-full text-[11px] font-semibold",
+                    done ? "bg-moss text-white" : active ? "bg-indigo text-white" : "bg-sand text-ink-3")}>{done ? <Check className="size-3.5" /> : st.step}</span>
+                  <div className="min-w-0">
+                    <div className="text-[13px] font-semibold text-ink">{st.title}</div>
+                    <div className="truncate text-[11.5px] text-ink-3" title={st.instruction}>{st.instruction}</div>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-end gap-1.5">
+                    {[...new Set(sc.map((c) => c.route ?? c.group))].map((r) => <RouteChip key={r} route={r} />)}
+                    {[...new Set(sc.map((c) => c.deployment as string))].map((d) => <ModelChip key={d} deployment={d} />)}
+                    {sc.length > 0 && <span className="font-mono text-[11px] text-ink-3">{sc.length} call{sc.length > 1 ? "s" : ""} · {usd(sc.reduce((a, c) => a + (c.cost ?? 0), 0))}</span>}
+                    {!sc.length && <span className="text-[11px] text-ink-3">{active ? "routing…" : "waiting"}</span>}
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        </Panel>
+      )}
+
       {(calls.length > 0 || running) && (
         <Panel kicker="This run" title={calls.length ? `${calls.length} model call${calls.length > 1 ? "s" : ""}, each routed by LiteLLM` : "routing…"}
           right={calls.length ? <span className="font-mono text-[11.5px] text-ink-3">{usd(spend)}</span> : null}>
-          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] gap-4">
-            <ol className="space-y-1.5">
-              {events.filter((e) => e.type === "llm" || e.type === "tool").map((e, i) => e.type === "llm" ? (
-                <li key={i} className="flex flex-wrap items-center gap-1.5 text-[12px]">
-                  <span className="grid size-5 place-items-center rounded-full bg-ink text-[10px] font-semibold text-white">{e.call}</span>
-                  {e.route ? <RouteChip route={e.route} /> : <span className="font-mono">{e.group}</span>}
-                  <ArrowRight className="size-3 text-ink-3" /><ModelChip deployment={e.deployment} />
-                  <span className="font-mono text-[11px] text-ink-3">{e.seconds}s · {usd(e.cost)}{e.fallbacks ? ` · fallback ×${e.fallbacks}` : ""}</span>
-                </li>
-              ) : (
-                <li key={i} className="ml-7 font-mono text-[11px] text-ink-3">tool {e.name} {String(e.input).slice(0, 80)}</li>
-              ))}
-            </ol>
-            <RouteMap router={picked?.model ?? "oci-auto-trained"} classifying={running && !answer}
-              calls={calls.map((c) => ({ ...c, route: c.route ?? Object.entries(ROUTE_STYLE).find(([, v]) => v.group === c.group)?.[0] })) as Extract<RunEvent, { type: "llm" }>[]} />
-          </div>
+          <RouteMap router={picked?.model ?? "oci-auto-trained"} classifying={running && !answer}
+            calls={calls.map((c) => ({ ...c, route: c.route ?? Object.entries(ROUTE_STYLE).find(([, v]) => v.group === c.group)?.[0] })) as Extract<RunEvent, { type: "llm" }>[]} />
+          <ol className="mx-auto mt-4 grid max-w-[1100px] grid-cols-2 gap-x-6 gap-y-1.5">
+            {events.filter((e) => e.type === "llm" || e.type === "tool").map((e, i) => e.type === "llm" ? (
+              <li key={i} className="flex flex-wrap items-center gap-1.5 text-[12px]">
+                <span className="grid size-5 place-items-center rounded-full bg-ink text-[10px] font-semibold text-white">{e.call}</span>
+                {planned && e.step !== undefined && <span className="font-mono text-[10.5px] text-ink-3">{e.step === 0 ? "plan" : `task ${e.step}`}</span>}
+                {e.route ? <RouteChip route={e.route} /> : <span className="font-mono">{e.group}</span>}
+                <ArrowRight className="size-3 text-ink-3" /><ModelChip deployment={e.deployment} />
+                <span className="font-mono text-[11px] text-ink-3">{e.seconds}s · {usd(e.cost)}{e.fallbacks ? ` · fallback ×${e.fallbacks}` : ""}</span>
+              </li>
+            ) : (
+              <li key={i} className="pl-7 font-mono text-[11px] text-ink-3">tool {e.name} {String(e.input).slice(0, 80)}</li>
+            ))}
+          </ol>
         </Panel>
       )}
 
@@ -288,7 +319,7 @@ export function Ask() {
           <Panel kicker="The answer" title={first ? `from ${shortModel(calls[calls.length - 1]?.deployment)}` : ""} right={answer && <span className="font-mono text-[11.5px] text-ink-3">{answer.seconds}s · {usd(spend)}</span>}>
             <p className="scroll-thin max-h-[360px] overflow-y-auto whitespace-pre-wrap text-[13px] leading-relaxed text-ink-2">{answer?.text}</p>
           </Panel>
-          <Panel kicker="Why this model" title={decision ? <span className="flex items-center gap-2"><RouteChip route={decision.route} size="lg" /> decided inside LiteLLM</span> : ""}>
+          <Panel kicker={planned ? "Why the planner's model" : "Why this model"} title={decision ? <span className="flex items-center gap-2"><RouteChip route={decision.route} size="lg" /> decided inside LiteLLM</span> : ""}>
             {why && <p className="text-[14px] leading-relaxed text-ink">{why.summary}</p>}
             {ladder?.steps && <div className="mt-3"><Ladder steps={ladder.steps} bar={ladder.bar ?? 0.7} /></div>}
             <button onClick={() => setDetails(!details)} className="mt-3 flex items-center gap-1 text-[12px] font-semibold text-indigo">

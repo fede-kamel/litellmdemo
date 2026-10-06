@@ -55,6 +55,7 @@ class RunRequest(BaseModel):
     bar: float | None = Field(default=None, ge=0.3, le=0.99)    # the ladder's quality bar; None: the trained one
     runtime: str = Field(default="openshell", pattern=r"^(openshell|host)$")
     image: str | None = Field(default=None, max_length=12_000_000, pattern=r"^data:image/(png|jpeg|webp|gif);base64,")
+    mode: str | None = Field(default=None, pattern=r"^(single|plan)$")   # plan: decompose, route each step; None: the scenario's
     replay: bool = True    # if every live path fails, replay a recorded run of the same request (labelled as such)
 
 
@@ -81,8 +82,9 @@ def _request(req: RunRequest) -> tuple[list[dict], str, list[str] | None, dict |
 @app.post("/api/runs")
 async def start_run(req: RunRequest) -> dict:
     messages, router, tags, scenario = _request(req)
+    mode = req.mode or (scenario or {}).get("mode") or "single"
     rid = time.strftime("%H%M%S-") + uuid.uuid4().hex[:6]
-    run = {"id": rid, "router": router, "tags": tags, "scenario": scenario and summary(scenario),
+    run = {"id": rid, "router": router, "tags": tags, "scenario": scenario and summary(scenario), "mode": mode,
            "events": [], "done": False, "cond": asyncio.Condition()}
     RUNS[rid] = run
     loop = asyncio.get_running_loop()
@@ -102,7 +104,7 @@ async def start_run(req: RunRequest) -> dict:
         try:
             if in_sandbox:
                 emit({"type": "runtime", "runtime": "openshell", "sandbox": sandbox.NAME, "gateway": sandbox.SANDBOX_GATEWAY})
-                if sandbox.run(_sandbox_request(messages, router, tags, req.bar), emit):
+                if sandbox.run(_sandbox_request(messages, router, tags, req.bar) | {"mode": mode}, emit):
                     _after_run(emit, messages, run, started)
                     return
                 # The sandbox could not answer (its gateway down, the sandbox gone): say
@@ -111,7 +113,7 @@ async def start_run(req: RunRequest) -> dict:
                       "reason": "the sandbox path did not answer"})
             emit({"type": "runtime", "runtime": "host", "gateway": gateway})
             try:
-                agent.run(messages, emit, router=router, tags=tags, use_tools=tools, gateway=gateway, bar=req.bar)
+                agent.execute(messages, emit, mode=mode, router=router, tags=tags, use_tools=tools, gateway=gateway, bar=req.bar)
             except Exception as exc:  # noqa: BLE001
                 # A gateway that fails before any model call (unreachable, or its OCI
                 # signing broken) gets the run once more on the next gateway.
@@ -121,7 +123,7 @@ async def start_run(req: RunRequest) -> dict:
                     raise
                 mark_down(gateway)
                 emit({"type": "failover", "from": gateway, "to": spare[0], "reason": str(exc)[:200]})
-                agent.run(messages, emit, router=router, tags=tags, use_tools=tools, gateway=spare[0], bar=req.bar)
+                agent.execute(messages, emit, mode=mode, router=router, tags=tags, use_tools=tools, gateway=spare[0], bar=req.bar)
             _after_run(emit, messages, run, started, network=False)
         except Exception as exc:  # noqa: BLE001 - surfaced to the UI
             # Both live paths failed (the sandbox, then the host): a recorded run of the
@@ -142,7 +144,7 @@ RECORDINGS = ROOT / "out" / "recordings"
 def _recording_key(req: "RunRequest") -> str:
     import hashlib
 
-    raw = json.dumps({"s": req.scenario, "p": req.prompt, "r": req.router, "t": req.tags, "b": req.bar,
+    raw = json.dumps({"s": req.scenario, "m": req.mode, "p": req.prompt, "r": req.router, "t": req.tags, "b": req.bar,
                       "i": hashlib.sha256((req.image or "").encode()).hexdigest()}, sort_keys=True)
     return hashlib.sha256(raw.encode()).hexdigest()[:20]
 

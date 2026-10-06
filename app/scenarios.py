@@ -52,6 +52,14 @@ SCENARIOS = [
      "prompt": "Enterprise customer NW-0093 had three outages last month (2h10m, 45m, 3h30m) against a 99.9% SLA. "
                "Using our SLA policy, work out the credit, explain the calculation, and propose a remediation plan "
                "with owners and dates for the account team."},
+    {"id": "agent-plan", "use_case": "Multi-step agent", "title": "Escalation, end to end", "expect": "a route per step",
+     "mode": "plan",
+     "why": "a planner splits the job into tasks; LiteLLM routes each task on its own, so a lookup, a calculation, "
+            "a reply in Spanish and a Python function can each land on a different model",
+     "prompt": "Handle the escalation for enterprise customer NW-0093 end to end. They had three outages last month "
+               "(2h10m, 45m, 3h30m). Look up the account and our SLA policy, work out the credit with the arithmetic, "
+               "write the reply to their CTO in Spanish (she is based in Madrid), and give our billing team a Python "
+               "function that computes the SLA credit from a list of outage durations and a monthly fee."},
     {"id": "code-explain", "use_case": "Coding assistant", "title": "Explain a one-liner", "expect": "CODE",
      "prompt": "What does this Python do: `sorted(d.items(), key=lambda kv: (-kv[1], kv[0]))[:3]`?"},
     {"id": "code-race", "use_case": "Coding assistant", "title": "Debug a race condition", "expect": "CODE",

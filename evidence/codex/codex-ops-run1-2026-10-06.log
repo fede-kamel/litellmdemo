@@ -1,0 +1,701 @@
+Reading additional input from stdin...
+OpenAI Codex v0.159.3
+--------
+workdir: /Users/federico.kamelhar/Projects/litellmdemo
+model: gpt-5.5
+provider: openai
+approval: on-request
+sandbox: workspace-write [workdir, /tmp, $TMPDIR, /Users/federico.kamelhar/.config/litellmdemo, /Users/federico.kamelhar/.kube, /Users/federico.kamelhar/.rd, /Users/federico.kamelhar/.cache/uv, /Users/federico.kamelhar/.local/share/uv, /Users/federico.kamelhar/.npm, /Users/federico.kamelhar/.config/openshell, /Users/federico.kamelhar/.local/state/openshell] (network access enabled)
+reasoning effort: high
+reasoning summaries: none
+session id: 01a11316-c24f-7942-af72-44f0d41ed9cf
+--------
+user
+Get this demo ready for a talk, on this laptop, and report.
+
+Read AGENTS.md, then the litellm-demo-ops skill, and follow it:
+
+1. Run scripts/demo-up.sh (it is idempotent) and then scripts/preflight.sh.
+2. For every failing check, apply the fix the skill gives for that check, then run the preflight again.
+   Stop and report instead if the fix needs the operator (the OCI login), a secret, a change to
+   gateway/, classifier/, app/ or scripts/ to make a check pass, or any cluster other than rancher-desktop.
+3. Run one request through the OpenShell sandbox with scripts/openshell.sh ask and the escape probe
+   with scripts/openshell.sh probe.
+4. Report, in a short table: each preflight check with its result, what you fixed and how, the sandbox
+   request's route and model, the probe's three results, and the OCI session's minutes left.
+   End with the preflight's last line. Never print a key or a token.
+warning: Ignoring unknown `features` requirement `ultrafast_mode` from requirements layers: enterprise-managed requirements Codex Developers (8a9cace4-0b4b-4c93-a8d5-b33253d2d6e4), enterprise-managed requirements Fast mode access (rbac-fast-mode), enterprise-managed requirements Ultra Fast mode access (rbac-ultrafast-mode), enterprise-managed requirements Computer History access (rbac-computer-history)
+warning: Configured value for `approval_policy` is disallowed by requirements; falling back to required value OnRequest. Details: invalid value for `approval_policy`: `Never` is not in the allowed set [OnRequest, UnlessTrusted] (set by enterprise-managed requirements Codex Developers (8a9cace4-0b4b-4c93-a8d5-b33253d2d6e4))
+warning: Ignoring unknown `features` requirement `ultrafast_mode` from requirements layers: enterprise-managed requirements Codex Developers (8a9cace4-0b4b-4c93-a8d5-b33253d2d6e4), enterprise-managed requirements Fast mode access (rbac-fast-mode), enterprise-managed requirements Ultra Fast mode access (rbac-ultrafast-mode), enterprise-managed requirements Computer History access (rbac-computer-history)
+codex
+I’ll use the `litellm-demo-ops` skill for this, since it owns the laptop demo bring-up and preflight recovery path. First I’m reading the repo instructions and the skill so the checks and fixes line up with the demo’s own runbook.
+exec
+/bin/zsh -lc "sed -n '1,260p' /Users/federico.kamelhar/Projects/litellmdemo/.agents/skills/litellm-demo-ops/SKILL.md" in /Users/federico.kamelhar/Projects/litellmdemo
+exec
+/bin/zsh -lc "sed -n '1,240p' AGENTS.md" in /Users/federico.kamelhar/Projects/litellmdemo
+ succeeded in 0ms:
+# Agent instructions
+
+This repository is a runnable demo: a LiteLLM AI Gateway routes every request
+an application sends across twenty-one OCI Generative AI models, deciding the
+route with a router we trained; a langchain-oci agent runs inside an NVIDIA
+OpenShell sandbox that holds no key, and a web control room shows every
+decision with LiteLLM's and OpenShell's own logs. The skills in
+`.agents/skills/` hold the how-to for each part; start with
+`litellm-demo-ops`. `codex/SPEC.md` is the build specification and
+`codex/PROMPT*.md` drive an agent through the common tasks.
+
+## Hard rules
+
+- Secrets. Never ask for, echo, log, or store a password, key, or token.
+  `~/.config/litellmdemo/` (config, master key, agent keys, database password)
+  and `~/.oci/` stay where they are; scripts read them. The OCI session is
+  renewed by the operator in their own terminal (`oci session authenticate`).
+- Clusters. The local `rancher-desktop` cluster is yours to deploy to
+  (`scripts/local/deploy.sh`). The OKE cluster is read-only for you, and no
+  other cluster, GPU instance or cloud resource may be created or changed,
+  unless the operator asks for it by name.
+- Data. Every scenario is about a fictional company (Northwind Cloud). Never
+  add real customer data.
+- Spend. Labelling (`classifier/label.py`, about $18 a run), the model trial
+  (`classifier/model_trial.py`) and the robustness test (`classifier/robustness.py`,
+  about $15) make many paid OCI calls: run them only when the task asks for it.
+  `classifier/generate.py` replaces the prompts the labels depend on.
+- Integrity. Do not modify `gateway/`, `classifier/`, `app/` or `scripts/` to
+  make a check pass. A test expectation changes only with the outcome data that
+  justifies it, written next to it. Explain and stop instead.
+
+## Where things are
+
+| Path | Purpose |
+|---|---|
+| `gateway/` | LiteLLM config (routes, prices, tags, fallbacks, auto-routers); hooks: OCI signing, the decision header, the console line; the trained-classifier plugin; the OCI Responses provider (Codex) |
+| `classifier/` | generate, label by outcome, the ladder, train, evaluate, the model trial, the robustness test, the classifier service |
+| `app/` | the langchain-oci agent, its tools, the use cases; `sandbox_run.py` runs it inside OpenShell |
+| `sandbox/` | the OpenShell image, provider profile and policy |
+| `ui/`, `web/` | the control room: FastAPI backend (runs, sandbox bridge, console, replay), React front end |
+| `deploy/k8s/` | the manifests, the same for OKE and the local cluster |
+| `scripts/` | `demo-up.sh`, `preflight.sh`, `openshell.sh`, `local/` (Rancher Desktop), `oci/` (OKE), the checks |
+| `.agents/skills/` | `litellm-demo-ops`, `litellm-oci-gateway`, `litellm-oci-routing`, `litellm-route-classifier`, `litellm-route-verify` |
+| `evidence/` | transcripts behind every claim |
+| `codex/` | the specification and the prompts |
+
+## Verifying
+
+- `scripts/preflight.sh` ends with `PREFLIGHT OK`.
+- `LITELLM_GATEWAY=http://127.0.0.1:30400 uv run python scripts/probe_routes.py` ends with `ROUTES OK`.
+- With the control room on 8780, `uv run python scripts/e2e.py` ends with `E2E OK`.
+- `cd web && node scripts/ui-e2e.mjs` ends with `UI E2E OK`.
+
+## Writing
+
+Active voice, short sentences, commands in `shell` fences. Keep the
+disclaimer that this is personal work with a fictional company's data.
+Never mention accounts, OCIDs, profile names, or key values.
+
+ succeeded in 19ms:
+---
+name: litellm-demo-ops
+description: Use when bringing the demo up on a laptop, checking it is ready for a talk, or fixing it when something breaks - scripts/demo-up.sh, scripts/preflight.sh, the OpenShell sandbox, the local Kubernetes cluster, the OCI session, recorded runs for replay. Start here for "get the demo ready", "it stopped working", or "before my talk".
+metadata:
+  author: federico-kamelhar
+  version: "1.0"
+compatibility: macOS with Rancher Desktop (Kubernetes enabled, 6 CPUs / 16 GB), the Homebrew OpenShell gateway, the OCI CLI with a session profile, uv, Node, Google Chrome
+---
+
+# Running the demo
+
+## What runs where
+
+| Piece | Where | Started by |
+|---|---|---|
+| LiteLLM gateway, route classifier, Postgres | Rancher Desktop Kubernetes, namespace `litellmdemo`, node port 30400 | `scripts/local/deploy.sh` |
+| the OCI session, copied into the cluster | Secret `oci-session`, renewed every 20 min | `scripts/local/refresh.sh` |
+| the agent | OpenShell sandbox `litellmdemo-agent` | `scripts/openshell.sh up` |
+| fallback gateway | the laptop, 127.0.0.1:4000 | `scripts/gateway.sh` |
+| control room | http://127.0.0.1:8780 | `uvicorn ui.server:app` |
+
+`scripts/demo-up.sh` starts whatever is not running, in that order, and ends
+with the preflight. It is idempotent: run it again after any failure.
+
+## Ready for a talk
+
+```shell
+scripts/demo-up.sh          # ends with PREFLIGHT OK (n/n)
+scripts/preflight.sh        # anytime; every check prints its fix when it fails
+```
+
+Before going on stage, on the venue's network:
+
+1. The OCI session must have more than 30 minutes. A refresh cannot extend a
+   session past its maximum lifetime; when the header says "log in again" or
+   the preflight says "at its maximum lifetime", only the operator can fix it,
+   in their own terminal: `oci session authenticate --profile-name <profile> --region us-ashburn-1`.
+   Then `scripts/local/push-session.sh`. Never try to log in for them.
+2. `PREFLIGHT OK`.
+3. Recorded runs exist (`out/recordings/`, at least 5). If not: `uv run python scripts/record_runs.py`.
+
+## When a check fails
+
+| Preflight check | Cause seen before | Fix |
+|---|---|---|
+| OCI session | expired, or at its maximum lifetime | the operator logs in (above); then `scripts/local/push-session.sh` |
+| Rancher Desktop | not started, or the VM starved (load in the hundreds, Docker not answering) | `rdctl start`; if starved, the VM needs 6 CPUs / 16 GB: ask the operator before changing it |
+| local cluster pods | a pod in CrashLoopBackOff | `kubectl --context rancher-desktop logs -n litellmdemo deploy/<name> -c <container> --tail=40`; an ImportError in the gateway is a module missing from the `gateway-code` ConfigMap list in `scripts/oci/deploy.sh` |
+| image pulls | `ImagePullBackOff` on a `docker.io` image | Docker Hub is blocked behind the corporate proxy: use the same image from ghcr.io or quay.io |
+| LiteLLM signs to OCI | 401 from OCI | a stale session in the cluster: `scripts/local/push-session.sh` |
+| the CODE route answers with Codex | the gateway falls back to GPT-5.1 | look for ROUTE-FAIL lines for `gpt-5.3-codex` in the gateway log |
+| the agent's virtual key | spent, or missing after a fresh database | `scripts/local/deploy.sh` re-issues it; then `scripts/openshell.sh provider && scripts/openshell.sh down && scripts/openshell.sh up` |
+| OpenShell sandbox / request through it | the sandbox died with a Rancher Desktop restart; or `policy_dns_trusted_gateway_unavailable` | `scripts/openshell.sh down && scripts/openshell.sh up`; the profile endpoint must be the node's IP, which `scripts/openshell.sh` renders |
+| the sandbox cannot escape | a probe reached something | stop: that is a policy regression, report it, do not loosen anything |
+
+Every `openshell` command in a script reads stdin from `/dev/null`
+(OpenShell 0.1.2 waits for piped stdin to close). `openshell sandbox get`
+output must be read whole before matching it: `grep -q` closes the pipe and,
+with `pipefail`, fails the check.
+
+## The console
+
+The control room's console follows `openshell logs`, the gateway's pod log
+(one `ROUTE` line per request: key, route, why, model, seconds, cost,
+fallbacks) and the classifier's `CLASSIFY` lines. When a request misbehaves,
+read the `ROUTE`/`ROUTE-FAIL` lines first: they name the deployment and the
+error.
+
+## Rules
+
+- Never print or copy a key, a token or a password; scripts read them from
+  `~/.config/litellmdemo/` and `~/.oci/`.
+- Only the local `rancher-desktop` context is yours to change. The OKE cluster
+  (`~/.config/litellmdemo/kubeconfig`) is read-only for you unless the operator
+  asks for a change there.
+- Report what you ran and its last line (`PREFLIGHT OK (n/n)`, `E2E OK (n/n)`).
+
+codex
+I’ve got the operating rules loaded: only the local `rancher-desktop` cluster is in scope, no secrets in output, and no code changes under `gateway/`, `classifier/`, `app/`, or `scripts/` just to force a green check. I’m starting the idempotent bring-up now, then I’ll drive failures through the skill’s fix table.
+exec
+/bin/zsh -lc scripts/demo-up.sh in /Users/federico.kamelhar/Projects/litellmdemo
+ succeeded in 16802ms:
+[1;32m==>[0m Rancher Desktop
+[1;32m==>[0m OCI session and its copy in the cluster
+    session-refresh started (log: out/session-refresh.log)
+[1;32m==>[0m LiteLLM, the classifier and Postgres on the local cluster
+deployment "litellm-gateway" successfully rolled out
+[1;32m==>[0m OpenShell sandbox
+[1;32m==>[0m fallback laptop gateway and the control room
+[1;32m==>[0m recorded runs for replay (once, while the network is good)
+[1;32m==>[0m preflight
+[32mPASS[0m  OCI session (<profile>), more than 30 min  (59 min left)
+[32mPASS[0m  Rancher Desktop and its Kubernetes  (node/lima-rancher-desktop)
+[32mPASS[0m  local cluster pods  (litellm-gateway, route-classifier, postgres ready)
+[32mPASS[0m  LiteLLM gateway and its database  (db connected)
+[32mPASS[0m  LiteLLM signs to OCI (a real call)  (200)
+[32mPASS[0m  the CODE route answers with Codex  (oci-responses/openai.gpt-5.3-codex)
+[32mPASS[0m  the agent's virtual key  (openshell-agent: $0.388 of $5.0)
+[32mPASS[0m  OpenShell gateway  (gateway reachable)
+[32mPASS[0m  OpenShell sandbox  (litellmdemo-agent Ready)
+[32mPASS[0m  a request through the sandbox  (answered via oci/openai.gpt-6-luna)
+[32mPASS[0m  the sandbox cannot escape  (3/3 refused)
+[32mPASS[0m  fallback laptop gateway  (fallback on :4000)
+[32mPASS[0m  control room on :8780, primary = local cluster  (primary http://127.0.0.1:30400)
+[32mPASS[0m  recorded runs for replay  (31 recorded runs)
+
+PREFLIGHT OK (14/14)
+control room: http://127.0.0.1:8780
+
+codex
+`demo-up.sh` completed cleanly and its embedded preflight is green. I’m still running the standalone `scripts/preflight.sh` as requested so the report reflects the final independent check, then I’ll run the sandbox ask and escape probe.
+exec
+/bin/zsh -lc scripts/preflight.sh in /Users/federico.kamelhar/Projects/litellmdemo
+ succeeded in 7988ms:
+[32mPASS[0m  OCI session (<profile>), more than 30 min  (59 min left)
+[32mPASS[0m  Rancher Desktop and its Kubernetes  (node/lima-rancher-desktop)
+[32mPASS[0m  local cluster pods  (litellm-gateway, route-classifier, postgres ready)
+[32mPASS[0m  LiteLLM gateway and its database  (db connected)
+[32mPASS[0m  LiteLLM signs to OCI (a real call)  (200)
+[32mPASS[0m  the CODE route answers with Codex  (oci-responses/openai.gpt-5.3-codex)
+[32mPASS[0m  the agent's virtual key  (openshell-agent: $0.388 of $5.0)
+[32mPASS[0m  OpenShell gateway  (gateway reachable)
+[32mPASS[0m  OpenShell sandbox  (litellmdemo-agent Ready)
+[32mPASS[0m  a request through the sandbox  (answered via oci/openai.gpt-6-luna)
+[32mPASS[0m  the sandbox cannot escape  (3/3 refused)
+[32mPASS[0m  fallback laptop gateway  (fallback on :4000)
+[32mPASS[0m  control room on :8780, primary = local cluster  (primary http://127.0.0.1:30400)
+[32mPASS[0m  recorded runs for replay  (31 recorded runs)
+
+PREFLIGHT OK (14/14)
+
+exec
+/bin/zsh -lc 'scripts/openshell.sh ask' in /Users/federico.kamelhar/Projects/litellmdemo
+ exited 1 in 58ms:
+scripts/openshell.sh: line 128: $1: unbound variable
+
+codex
+The standalone preflight is also green. The bare `scripts/openshell.sh ask` needs a prompt argument and exited before making a request, so I’m checking the script’s usage and will run the same command shape with a harmless Northwind prompt.
+exec
+/bin/zsh -lc "sed -n '1,220p' scripts/openshell.sh" in /Users/federico.kamelhar/Projects/litellmdemo
+ succeeded in 0ms:
+#!/usr/bin/env bash
+# The control room's agent inside an NVIDIA OpenShell sandbox.
+#
+#   scripts/openshell.sh provider        create or refresh the provider from ~/.config/litellmdemo/agent_key
+#   scripts/openshell.sh up              create the sandbox, upload the agent, wait until it is ready
+#   scripts/openshell.sh sync            upload the agent code again (after a change)
+#   scripts/openshell.sh ask '<json>'    run one request, print one JSON event per line
+#   scripts/openshell.sh probe           try to reach OCI and a model vendor directly: both must be refused
+#   scripts/openshell.sh status | down
+#
+# What the sandbox holds and can reach:
+#   - LITELLM_API_KEY: an OpenShell placeholder. Provider `litellm-agent` keeps the
+#     agent's LiteLLM virtual key in the OpenShell gateway; the proxy swaps it in
+#     only on requests to the LiteLLM gateway.
+#   - egress: POST /v1/chat/completions and GET /v1/models on the LiteLLM gateway
+#     (the local Kubernetes node port by default), for /usr/local/bin/python3.12 only. Nothing else.
+#   - no OCI credential and no model key of any kind.
+# Every exec reads stdin from /dev/null (OpenShell 0.1.2 reads piped stdin to EOF).
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SB="${LITELLMDEMO_SANDBOX:-litellmdemo-agent}"
+IMAGE="${LITELLMDEMO_SANDBOX_IMAGE:-litellmdemo-agent:0.1}"
+PROVIDER="${LITELLMDEMO_PROVIDER:-litellm-agent}"
+# The gateway the agent may reach: the local Kubernetes node's node port unless set.
+if [[ -z "${LITELLMDEMO_SANDBOX_GATEWAY:-}" ]]; then
+  NODE_IP="$(kubectl --context rancher-desktop get node -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}' 2>/dev/null || true)"
+  LITELLMDEMO_SANDBOX_GATEWAY="http://${NODE_IP:-192.168.5.15}:30400"
+fi
+GATEWAY_URL="$LITELLMDEMO_SANDBOX_GATEWAY"
+GATEWAY_HOSTPORT="${GATEWAY_URL#http://}"
+KEYFILE="${LITELLMDEMO_AGENT_KEY_FILE:-$HOME/.config/litellmdemo/agent_key-local}"
+say() { printf '%s\n' "$*" >&2; }
+step() { printf '\033[1;32m$\033[0m %s\n' "$*" >&2; }
+die() { say "ABORT: $*"; exit 1; }
+exists() { openshell sandbox get "$SB" </dev/null >/dev/null 2>&1; }
+
+provider() {
+  [[ -s "$KEYFILE" ]] || die "$KEYFILE is missing: run scripts/oci/deploy.sh"
+  # import never overwrites a profile and update needs its resource version: the
+  # demo owns both, so replace them (the provider first, it depends on the profile).
+  openshell provider delete "$PROVIDER" </dev/null >/dev/null 2>&1 || true
+  openshell provider profile delete litellm-gateway --global </dev/null >/dev/null 2>&1 || true
+  local rendered; rendered="$(mktemp -d)/litellm-gateway.yaml"
+  sed -e "s|__GATEWAY_HOST__|${GATEWAY_HOSTPORT%%:*}|" -e "s|__GATEWAY_PORT__|${GATEWAY_HOSTPORT##*:}|" \
+    "$ROOT/sandbox/profile/litellm-gateway.yaml" > "$rendered"
+  openshell provider profile import --file "$rendered" --global </dev/null >&2
+  openshell provider delete "$PROVIDER" </dev/null >/dev/null 2>&1 || true
+  # The key goes from its 0600 file into this process's environment; the CLI reads
+  # it by name. It is never on a command line and never printed.
+  LITELLM_API_KEY="$(cat "$KEYFILE")" openshell provider create --name "$PROVIDER" --type litellm-gateway \
+    --credential LITELLM_API_KEY </dev/null >&2
+}
+
+up() {
+  if exists; then say "sandbox $SB exists"; return 0; fi
+  openshell provider get "$PROVIDER" </dev/null >/dev/null 2>&1 || provider
+  step "openshell sandbox create --name $SB --from $IMAGE --provider $PROVIDER --policy sandbox/policy.yaml"
+  openshell sandbox create --name "$SB" --from "$IMAGE" --provider "$PROVIDER" --policy "$ROOT/sandbox/policy.yaml" \
+    --label app=litellmdemo --no-auto-providers --detach -- sleep infinity </dev/null >&2 || die "could not create $SB"
+  for _ in $(seq 1 60); do
+    openshell sandbox exec --name "$SB" -- /usr/local/bin/python3.12 -c "print('ready')" </dev/null 2>/dev/null | grep -q ready && break
+    sleep 2
+  done
+  # OpenShell 0.1.2 reloads the provider environment on its first settings poll and
+  # closes connections opened before it (NVIDIA/OpenShell#3994, fixed upstream).
+  step "waiting for the sandbox's first policy reload"
+  for _ in $(seq 1 30); do
+    openshell logs "$SB" -n 400 --source sandbox </dev/null 2>/dev/null | grep -q "Settings poll: config change detected" && break
+    sleep 1
+  done
+  sync
+  say "sandbox $SB ready"
+}
+
+sync() {
+  exists || die "no sandbox $SB: run scripts/openshell.sh up"
+  local work; work="$(mktemp -d)"
+  mkdir -p "$work/app/app" "$work/app/classifier"
+  cp "$ROOT"/app/{__init__.py,agent.py,tools.py,sandbox_run.py} "$work/app/app/"
+  cp "$ROOT"/classifier/{__init__.py,gateway_client.py} "$work/app/classifier/"
+  step "openshell sandbox upload $SB app/ /sandbox/app   (the agent: app/ and classifier/gateway_client.py)"
+  openshell sandbox upload "$SB" "$work/app" /sandbox </dev/null >&2 || die "upload failed"
+  rm -rf "$work"
+}
+
+ask() {
+  exists || die "no sandbox $SB: run scripts/openshell.sh up"
+  local b64 arg; b64="$(printf '%s' "$1" | base64 | tr -d '\n')"
+  arg="$b64"
+  if (( ${#b64} > 100000 )); then
+    # One argument may not exceed 128 KiB on Linux: hand large requests over as a file.
+    local work name; work="$(mktemp -d)"; name="req-$(date +%s%N).b64"
+    mkdir -p "$work/req"; printf '%s' "$b64" > "$work/req/$name"
+    openshell sandbox upload "$SB" "$work/req" /sandbox </dev/null >/dev/null || die "upload failed"
+    rm -rf "$work"; arg="@/sandbox/req/$name"
+  fi
+  openshell sandbox exec --name "$SB" --workdir /sandbox/app -- /bin/sh -c \
+    "LITELLM_GATEWAY='$GATEWAY_URL' exec /usr/local/bin/python3.12 -m app.sandbox_run \"\$1\"" sh "$arg" </dev/null
+}
+
+probe() {
+  exists || die "no sandbox $SB: run scripts/openshell.sh up"
+  # Three tries from inside: OCI Generative AI directly, a model vendor, and the
+  # gateway's admin API. The policy must refuse all three.
+  openshell sandbox exec --name "$SB" -- /usr/local/bin/python3.12 -c '
+import json, urllib.request, urllib.error
+tries = [("OCI Generative AI, directly", "https://inference.generativeai.us-chicago-1.oci.oraclecloud.com/20231130/actions/chat", "POST"),
+         ("a model vendor (api.openai.com)", "https://api.openai.com/v1/models", "GET"),
+         ("the gateway admin API (/key/generate)", "'"$GATEWAY_URL"'/key/generate", "POST")]
+for name, url, method in tries:
+    try:
+        r = urllib.request.urlopen(urllib.request.Request(url, data=b"{}" if method == "POST" else None, method=method), timeout=8)
+        print(json.dumps({"target": name, "result": "REACHED", "status": r.status}))
+    except urllib.error.HTTPError as e:
+        print(json.dumps({"target": name, "result": "REFUSED by policy" if e.code == 403 else "HTTP %d" % e.code, "status": e.code}))
+    except Exception as e:
+        print(json.dumps({"target": name, "result": "REFUSED: no connection", "detail": type(e).__name__}))
+' </dev/null
+}
+
+status() { openshell sandbox list </dev/null; }
+down() { exists && { step "openshell sandbox delete $SB"; openshell sandbox delete "$SB" </dev/null >&2; } || say "no sandbox $SB"; }
+
+case "${1:-}" in
+  provider) provider ;;
+  up) up ;;
+  sync) sync ;;
+  ask) shift; ask "$1" ;;
+  probe) probe ;;
+  status) status ;;
+  down) down ;;
+  *) die "usage: scripts/openshell.sh provider | up | sync | ask '<json>' | probe | status | down" ;;
+esac
+
+exec
+/bin/zsh -lc "sed -n '1,240p' app/sandbox_run.py" in /Users/federico.kamelhar/Projects/litellmdemo
+ succeeded in 0ms:
+"""Run one request through the agent inside the OpenShell sandbox; print one JSON event per line.
+
+    python -m app.sandbox_run <base64 of {"prompt", "router", "tags", "bar", "image"}>
+    python -m app.sandbox_run @/sandbox/req/<file>      # the same, from an uploaded file (large requests)
+
+The sandbox holds no model key and no OCI credential. LITELLM_API_KEY is an
+OpenShell placeholder: the sandbox proxy swaps in the agent's LiteLLM virtual
+key on the way to the gateway, the only host the policy lets it reach.
+LITELLM_GATEWAY names that host. stdout carries only events.
+"""
+
+from __future__ import annotations
+
+import base64
+import json
+import os
+import sys
+import time
+
+
+def main() -> int:
+    arg = sys.argv[1]
+    if arg.startswith("@"):                       # a large request, uploaded as a file
+        path = arg[1:]
+        with open(path) as fh:
+            arg = fh.read()
+        os.remove(path)
+    req = json.loads(base64.b64decode(arg))
+    from app import agent
+
+    def emit(event: dict) -> None:
+        print(json.dumps({"t": round(time.time(), 3), **event}, ensure_ascii=False), flush=True)
+
+    content = req["prompt"]
+    if req.get("image"):
+        content = [{"type": "text", "text": req["prompt"]}, {"type": "image_url", "image_url": {"url": req["image"]}}]
+    router = req.get("router") or "oci-auto-trained"
+    try:
+        agent.run([{"role": "user", "content": content}], emit, router=router, tags=req.get("tags"),
+                  use_tools=router not in ("oci-flaky", "oci-chat"), gateway=agent.GATEWAY, bar=req.get("bar"))
+    except Exception as exc:  # noqa: BLE001 - reported to the control room
+        emit({"type": "error", "message": f"{type(exc).__name__}: {str(exc)[:400]}"})
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+exec
+/bin/zsh -lc "sed -n '1,220p' app/agent.py" in /Users/federico.kamelhar/Projects/litellmdemo
+ succeeded in 8ms:
+"""The control room's agent: langchain-oci, with every model call routed by the gateway.
+
+`create_oci_agent` builds a tool-using agent; its model is an OpenAI-compatible
+client pointed at the LiteLLM gateway with a model-group name (by default
+`oci-auto-trained`), so the agent never names a vendor model and holds no OCI
+credential. Each model call's route comes back in the response headers; the
+runner turns every call and tool step into an event for the web app.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import re
+import sys
+import time
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
+
+from langchain_core.callbacks import BaseCallbackHandler
+from langchain_oci import create_oci_agent
+from langchain_openai import ChatOpenAI
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from app.tools import TOOLS  # noqa: E402
+from langgraph.errors import GraphRecursionError  # noqa: E402
+
+from classifier.gateway_client import GATEWAY, key  # noqa: E402
+
+SYSTEM = """You are Northwind Cloud's assistant for support, engineering and finance teams. Northwind Cloud is a
+fictional company. Use the tools for policies, accounts and arithmetic instead of guessing, and answer in the
+language of the request. Batch arithmetic: put every calculation you need into one calculate call, separated by
+';'. Use at most six tool calls. Be concise and complete."""
+
+ROUTE_HEADERS = {
+    "x-litellm-complexity-router-tier": "route", "x-litellm-complexity-router-cause": "cause",
+    "x-litellm-model-group": "group", "x-litellm-model-name": "deployment",
+    "x-litellm-attempted-fallbacks": "fallbacks", "x-litellm-attempted-retries": "retries",
+    "x-litellm-response-cost": "cost", "x-litellm-response-duration-ms": "ms", "x-litellm-call-id": "call_id",
+    "x-litellm-key-spend": "key_spend",
+}
+DECISION_HEADER = "x-litellm-route-decision"
+
+
+def decision_of(headers: dict) -> dict | None:
+    """The classifier's decision as the gateway reported it, in the shape of a classify event."""
+    raw = {k.lower(): v for k, v in (headers or {}).items()}.get(DECISION_HEADER)
+    if not raw:
+        return None
+    try:
+        d = json.loads(raw)
+    except ValueError:
+        return None
+    details = {k: d[k] for k in ("bar", "order", "cost", "features", "precedent", "code") if k in d}
+    return {"route": d.get("route"), "criterion": d.get("criterion"), "probabilities": d.get("p") or {},
+            "milliseconds": d.get("ms"), "details": details, "source": "litellm"}
+
+
+def route_of(headers: dict) -> dict:
+    h = {k.lower(): v for k, v in (headers or {}).items()}
+    out: dict[str, Any] = {name: h[k] for k, name in ROUTE_HEADERS.items() if k in h}
+    for n in ("cost", "ms", "key_spend"):
+        if n in out:
+            out[n] = round(float(out[n]), 0 if n == "ms" else 6)
+    for n in ("fallbacks", "retries"):
+        out[n] = int(out.get(n) or 0)
+    return out
+
+
+class RouteRecorder(BaseCallbackHandler):
+    """Turns each model call and tool step into an event."""
+
+    def __init__(self, emit: Callable[[dict], None], router: str, gateway: str = GATEWAY):
+        self.emit, self.router, self.gateway, self.calls, self.started = emit, router, gateway, 0, {}
+
+    def on_chat_model_start(self, serialized, messages, *, run_id, **kw):
+        self.started[run_id] = time.time()
+
+    def on_llm_end(self, response, *, run_id, **kw):
+        self.calls += 1
+        gen = response.generations[0][0]
+        msg = getattr(gen, "message", None)
+        meta = getattr(msg, "response_metadata", {}) or {}
+        tool_calls = [c["name"] for c in (getattr(msg, "tool_calls", None) or [])]
+        usage = meta.get("token_usage") or {}
+        decision = decision_of(meta.get("headers"))
+        if decision:
+            self.emit({"type": "classify", "call": self.calls, **decision})
+        self.emit({"type": "llm", "call": self.calls, "asked": self.router, "gateway": self.gateway,
+                   **route_of(meta.get("headers")),
+                   "seconds": round(time.time() - self.started.pop(run_id, time.time()), 2),
+                   "tokens": {"in": usage.get("prompt_tokens"), "out": usage.get("completion_tokens")},
+                   "tool_calls": tool_calls, "text": (msg.content if isinstance(getattr(msg, "content", None), str) else "")[:2000]})
+
+    def on_tool_start(self, serialized, input_str, **kw):
+        self.emit({"type": "tool", "name": serialized.get("name"), "input": str(input_str)[:300]})
+
+    def on_tool_end(self, output, **kw):
+        self.emit({"type": "tool_result", "output": str(getattr(output, "content", output))[:600]})
+
+
+def chat_model(router: str, tags: list[str] | None = None, gateway: str = GATEWAY,
+               bar: float | None = None) -> ChatOpenAI:
+    extra: dict = {"tags": tags} if tags else {}
+    if bar is not None:
+        extra["metadata"] = {"route_quality_bar": bar}
+    return ChatOpenAI(model=router, base_url=f"{gateway}/v1", api_key=key(), include_response_headers=True,
+                      max_retries=0, timeout=300, extra_body=extra or None)
+
+
+FINAL_NUDGE = "Please give your final answer to my request in full."
+
+
+def _final_from_transcript(history: list, model) -> str:
+    """One tool-free call: the request, the tool results so far, and a request for the final answer."""
+    request = next((_text(m) for m in history if getattr(m, "type", None) == "human" or (isinstance(m, dict) and m.get("role") == "user")), "")
+    results = [f"- {getattr(m, 'name', 'tool')}: {_text(m)[:600]}" for m in history if getattr(m, "type", None) == "tool"]
+    prompt = (f"{request}\n\nResults already computed with tools:\n" + "\n".join(results[-20:]) +
+              "\n\nUsing these results, give your final answer in full now.")
+    return _text(model.invoke([{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt}]))
+
+
+_TOOL_TEXT = re.compile(r"\[?\s*(calculate|lookup_policy|get_account)\s*\(", re.S)
+
+
+def _tool_call_as_text(answer: str) -> bool:
+    """A short answer that names one of our tools as a call: the model wrote it instead of making it."""
+    return len(answer) < 400 and bool(_TOOL_TEXT.search(answer))
+
+
+def _text(message) -> str:
+    content = getattr(message, "content", "")
+    if isinstance(content, list):   # content blocks
+        return "".join(b.get("text", "") if isinstance(b, dict) else str(b) for b in content)
+    return content if isinstance(content, str) else str(content)
+
+
+def run(messages: list[dict], emit: Callable[[dict], None], router: str = "oci-auto-trained",
+        tags: list[str] | None = None, use_tools: bool = True, gateway: str = GATEWAY,
+        bar: float | None = None) -> dict:
+    agent = create_oci_agent(model=chat_model(router, tags, gateway, bar), tools=TOOLS if use_tools else [], system_prompt=SYSTEM,
+                             name="northwind-assistant")
+    recorder = RouteRecorder(emit, router, gateway)
+    started = time.time()
+    config = {"callbacks": [recorder], "recursion_limit": 20}
+    state: dict = {"messages": messages}
+    capped = False
+    try:
+        for state in agent.stream({"messages": messages}, config=config, stream_mode="values"):
+            pass
+        result = state
+        answer = _text(result["messages"][-1])
+    except GraphRecursionError:
+        # The agent kept calling tools. Answer from what it gathered, without tools,
+        # rather than end the run with an error.
+        capped = True
+        result = state
+        answer = _final_from_transcript(state["messages"], chat_model(router, tags, gateway, bar))
+    retried = False
+    if (not answer.strip() or _tool_call_as_text(answer)) and not capped:
+        # Some models return an empty final message (Gemini Flash-Lite after a tool
+        # result) or write a tool call as text instead of making it (Llama 4 Scout,
+        # sometimes); ask once more rather than end the run with no answer.
+        retried = True
+        result = agent.invoke({"messages": [*result["messages"], {"role": "user", "content": FINAL_NUDGE}]}, config=config)
+        answer = _text(result["messages"][-1])
+    emit({"type": "answer", "text": answer, "seconds": round(time.time() - started, 1), "calls": recorder.calls,
+          "retried_empty": retried, "tool_limit_reached": capped})
+    return {"answer": answer, "calls": recorder.calls}
+
+
+if __name__ == "__main__":
+    import json
+
+    prompt = " ".join(sys.argv[1:]) or "How do I reset my Northwind Cloud console password?"
+    run([{"role": "user", "content": prompt}], lambda e: print(json.dumps(e, ensure_ascii=False)[:400], flush=True),
+        router=os.environ.get("ROUTER", "oci-auto"))
+
+exec
+/bin/zsh -lc "scripts/openshell.sh ask '{\"prompt\":\"In one sentence, say what Northwind Cloud support should check before resetting a user password.\",\"router\":\"oci-auto-trained\"}'" in /Users/federico.kamelhar/Projects/litellmdemo
+ succeeded in 5664ms:
+{"t": 1791321684.531, "type": "classify", "call": 1, "route": "SIMPLE", "criterion": "ladder", "probabilities": {"SIMPLE": 0.831, "MEDIUM": 0.851, "COMPLEX": 0.894, "REASONING": 0.868}, "milliseconds": 29.76, "details": {"bar": 0.75, "order": ["SIMPLE", "MEDIUM", "REASONING"], "cost": {"SIMPLE": 0.001157, "MEDIUM": 0.003675, "COMPLEX": 0.005782, "REASONING": 0.005849}, "features": {"SIMPLE": 0.791, "MEDIUM": 0.85, "COMPLEX": 0.915, "REASONING": 0.92}, "precedent": {"SIMPLE": 0.87, "MEDIUM": 0.853, "COMPLEX": 0.874, "REASONING": 0.815}, "code": 0.147}, "source": "litellm"}
+{"t": 1791321684.531, "type": "llm", "call": 1, "asked": "oci-auto-trained", "gateway": "http://192.168.5.15:30400", "route": "SIMPLE", "cause": "classifier_plugin", "group": "oci-auto-trained", "deployment": "oci/openai.gpt-6-luna", "fallbacks": 0, "retries": 0, "cost": 4.5e-05, "ms": 977.0, "call_id": "3009f2dc-ca80-4839-84e7-3be1572d6205", "key_spend": 0.387827, "seconds": 0.99, "tokens": {"in": 361, "out": 17}, "tool_calls": ["lookup_policy"], "text": ""}
+{"t": 1791321684.532, "type": "tool", "name": "lookup_policy", "input": "{'topic': 'password'}"}
+{"t": 1791321684.533, "type": "tool_result", "output": "Console passwords are reset from the sign-in page: choose 'Forgot password', confirm the email link within 15 minutes, then set a new password of at least 14 characters."}
+{"t": 1791321685.525, "type": "classify", "call": 2, "route": "SIMPLE", "criterion": "ladder", "probabilities": {"SIMPLE": 0.831, "MEDIUM": 0.851, "COMPLEX": 0.894, "REASONING": 0.868}, "milliseconds": 26.86, "details": {"bar": 0.75, "order": ["SIMPLE", "MEDIUM", "REASONING"], "cost": {"SIMPLE": 0.001157, "MEDIUM": 0.003675, "COMPLEX": 0.005782, "REASONING": 0.005849}, "features": {"SIMPLE": 0.791, "MEDIUM": 0.85, "COMPLEX": 0.915, "REASONING": 0.92}, "precedent": {"SIMPLE": 0.87, "MEDIUM": 0.853, "COMPLEX": 0.874, "REASONING": 0.815}, "code": 0.147}, "source": "litellm"}
+{"t": 1791321685.525, "type": "llm", "call": 2, "asked": "oci-auto-trained", "gateway": "http://192.168.5.15:30400", "route": "SIMPLE", "cause": "classifier_plugin", "group": "oci-auto-trained", "deployment": "oci/openai.gpt-6-luna", "fallbacks": 0, "retries": 0, "cost": 5.6e-05, "ms": 985.0, "call_id": "43ad7e96-a964-4083-a4f6-f45d9fddd15a", "key_spend": 0.387839, "seconds": 0.99, "tokens": {"in": 425, "out": 28}, "tool_calls": [], "text": "Before resetting a password, support should have the user choose “Forgot password” and confirm the email link within 15 minutes."}
+{"t": 1791321685.525, "type": "answer", "text": "Before resetting a password, support should have the user choose “Forgot password” and confirm the email link within 15 minutes.", "seconds": 2.0, "calls": 2, "retried_empty": false, "tool_limit_reached": false}
+
+codex
+The sandbox request succeeded and produced two gateway-routed model calls, both on `SIMPLE` through `oci/openai.gpt-6-luna`. I’m running the escape probe next; if any target is reached, I’ll stop and call that out as a policy regression.
+exec
+/bin/zsh -lc 'scripts/openshell.sh probe' in /Users/federico.kamelhar/Projects/litellmdemo
+ succeeded in 504ms:
+{"target": "OCI Generative AI, directly", "result": "REFUSED: no connection", "detail": "URLError"}
+{"target": "a model vendor (api.openai.com)", "result": "REFUSED: no connection", "detail": "URLError"}
+{"target": "the gateway admin API (/key/generate)", "result": "REFUSED by policy", "status": 403}
+
+codex
+Everything requested is green so far, with no fixes applied. I’m doing one final `preflight.sh` pass now so the OCI minutes-left value and the closing line in the report are fresh after the sandbox request and probe.
+exec
+/bin/zsh -lc scripts/preflight.sh in /Users/federico.kamelhar/Projects/litellmdemo
+ succeeded in 8515ms:
+[32mPASS[0m  OCI session (<profile>), more than 30 min  (58 min left)
+[32mPASS[0m  Rancher Desktop and its Kubernetes  (node/lima-rancher-desktop)
+[32mPASS[0m  local cluster pods  (litellm-gateway, route-classifier, postgres ready)
+[32mPASS[0m  LiteLLM gateway and its database  (db connected)
+[32mPASS[0m  LiteLLM signs to OCI (a real call)  (200)
+[32mPASS[0m  the CODE route answers with Codex  (oci-responses/openai.gpt-5.3-codex)
+[32mPASS[0m  the agent's virtual key  (openshell-agent: $0.402 of $5.0)
+[32mPASS[0m  OpenShell gateway  (gateway reachable)
+[32mPASS[0m  OpenShell sandbox  (litellmdemo-agent Ready)
+[32mPASS[0m  a request through the sandbox  (answered via oci/openai.gpt-6-luna)
+[32mPASS[0m  the sandbox cannot escape  (3/3 refused)
+[32mPASS[0m  fallback laptop gateway  (fallback on :4000)
+[32mPASS[0m  control room on :8780, primary = local cluster  (primary http://127.0.0.1:30400)
+[32mPASS[0m  recorded runs for replay  (32 recorded runs)
+
+PREFLIGHT OK (14/14)
+
+codex
+Ready for the talk. This is personal work with a fictional company’s data.
+
+| Item | Result | Fixed |
+|---|---:|---|
+| OCI session | PASS, 58 min left | None needed |
+| Rancher Desktop and Kubernetes | PASS | None needed |
+| local cluster pods | PASS | None needed |
+| LiteLLM gateway and database | PASS | None needed |
+| LiteLLM signs to OCI | PASS | None needed |
+| CODE route answers with Codex | PASS, `oci-responses/openai.gpt-5.3-codex` | None needed |
+| agent virtual key | PASS | None needed |
+| OpenShell gateway | PASS | None needed |
+| OpenShell sandbox | PASS | None needed |
+| request through sandbox | PASS, `oci/openai.gpt-6-luna` | None needed |
+| sandbox cannot escape | PASS, 3/3 refused | None needed |
+| fallback laptop gateway | PASS | None needed |
+| control room on `:8780` | PASS, primary local cluster | None needed |
+| recorded runs for replay | PASS, 32 runs | None needed |
+| sandbox ask route/model | `SIMPLE`, `oci/openai.gpt-6-luna` | Ran with the script’s documented JSON prompt argument |
+| probe: OCI direct | REFUSED: no connection | None needed |
+| probe: model vendor direct | REFUSED: no connection | None needed |
+| probe: gateway admin API | REFUSED by policy | None needed |
+
+PREFLIGHT OK (14/14)
+tokens used
+33,714
+Ready for the talk. This is personal work with a fictional company’s data.
+
+| Item | Result | Fixed |
+|---|---:|---|
+| OCI session | PASS, 58 min left | None needed |
+| Rancher Desktop and Kubernetes | PASS | None needed |
+| local cluster pods | PASS | None needed |
+| LiteLLM gateway and database | PASS | None needed |
+| LiteLLM signs to OCI | PASS | None needed |
+| CODE route answers with Codex | PASS, `oci-responses/openai.gpt-5.3-codex` | None needed |
+| agent virtual key | PASS | None needed |
+| OpenShell gateway | PASS | None needed |
+| OpenShell sandbox | PASS | None needed |
+| request through sandbox | PASS, `oci/openai.gpt-6-luna` | None needed |
+| sandbox cannot escape | PASS, 3/3 refused | None needed |
+| fallback laptop gateway | PASS | None needed |
+| control room on `:8780` | PASS, primary local cluster | None needed |
+| recorded runs for replay | PASS, 32 runs | None needed |
+| sandbox ask route/model | `SIMPLE`, `oci/openai.gpt-6-luna` | Ran with the script’s documented JSON prompt argument |
+| probe: OCI direct | REFUSED: no connection | None needed |
+| probe: model vendor direct | REFUSED: no connection | None needed |
+| probe: gateway admin API | REFUSED by policy | None needed |
+
+PREFLIGHT OK (14/14)
+codex exit 0

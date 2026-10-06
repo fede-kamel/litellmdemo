@@ -46,7 +46,7 @@ step "fallback laptop gateway and the control room"
 curl -sf -m 3 -o /dev/null http://127.0.0.1:4000/health/liveliness || start laptop-gateway "$ROOT/scripts/gateway.sh"
 if ! curl -sf -m 3 -o /dev/null http://127.0.0.1:8780/api/health; then
   (cd "$ROOT" && LITELLM_GATEWAY=http://127.0.0.1:30400 LITELLM_GATEWAY_FALLBACK=http://127.0.0.1:4000 LITELLMDEMO_CLUSTER=local \
-    start control-room "$ROOT/.venv/bin/uvicorn" ui.server:app --host 127.0.0.1 --port 8780)
+    start control-room "$ROOT/.venv/bin/uvicorn" ui.server:app --host 127.0.0.1 --port 8780 --timeout-graceful-shutdown 3)
 fi
 for _ in $(seq 60); do curl -sf -m 3 -o /dev/null http://127.0.0.1:8780/api/health && curl -sf -m 3 -o /dev/null http://127.0.0.1:4000/health/liveliness && break; sleep 2; done
 

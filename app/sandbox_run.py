@@ -1,6 +1,6 @@
 """Run one request through the agent inside the OpenShell sandbox; print one JSON event per line.
 
-    python -m app.sandbox_run <base64 of {"prompt", "router", "tags", "bar", "image"}>
+    python -m app.sandbox_run <base64 of {"prompt", "router", "tags", "bar", "image", "mode"}>
     python -m app.sandbox_run @/sandbox/req/<file>      # the same, from an uploaded file (large requests)
 
 The sandbox holds no model key and no OCI credential. LITELLM_API_KEY is an
@@ -36,7 +36,7 @@ def main() -> int:
         content = [{"type": "text", "text": req["prompt"]}, {"type": "image_url", "image_url": {"url": req["image"]}}]
     router = req.get("router") or "oci-auto-trained"
     try:
-        agent.run([{"role": "user", "content": content}], emit, router=router, tags=req.get("tags"),
+        agent.execute([{"role": "user", "content": content}], emit, mode=req.get("mode") or "single", router=router, tags=req.get("tags"),
                   use_tools=router not in ("oci-flaky", "oci-chat"), gateway=agent.GATEWAY, bar=req.get("bar"))
     except Exception as exc:  # noqa: BLE001 - reported to the control room
         emit({"type": "error", "message": f"{type(exc).__name__}: {str(exc)[:400]}"})

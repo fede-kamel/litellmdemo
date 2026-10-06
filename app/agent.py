@@ -140,8 +140,11 @@ def _text(message) -> str:
 
 def run(messages: list[dict], emit: Callable[[dict], None], router: str = "oci-auto-trained",
         tags: list[str] | None = None, use_tools: bool = True, gateway: str = GATEWAY,
-        bar: float | None = None) -> dict:
-    agent = create_oci_agent(model=chat_model(router, tags, gateway, bar), tools=TOOLS if use_tools else [], system_prompt=SYSTEM,
+        bar: float | None = None, context: str = "") -> dict:
+    # `context` (a plan step's earlier results) goes into the system prompt: the router
+    # reads the user turns only, so each step is routed on its own instruction.
+    system = SYSTEM + (f"\n\n{context}" if context else "")
+    agent = create_oci_agent(model=chat_model(router, tags, gateway, bar), tools=TOOLS if use_tools else [], system_prompt=system,
                              name="northwind-assistant")
     recorder = RouteRecorder(emit, router, gateway)
     started = time.time()
@@ -170,6 +173,80 @@ def run(messages: list[dict], emit: Callable[[dict], None], router: str = "oci-a
     emit({"type": "answer", "text": answer, "seconds": round(time.time() - started, 1), "calls": recorder.calls,
           "retried_empty": retried, "tool_limit_reached": capped})
     return {"answer": answer, "calls": recorder.calls}
+
+
+PLANNER = """You plan work for Northwind Cloud's assistant. Split the request into the separate tasks it contains,
+in the order they must be done: two to five steps, each one job (look something up, calculate, write, code).
+Write each step as a complete instruction that can be done on its own, with the facts it needs (ids, numbers),
+in the language its result must be written in. A coding step is a spec: the programming language, the function
+signature, its inputs and output. Results of earlier steps are passed to later ones.
+Reply with JSON only: {"steps": [{"title": "<three to six words>", "instruction": "<the task>"}]}"""
+
+
+def plan(request: str, router: str = "oci-auto-trained", tags: list[str] | None = None, gateway: str = GATEWAY,
+         bar: float | None = None, emit: Callable[[dict], None] | None = None) -> list[dict]:
+    """The planner is a model call like any other: LiteLLM routes it too."""
+    recorder = RouteRecorder(emit or (lambda e: None), router, gateway)
+    model = chat_model(router, tags, gateway, bar)
+    reply = model.invoke([{"role": "system", "content": PLANNER}, {"role": "user", "content": request}],
+                         config={"callbacks": [recorder]})
+    match = re.search(r"\{.*\}", _text(reply), re.S)
+    try:
+        steps = json.loads(match.group(0))["steps"] if match else []
+    except (ValueError, KeyError, TypeError):
+        steps = []
+    steps = [s for s in steps if isinstance(s, dict) and str(s.get("instruction", "")).strip()][:5]
+    return steps or [{"title": "Answer the request", "instruction": request}]
+
+
+def run_plan(messages: list[dict], emit: Callable[[dict], None], router: str = "oci-auto-trained",
+             tags: list[str] | None = None, gateway: str = GATEWAY, bar: float | None = None) -> dict:
+    """A multi-step agent: plan, then run each step as its own request through the gateway.
+
+    Each step reaches LiteLLM with its own instruction as the user turn, so the router
+    picks a route per task: a lookup can go to the fast route, the credit calculation
+    to reasoning, a reply in Spanish to the multilingual route, a function to Codex.
+    """
+    content = messages[-1]["content"]
+    request = content if isinstance(content, str) else " ".join(p.get("text", "") for p in content if p.get("type") == "text")
+    started, offset = time.time(), 0
+
+    def tagged(step: int):
+        def out(event: dict) -> None:
+            event = dict(event)
+            if "call" in event:
+                event["call"] += offset
+            if event["type"] == "answer":       # a step's answer; the run's answer comes at the end
+                event["type"] = "step_done"
+            emit({**event, "step": step})
+        return out
+
+    planner_events: list[dict] = []
+    steps = plan(request, router, tags, gateway, bar, emit=lambda e: (planner_events.append(e), tagged(0)(e)))
+    offset = sum(1 for e in planner_events if e["type"] == "llm")
+    emit({"type": "plan", "steps": [{"step": i, "title": str(s.get("title") or f"Step {i}"), "instruction": s["instruction"]}
+                                    for i, s in enumerate(steps, 1)]})
+    results: list[tuple[str, str]] = []
+    for i, s in enumerate(steps, 1):
+        title = str(s.get("title") or f"Step {i}")
+        emit({"type": "step", "step": i, "title": title, "instruction": s["instruction"]})
+        context = ("Results of the earlier steps of this job:\n" + "\n\n".join(f"## {t}\n{a}" for t, a in results)) if results else ""
+        out = run([{"role": "user", "content": s["instruction"]}], tagged(i), router=router, tags=tags,
+                  gateway=gateway, bar=bar, context=context)
+        offset += out["calls"]
+        results.append((title, out["answer"]))
+    answer = "\n\n".join(f"**{i}. {t}**\n\n{a}" for i, (t, a) in enumerate(results, 1))
+    emit({"type": "answer", "text": answer, "seconds": round(time.time() - started, 1), "calls": offset,
+          "steps": len(steps), "retried_empty": False, "tool_limit_reached": False})
+    return {"answer": answer, "calls": offset}
+
+
+def execute(messages: list[dict], emit: Callable[[dict], None], mode: str = "single", **kw) -> dict:
+    """One request, as a single agent run or as a plan of steps."""
+    if mode == "plan":
+        kw.pop("use_tools", None)
+        return run_plan(messages, emit, **kw)
+    return run(messages, emit, **kw)
 
 
 if __name__ == "__main__":

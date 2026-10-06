@@ -7,7 +7,8 @@
 For each scenario in app/scenarios.py the langchain-oci agent runs once,
 asking the gateway for `oci-auto-trained` (or the scenario's own group).
 Checks: the first model call took the route the scenario expects, the
-premium request took the premium lane, the failing deployment fell back,
+premium request took the premium lane, the failing deployment fell back, the
+multi-step agent planned and routed every step,
 and the agent produced an answer.
 """
 
@@ -47,6 +48,13 @@ def check(s: dict, events: list[dict]) -> tuple[bool, str]:
         ok = "gpt-5.2" in (first.get("deployment") or "")
     elif expect == "fallback":
         ok = first.get("fallbacks", 0) >= 1 and first.get("group") == "oci-balanced"
+    elif expect == "a route per step":
+        # a plan of at least two steps, every step answered, and each step routed on its own
+        plan = next((e for e in events if e["type"] == "plan"), {"steps": []})
+        done = {e["step"] for e in events if e["type"] == "step_done"}
+        routes = [next((c.get("route") for c in calls if c.get("step") == i), None) for i in range(1, len(plan["steps"]) + 1)]
+        ok = len(plan["steps"]) >= 2 and done == set(range(1, len(plan["steps"]) + 1)) and all(routes)
+        return ok, f"steps={len(plan['steps'])} routes={'/'.join(r or '-' for r in routes)} calls={len(calls)} spend=${sum(c.get('cost') or 0 for c in calls):.5f}"
     else:
         ok = first.get("route") in s.get("accept", [expect])
     spend = sum(c.get("cost") or 0 for c in calls)

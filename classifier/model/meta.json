@@ -6,27 +6,27 @@
     "REASONING",
     "CODE"
   ],
-  "trained_at": "2026-10-06T19:45:47+00:00",
-  "examples": 407,
-  "train": 324,
-  "held_out": 83,
+  "trained_at": "2026-10-06T21:56:57+00:00",
+  "examples": 535,
+  "train": 426,
+  "held_out": 109,
   "label_counts": {
-    "CODE": 48,
+    "CODE": 112,
     "SIMPLE": 251,
-    "MEDIUM": 45,
+    "MEDIUM": 109,
     "REASONING": 63
   },
   "C": 8,
-  "cv_balanced_accuracy": 0.659,
-  "held_out_accuracy": 0.771,
-  "repeated_cv_accuracy": 0.722,
-  "repeated_cv_std": 0.042,
+  "cv_balanced_accuracy": 0.784,
+  "held_out_accuracy": 0.826,
+  "repeated_cv_accuracy": 0.787,
+  "repeated_cv_std": 0.03,
   "labels_from_votes": 359,
   "held_out_recall": {
     "SIMPLE": 0.825,
-    "MEDIUM": 0.333,
-    "REASONING": 0.5,
-    "CODE": 1.0
+    "MEDIUM": 0.737,
+    "REASONING": 0.7,
+    "CODE": 0.957
   },
   "confusion_matrix": {
     "labels": [
@@ -38,32 +38,32 @@
     "rows_true_cols_predicted": [
       [
         47,
-        6,
-        3,
+        2,
+        7,
         1
       ],
       [
-        0,
-        2,
+        1,
+        14,
         4,
         0
       ],
       [
         2,
-        3,
-        5,
+        1,
+        7,
         0
       ],
       [
         0,
         0,
-        0,
-        10
+        1,
+        22
       ]
     ]
   },
-  "embed_seconds": 3.3,
-  "train_seconds": 0.18,
+  "embed_seconds": 4.5,
+  "train_seconds": 0.2,
   "ladder": {
     "bar": 0.75,
     "routes": [

@@ -4,7 +4,7 @@ description: Use when proving that the gateway routes requests the way it should
 metadata:
   author: federico-kamelhar
   version: "1.0"
-compatibility: the gateway on 127.0.0.1:4000; the web app on 127.0.0.1:8780 for the end-to-end and browser tests; Google Chrome for the browser test
+compatibility: the local cluster gateway on 127.0.0.1:30400 and the laptop gateway on 127.0.0.1:4000; the control room on 127.0.0.1:8780; the OpenShell sandbox; Google Chrome for the browser test
 ---
 
 # Verifying routes
@@ -12,10 +12,17 @@ compatibility: the gateway on 127.0.0.1:4000; the web app on 127.0.0.1:8780 for 
 ## The checks, in order
 
 ```shell
-uv run python scripts/probe_routes.py              # one request per routing behaviour -> ROUTES OK (n/n)
-uv run python scripts/e2e.py                       # every use case through the agent  -> E2E OK (n/n)
-(cd web && node scripts/ui-e2e.mjs)                # the screens, clicked in a browser -> UI E2E OK (n/n)
+scripts/preflight.sh                                                     # every piece, end to end   -> PREFLIGHT OK (n/n)
+LITELLM_GATEWAY=http://127.0.0.1:30400 uv run python scripts/probe_routes.py   # each routing behaviour -> ROUTES OK (n/n)
+uv run python scripts/e2e.py --evidence evidence/openshell              # every use case, in the sandbox -> E2E OK (n/n)
+(cd web && node scripts/ui-e2e.mjs)                                     # the screens, clicked     -> UI E2E OK (n/n)
+uv run python scripts/failover.py                                       # a dead primary gateway   -> FAILOVER OK (n/n)
+scripts/oci/chaos.sh                                                    # a classifier outage      -> CHAOS OK
 ```
+
+`e2e.py` runs the agent inside the OpenShell sandbox and records, per use
+case, the runtime and the sandbox's network decisions; every run should be
+`openshell` only, with no denied connection.
 
 Each probe asks for a model group and checks the route from the response
 headers (`x-litellm-complexity-router-tier`, `x-litellm-model-name`,

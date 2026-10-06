@@ -64,6 +64,12 @@ try {
   check("a hard support request answers, with every model call", await visible("This run") && await page.locator("text=/model calls?, each routed by LiteLLM/").count() > 0);
   check("the route map shows the route", await page.locator("svg text").filter({ hasText: /SIMPLE|MEDIUM|REASONING/ }).count() > 0);
   await shot("02-escalation");
+  await page.locator("section").filter({ hasText: "each routed by LiteLLM" }).first().screenshot({ path: `${out}/02-this-run.png` });
+  await runUseCase("Escalation, end to end");
+  check("the multi-step agent plans, then routes every task", await visible("tasks, each routed by LiteLLM on its own", 300000)
+    && await page.locator('[data-testid="plan"] li').count() >= 3);
+  await shot("06-plan");
+  await page.locator("section").filter({ hasText: "each routed by LiteLLM on its own" }).first().screenshot({ path: `${out}/06-plan-panel.png` });
   await runUseCase("Japanese request");
   check("the language rule decided the Japanese request", await visible("written in Japanese", 30000));
   await shot("03-multilingual");

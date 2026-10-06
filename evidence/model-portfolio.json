@@ -1,5 +1,5 @@
 {
- "models": 20,
+ "models": 21,
  "route_pass_rate": {
   "SIMPLE": 0.7,
   "MEDIUM": 0.755,
@@ -150,7 +150,7 @@
     },
     {
      "route": "tag lane",
-     "role": "default / premium",
+     "role": "default",
      "group": "oci-chat",
      "route_pass_rate": null
     }
@@ -282,12 +282,29 @@
    "trial_pass_rate": null
   },
   {
-   "model": "openai.gpt-5.1",
+   "model": "openai.gpt-5.3-codex",
    "uses": [
     {
      "route": "CODE",
      "role": "primary",
      "group": "oci-code",
+     "route_pass_rate": null
+    }
+   ],
+   "price_per_1m": [
+    1.75,
+    14.0
+   ],
+   "price_source": "vendor list price (OCI publishes none)",
+   "trial_pass_rate": null
+  },
+  {
+   "model": "openai.gpt-5.1",
+   "uses": [
+    {
+     "route": "CODE",
+     "role": "backup",
+     "group": "oci-code-backup",
      "route_pass_rate": null
     }
    ],
@@ -366,7 +383,7 @@
     },
     {
      "route": "tag lane",
-     "role": "default / premium",
+     "role": "premium",
      "group": "oci-chat",
      "route_pass_rate": null
     }

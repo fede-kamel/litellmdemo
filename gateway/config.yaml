@@ -86,7 +86,10 @@ model_list:
     litellm_params: {<<: *oci, model: oci/openai.o4-mini}
     model_info: {input_cost_per_token: 1.1e-06, output_cost_per_token: 4.4e-06, max_input_tokens: 200000}
 
-  - model_name: oci-code                      # CODE: write, review, debug code
+  - model_name: oci-code                      # CODE: write, review, debug code, with Codex: OCI serves it on the
+    litellm_params: {<<: *oci, model: oci-responses/openai.gpt-5.3-codex}   # Responses API only (oci_responses.py)
+    model_info: {input_cost_per_token: 1.75e-06, output_cost_per_token: 1.4e-05, max_input_tokens: 272000}   # vendor list price
+  - model_name: oci-code-backup
     litellm_params: {<<: *oci, model: oci/openai.gpt-5.1}
     model_info: {input_cost_per_token: 1.25e-06, output_cost_per_token: 1.0e-05, max_input_tokens: 272000}
   - model_name: oci-code-backup
@@ -213,6 +216,8 @@ litellm_settings:
   callbacks: [oci_session_signer.handler, route_headers.handler, route_headers.console]
   drop_params: true                           # e.g. temperature for GPT-5 reasoning models
   request_timeout: 300                        # long proofs take minutes; a timeout falls back to the backup group
+  custom_provider_map:                        # OCI's Responses API, for the Codex models (oci_responses.py)
+    - {provider: oci-responses, custom_handler: oci_responses.handler}
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY

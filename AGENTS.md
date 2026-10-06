@@ -1,47 +1,54 @@
 # Agent instructions
 
 This repository is a runnable demo: a LiteLLM AI Gateway routes every request
-an application sends across fifteen OCI Generative AI models, deciding the
-route with a classifier we mini-trained; a langchain-oci agent and a web
-control room show each decision. The specification for building and running
-it is `codex/SPEC.md`; `codex/PROMPT.md` drives an agent through it. The
-skills in `.agents/skills/` hold the how-to for each part. Read the
-specification before running anything.
+an application sends across twenty-one OCI Generative AI models, deciding the
+route with a router we trained; a langchain-oci agent runs inside an NVIDIA
+OpenShell sandbox that holds no key, and a web control room shows every
+decision with LiteLLM's and OpenShell's own logs. The skills in
+`.agents/skills/` hold the how-to for each part; start with
+`litellm-demo-ops`. `codex/SPEC.md` is the build specification and
+`codex/PROMPT*.md` drive an agent through the common tasks.
 
 ## Hard rules
 
 - Secrets. Never ask for, echo, log, or store a password, key, or token.
-  `~/.config/litellmdemo/config.json` and `master_key` stay where they are;
-  scripts read them. The OCI session is renewed by the operator in their own
-  terminal (`oci session authenticate`).
-- Local only. The gateway, the classifier and the web app run on this machine.
-  Never create, use or deploy to a cluster, a GPU instance, or any cloud
-  resource without the operator's explicit go-ahead naming it.
+  `~/.config/litellmdemo/` (config, master key, agent keys, database password)
+  and `~/.oci/` stay where they are; scripts read them. The OCI session is
+  renewed by the operator in their own terminal (`oci session authenticate`).
+- Clusters. The local `rancher-desktop` cluster is yours to deploy to
+  (`scripts/local/deploy.sh`). The OKE cluster is read-only for you, and no
+  other cluster, GPU instance or cloud resource may be created or changed,
+  unless the operator asks for it by name.
 - Data. Every scenario is about a fictional company (Northwind Cloud). Never
   add real customer data.
-- Spend. `classifier/label.py` costs about $5 in OCI calls and
-  `classifier/generate.py` replaces the prompts the labels depend on: run
-  them only when the task asks for it.
+- Spend. Labelling (`classifier/label.py`, about $18 a run), the model trial
+  (`classifier/model_trial.py`) and the robustness test (`classifier/robustness.py`,
+  about $15) make many paid OCI calls: run them only when the task asks for it.
+  `classifier/generate.py` replaces the prompts the labels depend on.
 - Integrity. Do not modify `gateway/`, `classifier/`, `app/` or `scripts/` to
-  make a check pass. Explain and stop instead.
+  make a check pass. A test expectation changes only with the outcome data that
+  justifies it, written next to it. Explain and stop instead.
 
 ## Where things are
 
 | Path | Purpose |
 |---|---|
-| `gateway/` | LiteLLM config (routes, tags, fallbacks, auto-routers), OCI session signer, the trained-classifier plugin |
-| `classifier/` | generate, label by outcome, mini-train, evaluate; the shared `router_model.py` |
-| `app/` | the langchain-oci agent, its tools, the use-case scenarios |
-| `ui/`, `web/` | the control room: FastAPI backend, React front end |
-| `scripts/` | `gateway.sh`, `probe_routes.py`, `e2e.py` |
-| `.agents/skills/` | `litellm-oci-gateway`, `litellm-oci-routing`, `litellm-route-classifier`, `litellm-route-verify` |
+| `gateway/` | LiteLLM config (routes, prices, tags, fallbacks, auto-routers); hooks: OCI signing, the decision header, the console line; the trained-classifier plugin; the OCI Responses provider (Codex) |
+| `classifier/` | generate, label by outcome, the ladder, train, evaluate, the model trial, the robustness test, the classifier service |
+| `app/` | the langchain-oci agent (single run, or plan mode: a planner, then each task routed on its own), its tools, the use cases; `sandbox_run.py` runs it inside OpenShell |
+| `sandbox/` | the OpenShell image, provider profile and policy |
+| `ui/`, `web/` | the control room: FastAPI backend (runs, sandbox bridge, console, replay), React front end |
+| `deploy/k8s/` | the manifests, the same for OKE and the local cluster |
+| `scripts/` | `demo-up.sh`, `preflight.sh`, `openshell.sh`, `local/` (Rancher Desktop), `oci/` (OKE), the checks |
+| `.agents/skills/` | `litellm-demo-ops`, `litellm-oci-gateway`, `litellm-oci-routing`, `litellm-route-classifier`, `litellm-route-verify` |
 | `evidence/` | transcripts behind every claim |
-| `codex/` | the specification and the prompt |
+| `codex/` | the specification and the prompts |
 
 ## Verifying
 
-- `uv run python scripts/probe_routes.py` ends with `ROUTES OK`.
-- With the web app on 8780, `uv run python scripts/e2e.py` ends with `E2E OK`.
+- `scripts/preflight.sh` ends with `PREFLIGHT OK`.
+- `LITELLM_GATEWAY=http://127.0.0.1:30400 uv run python scripts/probe_routes.py` ends with `ROUTES OK`.
+- With the control room on 8780, `uv run python scripts/e2e.py` ends with `E2E OK`.
 - `cd web && node scripts/ui-e2e.mjs` ends with `UI E2E OK`.
 
 ## Writing

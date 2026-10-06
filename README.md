@@ -2,14 +2,16 @@
 
 An application sends every request to one OpenAI-compatible endpoint, the
 [LiteLLM](https://github.com/BerriAI/litellm) AI Gateway, and asks for a
-model group. The gateway decides which of **fifteen OCI Generative AI
+model group. The gateway decides which of **twenty-one OCI Generative AI
 models** answers, across OpenAI, Google, Meta, xAI and Cohere: a
 **classifier we mini-trained** reads the request and picks one of eight
 routes, tags pick a customer lane, a context-window check and fallback chains
 keep requests alive, and latency balances deployments. A
-[langchain-oci](https://github.com/oracle/langchain-oracle) agent drives it,
-a web control room draws every routing decision live, and Codex builds and
-verifies it from a spec and four skills.
+[langchain-oci](https://github.com/oracle/langchain-oracle) agent drives it
+from inside an [NVIDIA OpenShell](https://github.com/NVIDIA/OpenShell)
+sandbox that holds no key, a web control room shows every decision live with
+LiteLLM's and OpenShell's own logs, and Codex builds and verifies it from a
+spec and four skills.
 
 Built on the integration announced in
 [LiteLLM natively supports OCI Generative AI](https://blogs.oracle.com/ai-and-datascience/litellm-natively-supports-generative-ai).
@@ -20,14 +22,23 @@ Built on the integration announced in
 
 | Route | Model group | OCI models (backup) |
 |---|---|---|
-| SIMPLE: short facts, formatting | `oci-fast` | Gemini 2.5 Flash-Lite (Llama 4 Scout, GPT-5 nano) |
-| MEDIUM: explanations, summaries | `oci-balanced` | GPT-5 mini, Gemini 2.5 Flash |
-| COMPLEX: multi-part analysis | `oci-strong` | Gemini 2.5 Pro (GPT-5.2) |
-| REASONING: proofs, constrained planning | `oci-reasoning` | Grok 4.20 reasoning, o3 (o4-mini) |
-| CODE | `oci-code` | GPT-5.1 (Grok 4.3) |
-| VISION | `oci-vision` | Gemini 2.5 Flash, Llama 4 Maverick |
+| SIMPLE: short facts, formatting | `oci-fast` | GPT-6-luna, GPT-5.4-nano (Gemini 2.5 Flash-Lite, Llama 4 Scout) |
+| MEDIUM: explanations, summaries | `oci-balanced` | GPT-5.4-mini, Grok 4.20 non-reasoning (Gemini 2.5 Flash) |
+| COMPLEX: multi-part analysis | `oci-strong` | GPT-6-sol, GPT-6.1-sol (GPT-5.4) |
+| REASONING: proofs, constrained planning | `oci-reasoning` | Grok 4.20 reasoning, Grok 4.7 (o3, o4-mini) |
+| CODE | `oci-code` | GPT-5.3-codex, on OCI's Responses API (GPT-5.1, Grok 4.3) |
+| VISION | `oci-vision` | GPT-6-luna, Gemini 2.5 Flash (Llama 4 Maverick) |
 | LONG_CONTEXT | `oci-long` | Gemini 2.5 Flash (Llama 4 Maverick) |
 | MULTILINGUAL | `oci-multilingual` | Cohere Command A (Gemini 2.5 Flash) |
+
+Every model, its price and the price's source (OCI's public price list where
+it has one): [evidence/model-portfolio.json](evidence/model-portfolio.json),
+built by `scripts/portfolio.py` from the gateway config. The models were
+chosen by a trial: every candidate answered the same 40 prompts, graded by one
+judge ([evidence/model-trial.json](evidence/model-trial.json),
+`classifier/model_trial.py`). Codex models are served by OCI only on its
+Responses API, which LiteLLM's OCI provider does not speak;
+`gateway/oci_responses.py` is a LiteLLM `CustomLLM` provider for it.
 
 A route is decided by three layers, in order:
 
@@ -56,9 +67,9 @@ grades the request) and `oci-auto-trained` (ours, `classifier_type: custom`).
    gateway; GPT-5.2 grades the anonymised answers on correctness,
    completeness and instruction-following (1-5); an answer passes at 4 or
    more on all three. Three runs per route (one for the reasoning route) give
-   each prompt a pass rate per route: 3,590 judged answers, about $33.
-3. **Why not one label**: labelled three times, only 63% of prompts got the
-   same cheapest passing route every time, so accuracy against one label tops
+   each prompt a pass rate per route: 3,590 judged answers, about $18 a labelling.
+3. **Why not one label**: labelled three times, only 72% of prompts got the
+   same cheapest passing route every time (63% with the first portfolio), so accuracy against one label tops
    out in the 60s and 70s for any model (bigger encoders, up to 568M weights,
    did not move it). The router predicts pass probabilities instead.
 4. **Train the ladder** (`classifier/ladder.py`): per route, a logistic model on
@@ -66,38 +77,43 @@ grades the request) and `oci-auto-trained` (ours, `classifier_type: custom`).
    fractional outcomes, averaged with the pass rates of the 12 most similar
    labelled requests. A code head sends programming requests to CODE. Seconds
    on a laptop CPU; the shipped model is 210 KB.
-5. **Choose the quality bar** inside the training split by 5-fold
-   cross-validation: the cheapest bar at least as good as always using the
-   reasoning models. Each request may set its own (`metadata.route_quality_bar`).
+5. **Choose the route set and the quality bar** inside the training split by
+   5-fold cross-validation: the cheapest combination at least as good as always
+   using the reasoning models. It chose simple, medium, reasoning with a bar of 75%: the
+   strong route costs as much as the reasoning one and passes less often, so the
+   ladder skips it. Each request may set its own bar (`metadata.route_quality_bar`).
 6. **Plug in**: `gateway/trained_classifier.py` implements LiteLLM's
    `ClassifierPlugin` (`async classify(context) -> route`).
 
 ## Results
 
 Through the real gateway, on held-out prompts never seen in training or in
-choosing the bar, every answer a real OCI call graded by the same judge
-([evidence/classifier-eval.json](evidence/classifier-eval.json)):
+choosing the route set and the bar, every answer a real OCI call graded by the
+same judge ([evidence/classifier-eval.json](evidence/classifier-eval.json)):
 
 | Policy | Answers good enough | Cost of the answers | Code and language routes |
 |---|---|---|---|
-| always the fast models | 57% | $0.029 | — |
-| always the balanced models | 80% | $0.236 | — |
-| always Gemini 2.5 Pro | 58% | $1.333 | — |
-| always the reasoning models | 86% | $0.724 | — |
-| LiteLLM heuristic (`oci-auto`) | 62% | $0.076 | 0% |
-| LiteLLM LLM classifier (`oci-auto-llm`) | 68% | $0.719 | 0% |
-| **our ladder (`oci-auto-trained`, bar 70%)** | **84%** | **$0.438** | **100%** |
+| always the fast models | 76% | $0.070 | — |
+| always the balanced models | 77% | $0.218 | — |
+| always the strong models | 85% | $0.378 | — |
+| always the reasoning models | 89% | $0.376 | — |
+| LiteLLM heuristic (`oci-auto`) | 77% | $0.097 | 0% |
+| LiteLLM LLM classifier (`oci-auto-llm`) | 86% | $0.336 | 0% |
+| **our ladder (`oci-auto-trained`, bar 75%)** | **86%** | **$0.233** | **96%** (see below) |
 
 ![Quality against cost](docs/figures/figure4-quality-cost.png)
 
-The ladder gives 22 points more good answers than LiteLLM's heuristic and 16
-more than its LLM classifier at 40% less, 4 points more than always using the
-balanced models, and stays 2 points under always using the reasoning models
-for 40% less. Raising the bar trades spend for quality on the same unseen
-prompts ([classifier/model/meta.json](classifier/model/meta.json),
-`ladder.held_out_curve`): at 85% it matches always-reasoning (86%) for about
-20% less. It is the only router that sends code and other languages to their
-own models. Held-out is 73 prompts: one prompt moves a score by 1.4 points.
+With the newer models routing is a cost lever more than a quality lever: even
+the cheapest route gives a good answer 76% of the time. The ladder
+gives 9 points more good answers than LiteLLM's heuristic, matches its LLM
+classifier at 31% less, and stays 3 points under always using the
+reasoning models for 38% less. Cross-validated over all 359 prompts it ties
+always-reasoning at about 29% less ([evidence/ladder-lab.json](evidence/ladder-lab.json)).
+It is the only router that sends code and other languages to their own models:
+24 of 24 held-out code and language prompts when measured through the gateway,
+23 of 24 after the code-check retrain described under the multi-step agent.
+Held-out is 73 prompts: one prompt moves a score by 1.4 points; see
+"Does it hold up?" below for fresh prompts and a second judge.
 
 **Did we really train it?** Yes: supervised learning on judged outcomes. The
 shipped router fits four logistic models (one per route) and a code head on
@@ -106,6 +122,43 @@ single-run labels, fine-tuning the encoder itself (117.7M weights,
 `classifier/finetune.py`, 47 s on the Mac's GPU) added about 8 points of label
 accuracy ([evidence/finetune-comparison.json](evidence/finetune-comparison.json));
 with more labelled traffic that is the next lever, on an OCI GPU.
+
+## Does it hold up?
+
+The held-out numbers come from the same prompt writer and the same judge as
+the training labels. To test both, GPT-5.5 (a model the router never routes
+to) wrote 150 new requests, every route answered each one, and two judges from
+different vendors graded them: GPT-5.2, the training judge, and Gemini 2.5 Pro,
+which is not in the portfolio. The judges agree on 89% of answers
+([evidence/robustness.json](evidence/robustness.json)).
+
+| Policy | Good answers, GPT-5.2 judge | Good answers, Gemini 2.5 Pro judge | Cost |
+|---|---|---|---|
+| always the fast models | 85% | 84% | $0.127 |
+| always the balanced models | 83% | 89% | $0.439 |
+| always the strong models | 91% | 99% | $0.793 |
+| always the reasoning models | 88% | 96% | $0.915 |
+| LiteLLM heuristic | 84% | 85% | $0.251 |
+| LiteLLM LLM classifier | 89% | 93% | $0.889 |
+| **our ladder** | **87%** | **89%** | **$0.403** |
+| perfect routing (hindsight) | 98% | 100% | $0.23 / $0.20 |
+
+What this says, plainly:
+
+- The ladder stays on the cost frontier: more good answers than the heuristic,
+  close to the LLM classifier at less than half its cost.
+- On fresh prompts the strong route, which training left out of the ladder,
+  gives the most good answers. The Gemini judge rates the ladder about equal
+  to always-balanced, and the fast models alone pass 84-85% at a third of the
+  ladder's cost.
+- Perfect routing passes 98-100% for less than the ladder spends: the headroom
+  is in the predictor, not in the models.
+- Code: GPT-5.3-codex passed 20 of 20 coding tasks under both judges (GPT-5.1:
+  95% / 100%; GPT-6-luna: 100% / 100%). Vision: GPT-6-luna read the total and
+  due date from 8 of 8 generated invoices; Gemini 2.5 Flash and Llama 4
+  Maverick 7 of 8.
+
+We did not retune on this test: doing so would turn it into training data.
 
 ## The agent in an OpenShell sandbox
 
@@ -133,9 +186,54 @@ scripts/openshell.sh probe     # OCI directly, api.openai.com, the gateway's /ke
   (`gateway/route_headers.py`), so the screen explains what LiteLLM decided,
   not what a second copy of the classifier thinks.
 - **Measured** ([evidence/openshell/e2e.jsonl](evidence/openshell/e2e.jsonl)):
-  13 of 13 use cases ran entirely in the sandbox; its only connections were 26
+  13 of 13 use cases ran entirely in the sandbox; its only connections were 21
   chat-completion requests to the gateway. If the sandbox cannot reach the
   gateway, the control room says so and answers from the host agent instead.
+
+## A multi-step agent: a model per task
+
+One request often holds several tasks. The "Escalation, end to end" use case
+asks the agent to look up an account and the SLA policy, work out the credit,
+write the customer a reply in Spanish, and give the billing team a Python
+function. In plan mode (`app/agent.py`, `run_plan`):
+
+1. A planner call splits the request into steps. LiteLLM routes the planner
+   too.
+2. Each step goes to the gateway as its own request, with only its instruction
+   as the user turn. Earlier results travel in the system prompt, which the
+   router does not read, so each task is routed on its own.
+3. The answers are put together in order.
+
+A run in the sandbox: the plan on balanced (GPT-5.4-mini), the lookup and
+the credit on reasoning (Grok 4.20 and Grok 4.7), the reply on balanced, the
+function on CODE (GPT-5.3-codex): 4 tasks, 11 calls, 4 models, $0.02-0.04 across five runs.
+The control room shows the plan with each task's route and model.
+
+**What the demo found.** The router decides from the task's words, and the
+planner writes tasks in the job's words. "Write a Python function named
+calculate_sla_credit that takes outages and monthly_fee" scored 31% on the
+code check and went to the balanced route. Every CODE training example was
+worded like engineering ("a JavaScript debounce"); none came from a billing or
+support team. `classifier/code_gap.py` closes the gap
+([evidence/code-gap.json](evidence/code-gap.json)):
+
+- GPT-5.5 wrote 64 coding requests in business teams' words (CODE) and 64
+  business requests that are not code (counter-examples). The ladder trains on
+  outcome labels only, so its numbers did not change.
+- Gemini 2.5 Pro, a different writer, wrote a test set never trained on: 32
+  coding requests and 32 non-coding ones.
+
+| | Coding requests sent to CODE | Non-coding requests sent to CODE | Held-out CODE prompts caught |
+|---|---|---|---|
+| before | 72% | 0% | 10 of 10 |
+| coding rows only | 100% | 31% | 9 of 10 |
+| **with counter-examples (shipped)** | **100%** | **3%** | **9 of 10** |
+
+Coding rows alone taught the check that "business words plus a format" means
+code. The counter-examples fixed that. The one held-out prompt now missed is a
+Kafka design question with code patterns: it goes to the reasoning route. The
+planner is also told to write coding steps as a spec (language, function
+signature, inputs, output).
 
 ## See why a request got its model
 
@@ -151,14 +249,24 @@ written by a model after the fact (`classifier/explain.py`).
 
 ## Run it
 
+On one laptop, for a talk: Rancher Desktop (Kubernetes), NVIDIA OpenShell and
+an OCI session. Everything runs locally; the only outside services are OCI
+Generative AI and the session's identity provider, so any network with a
+route to OCI works.
+
 ```shell
-uv sync
+uv sync && (cd web && npm ci && npm run build)
 cp config.example.json ~/.config/litellmdemo/config.json      # your OCI profile, region, compartment
 oci session authenticate --profile-name <profile> --region us-ashburn-1   # your terminal
-scripts/gateway.sh &                                            # LiteLLM on 127.0.0.1:4000
-(cd web && npm ci && npm run build)
-uv run uvicorn ui.server:app --host 127.0.0.1 --port 8780       # http://127.0.0.1:8780
+scripts/demo-up.sh       # cluster, session refresh, OpenShell sandbox, gateways, control room, then the preflight
+scripts/preflight.sh     # every piece, end to end; ends with PREFLIGHT OK or the fixes to run
 ```
+
+The control room is at http://127.0.0.1:8780. Before going on stage: run the
+preflight on the venue's network, and keep the OCI session countdown (top
+right) above 15 minutes; `scripts/local/refresh.sh` renews it on its own. If
+the network fails mid-talk, a request that was recorded earlier
+(`scripts/record_runs.py`) replays, labelled REPLAY on screen.
 
 Or hand it to Codex: `codex "$(cat codex/PROMPT.md)"` with the flags in
 [codex/README.md](codex/README.md). Codex follows [codex/SPEC.md](codex/SPEC.md),
@@ -172,7 +280,7 @@ the rules in [AGENTS.md](AGENTS.md), and the skills in
 | `litellm-route-classifier` | generate, label by outcome, train, evaluate, plug in |
 | `litellm-route-verify` | probes, end-to-end, browser test, evidence without secrets |
 
-## Run it on Kubernetes (OKE)
+## The same stack on OKE
 
 The same gateway and classifier run as two services on an OKE Basic cluster
 with one Ampere A1 node.
@@ -237,20 +345,23 @@ scripts/oci/down.sh                   # delete everything up.sh created
 | Complexity router · Llama 4 | The map says 8,192 output tokens; OCI allows 4,096. Same failure, same fix. |
 | LLM classifier | Its default timeout is 3 s; GPT-5 nano took longer and the router fell back to the heuristic without an error. Use the fastest model and `timeout_ms`. |
 | Cohere vision | LiteLLM sends every `cohere.*` model in Cohere format; OCI rejects it for `command-a-vision`. |
-| Model catalog | Listed is not served: Grok 4, Grok Code and the Codex models returned 404 on demand. Smoke-test first. |
-| Prices | Newer OCI models have no price-map entry; set `model_info` prices or cost is `None`. |
+| Model catalog | Listed is not served everywhere: Grok 4 and Grok Code returned 404 on demand; Codex answers only on the Responses API. Smoke-test first. |
 | Open-source limit | One auto-router with operator-defined routes per gateway. |
 | Agent requests | The agent's system prompt and tool turns drowned the request: every prompt looked alike to the classifier and Spanish read as English. Classify the user turns only. |
 | Short requests | py3langid called "What is 18 percent of 4,217.50?" Afrikaans. The language rule needs a few words and 50% confidence; that keeps 56/56 non-English prompts and flags 0/256 English ones. |
 | Unseen domains | The first prompts had no customer-support requests: "reset a password" routed to CODE. 151 business prompts, labelled the same way, fixed it; the ladder now sends it to the balanced models, because the fast ones passed similar requests 47% of the time. |
 | OKE behind NAT | Port 6443 left from a different address than web traffic; allowlist the address seen on 6443. |
 | Labels | Labelled three times, only 63% of prompts got the same cheapest passing route. Predict each route's pass probability, not one label. |
-| Gemini 2.5 Pro | 58% good answers at five times the balanced cost: thinks at length, answers tersely. The router never picks it. |
+| Gemini 2.5 Pro | With the first portfolio it passed 58% at five times the balanced cost (it thinks at length, then answers tersely); the model trial replaced it with GPT-6-sol (82%). |
 | OKE signing | Instance-principal signing failed after ~20 minutes: LiteLLM signs with `do_request_sign()`, which skips the SDK's token refresh (only `__call__` refreshes). The pre-call hook refreshes it. |
 | Well-known is not hard | Famous proofs pass on the cheapest model, so the classifier learned SIMPLE for them; constrained planning is what needs REASONING. |
+| Codex on OCI | Served only on OCI's Responses API ("Use the v1/responses endpoint instead"); LiteLLM's OCI provider speaks only the chat API. `gateway/oci_responses.py` is a CustomLLM provider for it. |
+| GPT-6 and tools | OCI serves the GPT-6 models with reasoning on and refuses function tools; `reasoning_effort: none`, sent only with tools, fixes it. |
+| Prices | LiteLLM's map prices OCI Gemini 2.5 Flash at $0.15 / $0.60 per 1M tokens; OCI's price list says $0.30 / $2.50. Every deployment states its price, from OCI's public price-list API where it has one. |
+| Rancher Desktop | 2 CPUs and 6 GB ran out of memory with the cluster, the sandbox and a torch install (load 163); 6 CPUs and 16 GB is comfortable. Docker Hub is blocked behind the corporate proxy: every image comes from ghcr.io or quay.io. |
 | Plugin explanations | LiteLLM records only `classifier-plugin:<tier>` in `routing_decision`, and the response hook sees a copy of the metadata. We carry the decision in `requester_metadata` to `x-litellm-route-decision`. |
 | Tools and Llama 4 Scout | Through LiteLLM on OCI it sometimes writes a tool call as text. LiteLLM's pre-call checks do not skip deployments without function calling yet (a TODO in `router.py`), so Scout is a backup. |
-| OpenShell and the host | OpenShell refuses `host.docker.internal` unless the Docker driver's callback is an IP literal; a declared IP (`192.168.5.2` on Rancher Desktop) works. `profile import` never overwrites a profile. |
+| OpenShell and the host | OpenShell refuses `host.docker.internal` unless the Docker driver's callback is an IP literal; a declared IP works: the local Kubernetes node (`192.168.5.15:30400` on Rancher Desktop), rendered into the profile by `scripts/openshell.sh`. `profile import` never overwrites a profile. |
 | Session signing | The provider signs with API-key fields or an `oci_signer`; a `CustomLogger.async_pre_call_deployment_hook` attaches a session signer per call. |
 
 ## Layout

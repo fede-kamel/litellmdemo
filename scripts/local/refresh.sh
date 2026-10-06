@@ -24,7 +24,16 @@ status() { printf '{"minutes_left": %s, "state": "%s", "at": %s}\n' "$(minutes_l
 while true; do
   if oci session refresh --profile "$PROFILE" --region us-ashburn-1 >/dev/null 2>&1; then
     "$ROOT/scripts/local/push-session.sh" && status ok || status push-failed
-    sleep 1200
+    # A refresh cannot extend a session past its maximum lifetime: when the new
+    # token is short, only `oci session authenticate` (a browser login) helps.
+    left="$(minutes_left)"
+    if (( left < 45 )); then
+      status "needs-login"
+      echo "$(date +%T) OCI session at its maximum lifetime ($left min left): run  oci session authenticate --profile-name $PROFILE --region us-ashburn-1" >&2
+      sleep 120
+    else
+      sleep 1200
+    fi
   else
     status expired
     echo "$(date +%T) OCI session cannot be refreshed: run  oci session authenticate --profile-name $PROFILE --region us-ashburn-1" >&2
