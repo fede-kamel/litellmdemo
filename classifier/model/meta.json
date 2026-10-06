@@ -1,0 +1,64 @@
+{
+  "encoder": "intfloat/multilingual-e5-small",
+  "classes": [
+    "SIMPLE",
+    "MEDIUM",
+    "REASONING",
+    "CODE"
+  ],
+  "trained_at": "2026-10-06T14:12:50+00:00",
+  "examples": 256,
+  "train": 204,
+  "held_out": 52,
+  "label_counts": {
+    "CODE": 48,
+    "SIMPLE": 129,
+    "MEDIUM": 46,
+    "REASONING": 33
+  },
+  "C": 0.5,
+  "cv_balanced_accuracy": 0.668,
+  "held_out_accuracy": 0.731,
+  "held_out_recall": {
+    "SIMPLE": 0.731,
+    "MEDIUM": 0.333,
+    "REASONING": 0.857,
+    "CODE": 1.0
+  },
+  "confusion_matrix": {
+    "labels": [
+      "SIMPLE",
+      "MEDIUM",
+      "REASONING",
+      "CODE"
+    ],
+    "rows_true_cols_predicted": [
+      [
+        19,
+        3,
+        3,
+        1
+      ],
+      [
+        3,
+        3,
+        1,
+        2
+      ],
+      [
+        1,
+        0,
+        6,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        10
+      ]
+    ]
+  },
+  "embed_seconds": 3.2,
+  "train_seconds": 0.14
+}

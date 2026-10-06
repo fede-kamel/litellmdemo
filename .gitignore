@@ -12,4 +12,3 @@ master_key
 deck/*.pptx
 deck/*.pdf
 classifier/data/raw/
-classifier/model/*.bin

@@ -1,60 +1,151 @@
 # LiteLLM AI Gateway in front of OCI Generative AI (us-chicago-1).
 #
 # Applications call one OpenAI-compatible endpoint with a model-group name and
-# never name a vendor model. The gateway decides the deployment: by complexity
-# tier, by tag, by latency, by context window, and by fallback when a
-# deployment fails. Every decision comes back in x-litellm-* response headers.
+# never name a vendor model. The gateway decides the deployment: by route (a
+# classifier reads the request), by tag, by latency, by context window, and by
+# fallback when a deployment fails. Every decision comes back in x-litellm-*
+# response headers.
+#
+# Three auto-routers classify the same request three ways, for comparison:
+#   oci-auto          LiteLLM's built-in heuristic (four tiers)
+#   oci-auto-llm      an LLM grades the request against the route rubric
+#   oci-auto-trained  our mini-trained classifier (classifier/), as a plugin
 #
 # Region and compartment come from the environment (scripts/gateway.sh reads
 # them from ~/.config/litellmdemo/config.json); OCI requests are signed with
 # the operator's OCI session by oci_session_signer.py.
 #
 # Prices: where LiteLLM's model map has no OCI entry, input/output costs are
-# set from the map's price for the same model at its own provider.
+# set from the map's price for the same model at its own provider. Gemini
+# deployments declare max_output_tokens 65535 and Llama 4 deployments 4096:
+# the complexity router sets max_tokens from the model map, which OCI rejects.
 
 x-oci: &oci
   oci_region: os.environ/OCI_REGION
   oci_compartment_id: os.environ/OCI_COMPARTMENT_ID
+x-gemini: &gemini {max_output_tokens: 65535}
+x-llama4: &llama4 {max_output_tokens: 4096}       # OCI's limit; the model map says 8192
 
 model_list:
-  # --- Tier ladder: what the complexity router chooses between -------------
-  - model_name: oci-fast                      # SIMPLE
+  # --- Routes: what the classifiers choose between -------------------------
+  - model_name: oci-fast                      # SIMPLE: quick facts, formatting, short rewrites
     litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash-lite}
-    model_info: {max_output_tokens: 65535}   # OCI accepts < 65536; the model map says 65536
+    model_info: *gemini
+  - model_name: oci-fast
+    litellm_params: {<<: *oci, model: oci/meta.llama-4-scout-17b-16e-instruct}
+    model_info: *llama4
   - model_name: oci-fast-backup
-    litellm_params: {<<: *oci, model: oci/meta.llama-4-maverick-17b-128e-instruct-fp8}
+    litellm_params: {<<: *oci, model: oci/openai.gpt-5-nano}
 
-  - model_name: oci-balanced                  # MEDIUM: two vendors, load-balanced by latency
+  - model_name: oci-balanced                  # MEDIUM: explanations, summaries, everyday analysis
     litellm_params: {<<: *oci, model: oci/openai.gpt-5-mini}
   - model_name: oci-balanced
     litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash}
-    model_info: {max_output_tokens: 65535}   # OCI accepts < 65536; the model map says 65536
+    model_info: *gemini
 
-  - model_name: oci-strong                    # COMPLEX
+  - model_name: oci-strong                    # COMPLEX: multi-part analysis, careful writing
     litellm_params: {<<: *oci, model: oci/google.gemini-2.5-pro}
-    model_info: {max_output_tokens: 65535}   # OCI accepts < 65536; the model map says 65536
+    model_info: *gemini
   - model_name: oci-strong-backup
     litellm_params: {<<: *oci, model: oci/openai.gpt-5.2}
     model_info: {input_cost_per_token: 1.75e-06, output_cost_per_token: 1.4e-05, max_input_tokens: 272000}
 
-  - model_name: oci-reasoning                 # REASONING
+  - model_name: oci-reasoning                 # REASONING: proofs, hard math, planning under constraints
     litellm_params: {<<: *oci, model: oci/xai.grok-4.20-reasoning}
     model_info: {input_cost_per_token: 1.25e-06, output_cost_per_token: 2.5e-06, max_input_tokens: 1000000}
+  - model_name: oci-reasoning
+    litellm_params: {<<: *oci, model: oci/openai.o3}
+    model_info: {input_cost_per_token: 2.0e-06, output_cost_per_token: 8.0e-06, max_input_tokens: 200000}
   - model_name: oci-reasoning-backup
     litellm_params: {<<: *oci, model: oci/openai.o4-mini}
     model_info: {input_cost_per_token: 1.1e-06, output_cost_per_token: 4.4e-06, max_input_tokens: 200000}
 
+  - model_name: oci-code                      # CODE: write, review, debug code
+    litellm_params: {<<: *oci, model: oci/openai.gpt-5.1}
+    model_info: {input_cost_per_token: 1.25e-06, output_cost_per_token: 1.0e-05, max_input_tokens: 272000}
+  - model_name: oci-code-backup
+    litellm_params: {<<: *oci, model: oci/xai.grok-4.3}
+    model_info: {input_cost_per_token: 1.25e-06, output_cost_per_token: 2.5e-06, max_input_tokens: 1000000}
+
+  - model_name: oci-vision                    # VISION: an image in the request
+    litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash}
+    model_info: *gemini
+  - model_name: oci-vision
+    litellm_params: {<<: *oci, model: oci/meta.llama-4-maverick-17b-128e-instruct-fp8}
+    model_info: *llama4
+
+  - model_name: oci-long                      # LONG_CONTEXT: a request beyond ~30k tokens
+    litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash}
+    model_info: *gemini
+  - model_name: oci-long-backup
+    litellm_params: {<<: *oci, model: oci/meta.llama-4-maverick-17b-128e-instruct-fp8}
+    model_info: *llama4
+
+  - model_name: oci-multilingual              # MULTILINGUAL: a request not in English
+    litellm_params: {<<: *oci, model: oci/cohere.command-a-03-2025}
+  - model_name: oci-multilingual-backup
+    litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash}
+    model_info: *gemini
+
+  # --- Classifier and judge models -----------------------------------------
+  - model_name: oci-classifier-llm            # the LLM that grades requests for oci-auto-llm
+    litellm_params: {<<: *oci, model: oci/openai.gpt-5-nano}
+  - model_name: oci-judge                     # writes and grades the classifier's training data
+    litellm_params: {<<: *oci, model: oci/openai.gpt-5.2}
+    model_info: {input_cost_per_token: 1.75e-06, output_cost_per_token: 1.4e-05, max_input_tokens: 272000}
+
   # --- Auto routers: the application asks for these -------------------------
-  - model_name: oci-auto                      # complexity router, built-in heuristic classifier
+  - model_name: oci-auto                      # 1. built-in heuristic, four tiers
     litellm_params:
       model: auto_router/complexity_router
       complexity_router_config:
         tiers: {SIMPLE: oci-fast, MEDIUM: oci-balanced, COMPLEX: oci-strong, REASONING: oci-reasoning}
 
+  - model_name: oci-auto-llm                  # 2. an LLM grades the request, LiteLLM's shipped rubric and tiers
+    litellm_params:
+      model: auto_router/complexity_router
+      complexity_router_config:
+        classifier_type: llm
+        classifier_llm_config: {model: oci-classifier-llm}
+        tiers: {SIMPLE: oci-fast, MEDIUM: oci-balanced, COMPLEX: oci-strong, REASONING: oci-reasoning}
+
+  - model_name: oci-auto-trained              # 3. our mini-trained classifier
+    litellm_params:
+      model: auto_router/complexity_router
+      complexity_router_config:
+        classifier_type: custom
+        classifier_plugin: trained_classifier.plugin
+        classifier_plugin_timeout_ms: 2000
+        fallback_tier: MEDIUM
+        # The open-source build registers one auto-router with operator-defined
+        # tiers; this is it. Route rubric: SIMPLE short fact or formatting;
+        # MEDIUM one-step explanation or summary; COMPLEX multi-part analysis
+        # or long-form writing; REASONING proofs, hard math, constrained
+        # planning; CODE source code or SQL; VISION an image; LONG_CONTEXT a
+        # very long document; MULTILINGUAL not in English.
+        tier_definitions:
+          - {name: SIMPLE}
+          - {name: MEDIUM}
+          - {name: COMPLEX}
+          - {name: REASONING}
+          - {name: CODE, description: "Writing, reviewing, explaining or debugging source code or SQL"}
+          - {name: VISION, description: "The request contains an image"}
+          - {name: LONG_CONTEXT, description: "The request carries a very long document"}
+          - {name: MULTILINGUAL, description: "The request is written in a language other than English"}
+        tiers:
+          SIMPLE: oci-fast
+          MEDIUM: oci-balanced
+          COMPLEX: oci-strong
+          REASONING: oci-reasoning
+          CODE: oci-code
+          VISION: oci-vision
+          LONG_CONTEXT: oci-long
+          MULTILINGUAL: oci-multilingual
+
   # --- Tag routing: same group, a premium lane for tagged requests ----------
   - model_name: oci-chat
     litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash, tags: ["default"]}
-    model_info: {max_output_tokens: 65535}   # OCI accepts < 65536; the model map says 65536
+    model_info: *gemini
   - model_name: oci-chat
     litellm_params: {<<: *oci, model: oci/openai.gpt-5.2, tags: ["premium"]}
     model_info: {input_cost_per_token: 1.75e-06, output_cost_per_token: 1.4e-05, max_input_tokens: 272000}
@@ -63,9 +154,6 @@ model_list:
   - model_name: oci-compact
     litellm_params: {<<: *oci, model: oci/meta.llama-3.3-70b-instruct}
     model_info: {max_input_tokens: 2000}
-  - model_name: oci-long
-    litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash}
-    model_info: {max_output_tokens: 65535}   # OCI accepts < 65536; the model map says 65536
 
   # --- Fallback chain: a deployment that always fails -----------------------
   - model_name: oci-flaky
@@ -82,6 +170,9 @@ router_settings:
     - {oci-fast: [oci-fast-backup]}
     - {oci-strong: [oci-strong-backup]}
     - {oci-reasoning: [oci-reasoning-backup]}
+    - {oci-code: [oci-code-backup]}
+    - {oci-long: [oci-long-backup]}
+    - {oci-multilingual: [oci-multilingual-backup]}
     - {oci-flaky: [oci-balanced]}
   context_window_fallbacks:
     - {oci-compact: [oci-long]}

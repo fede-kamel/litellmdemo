@@ -1,0 +1,39 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/600.css";
+
+/* Redwood-inspired tokens shared with the Deep Agents demo: warm neutrals, Oracle red as the accent. */
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --color-ink: #161513;
+  --color-ink-2: #3f3a36;
+  --color-ink-3: #6f6964;
+  --color-paper: #fbf9f8;
+  --color-panel: #ffffff;
+  --color-line: #e7e2de;
+  --color-sand: #f1efed;
+  --color-oracle: #c74634;
+  --color-oracle-soft: #fbeae7;
+  --color-teal: #2c5967;
+  --color-teal-soft: #e6eff1;
+  --color-moss: #5f7d4f;
+  --color-moss-soft: #edf3e8;
+  --color-ochre: #b07d1f;
+  --color-ochre-soft: #fbf3e2;
+  --color-violet: #6b4fa0;
+  --color-violet-soft: #f0ecf7;
+  --color-indigo: #3d3a8f;
+  --color-indigo-soft: #eceaf8;
+}
+
+html, body, #root { height: 100%; }
+body { @apply bg-paper text-ink font-sans antialiased; font-feature-settings: "cv11", "ss01"; }
+::selection { background: color-mix(in srgb, var(--color-oracle) 22%, transparent); }
+.scroll-thin { scrollbar-width: thin; scrollbar-color: #d6d0cb transparent; }
+
+@keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgb(199 70 52 / .45); } 70% { box-shadow: 0 0 0 7px rgb(199 70 52 / 0); } 100% { box-shadow: 0 0 0 0 rgb(199 70 52 / 0); } }
+.live-dot { animation: pulse-ring 1.6s infinite; }
+@keyframes lit { from { background-color: var(--color-oracle-soft); } to { background-color: transparent; } }
+.lit { animation: lit 2.4s ease-out; }

@@ -27,12 +27,28 @@ LONG = " ".join(["The quarterly operations review covers capacity, incidents, sp
 PROBES = [
     # name, model group, prompt, extra body, expectation(headers) -> bool, what it shows
     ("complexity: simple", "oci-auto", "What is the capital of France?", {},
-     lambda h: h.get("x-litellm-complexity-router-tier") == "SIMPLE" and "flash-lite" in h.get("x-litellm-model-name", ""),
+     lambda h: h.get("x-litellm-complexity-router-tier") == "SIMPLE" and int(h.get("x-litellm-attempted-fallbacks") or 0) == 0
+              and any(m in h.get("x-litellm-model-name", "") for m in ("flash-lite", "llama-4-scout")),
      "a one-line fact goes to the cheapest tier"),
     ("complexity: proof (heuristic)", "oci-auto",
      "Prove step by step that the square root of 2 is irrational, then explain why the proof generalises to every non-square integer.", {},
      lambda h: bool(h.get("x-litellm-complexity-router-tier")),
      "the built-in heuristic's tier for a proof: the baseline the trained classifier must beat"),
+    ("trained: proof", "oci-auto-trained",
+     "Prove step by step that the square root of 2 is irrational, then explain why the proof generalises to every non-square integer.", {},
+     lambda h: h.get("x-litellm-complexity-router-tier") == "REASONING" and h.get("x-litellm-complexity-router-cause") == "classifier_plugin",
+     "our classifier sends the proof the heuristic called MEDIUM to REASONING"),
+    ("trained: code", "oci-auto-trained",
+     "My Go program increments a shared counter from goroutines and the total is wrong. Explain and fix it with sync/atomic.", {},
+     lambda h: h.get("x-litellm-complexity-router-tier") == "CODE",
+     "a code task goes to the code route"),
+    ("trained: language rule", "oci-auto-trained",
+     "Hola, ¿cómo puedo fijar un límite de gasto mensual en mi cuenta?", {},
+     lambda h: h.get("x-litellm-complexity-router-tier") == "MULTILINGUAL" and "cohere" in h.get("x-litellm-model-name", ""),
+     "a Spanish request goes to the multilingual route by rule"),
+    ("trained: image rule", "oci-auto-trained", "IMAGE", {},
+     lambda h: h.get("x-litellm-complexity-router-tier") == "VISION",
+     "an image in the request goes to a vision model by rule"),
     ("tag: default", "oci-chat", "Summarise the benefits of a model gateway in one sentence.", {},
      lambda h: "gemini-2.5-flash" in h.get("x-litellm-model-name", ""),
      "untagged traffic takes the default lane"),
@@ -56,7 +72,14 @@ SHOWN = ("x-litellm-model-group", "x-litellm-model-name", "x-litellm-complexity-
 
 
 def call(client: httpx.Client, key: str, model: str, prompt: str, extra: dict) -> tuple[int, dict, str]:
-    body = {"model": model, "messages": [{"role": "user", "content": prompt}], "max_tokens": 600, **extra}
+    content: str | list = prompt
+    if prompt == "IMAGE":
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+        from app.scenarios import invoice_image
+
+        content = [{"type": "text", "text": "What is the total due on this invoice?"},
+                   {"type": "image_url", "image_url": {"url": invoice_image()}}]
+    body = {"model": model, "messages": [{"role": "user", "content": content}], "max_tokens": 600, **extra}
     r = client.post(f"{GATEWAY}/v1/chat/completions", headers={"Authorization": f"Bearer {key}"}, json=body, timeout=180)
     text = ""
     if r.status_code == 200:
