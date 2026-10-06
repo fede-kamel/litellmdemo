@@ -68,7 +68,9 @@ def main() -> int:
             ok_count += ok
             print(f"{'PASS' if ok else 'FAIL'}  {s['id']:20s} expect {s['expect']:13s} {detail}", flush=True)
             lines.append({"scenario": s["id"], "use_case": s["use_case"], "expect": s["expect"], "passed": ok,
-                          "detail": detail, "calls": [{k: e.get(k) for k in ("call", "route", "cause", "group", "deployment",
+                          "runtime": [e.get("runtime") for e in events if e["type"] == "runtime"],
+                          "sandbox_network": next((e["events"] for e in events if e["type"] == "sandbox_net"), None),
+                          "detail": detail, "calls": [{k: e.get(k) for k in ("call", "route", "cause", "group", "deployment", "gateway",
                                                                               "fallbacks", "retries", "cost", "seconds", "tool_calls")}
                                                      for e in events if e["type"] == "llm"],
                           "classifier": [{k: e.get(k) for k in ("call", "route", "criterion", "probabilities", "milliseconds")}

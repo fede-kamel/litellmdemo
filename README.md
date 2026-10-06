@@ -20,7 +20,7 @@ Built on the integration announced in
 
 | Route | Model group | OCI models (backup) |
 |---|---|---|
-| SIMPLE: short facts, formatting | `oci-fast` | Gemini 2.5 Flash-Lite, Llama 4 Scout (GPT-5 nano) |
+| SIMPLE: short facts, formatting | `oci-fast` | Gemini 2.5 Flash-Lite (Llama 4 Scout, GPT-5 nano) |
 | MEDIUM: explanations, summaries | `oci-balanced` | GPT-5 mini, Gemini 2.5 Flash |
 | COMPLEX: multi-part analysis | `oci-strong` | Gemini 2.5 Pro (GPT-5.2) |
 | REASONING: proofs, constrained planning | `oci-reasoning` | Grok 4.20 reasoning, o3 (o4-mini) |
@@ -107,10 +107,41 @@ single-run labels, fine-tuning the encoder itself (117.7M weights,
 accuracy ([evidence/finetune-comparison.json](evidence/finetune-comparison.json));
 with more labelled traffic that is the next lever, on an OCI GPU.
 
+## The agent in an OpenShell sandbox
+
+The control room's agent runs inside an [NVIDIA OpenShell](https://github.com/NVIDIA/OpenShell)
+sandbox. It holds no OCI credential and no model key, and it can reach one
+place: LiteLLM.
+
+![Isolation](docs/figures/figure6-isolation.png)
+
+```shell
+scripts/oci/deploy.sh          # also issues the agent's LiteLLM virtual key into ~/.config/litellmdemo/agent_key
+scripts/openshell.sh provider  # OpenShell provider litellm-agent holds that key
+scripts/openshell.sh up        # sandbox litellmdemo-agent from sandbox/ (image, profile, policy)
+scripts/openshell.sh probe     # OCI directly, api.openai.com, the gateway's /key API: all refused
+```
+
+- **The sandbox** sees `LITELLM_API_KEY` as a placeholder. The OpenShell proxy
+  swaps in the real key on requests to the gateway, and nowhere else. Its
+  policy allows `POST /v1/chat/completions` and `GET /v1/models` on the
+  gateway, for the Python interpreter only.
+- **LiteLLM** checks the agent's virtual key (five model groups, $5 per 30 days,
+  30 requests a minute, kept in Postgres), classifies the request with our
+  plugin, routes it, signs the OCI call as the OKE node, and charges the cost
+  to the key. Its decision comes back in `x-litellm-route-decision`
+  (`gateway/route_headers.py`), so the screen explains what LiteLLM decided,
+  not what a second copy of the classifier thinks.
+- **Measured** ([evidence/openshell/e2e.jsonl](evidence/openshell/e2e.jsonl)):
+  13 of 13 use cases ran entirely in the sandbox; its only connections were 26
+  chat-completion requests to the gateway. If the sandbox cannot reach the
+  gateway, the control room says so and answers from the host agent instead.
+
 ## See why a request got its model
 
-The control room opens on **Ask and explain**: type any request and the
-gateway routes it; the screen shows the decision path (each rule, the code
+The control room opens on **Ask and explain**: type any request and follow
+it left to right, the OpenShell sandbox, LiteLLM's five steps (key check,
+classify, route, sign, account), the OCI model. The "why" card shows the decision path (each rule, the code
 check, then every route cheapest first with its chance of a good answer
 against the bar), where that number comes from (the request's own features
 and its twelve most similar labelled requests), the closest training requests
@@ -217,6 +248,9 @@ scripts/oci/down.sh                   # delete everything up.sh created
 | Gemini 2.5 Pro | 58% good answers at five times the balanced cost: thinks at length, answers tersely. The router never picks it. |
 | OKE signing | Instance-principal signing failed after ~20 minutes: LiteLLM signs with `do_request_sign()`, which skips the SDK's token refresh (only `__call__` refreshes). The pre-call hook refreshes it. |
 | Well-known is not hard | Famous proofs pass on the cheapest model, so the classifier learned SIMPLE for them; constrained planning is what needs REASONING. |
+| Plugin explanations | LiteLLM records only `classifier-plugin:<tier>` in `routing_decision`, and the response hook sees a copy of the metadata. We carry the decision in `requester_metadata` to `x-litellm-route-decision`. |
+| Tools and Llama 4 Scout | Through LiteLLM on OCI it sometimes writes a tool call as text. LiteLLM's pre-call checks do not skip deployments without function calling yet (a TODO in `router.py`), so Scout is a backup. |
+| OpenShell and the host | OpenShell refuses `host.docker.internal` unless the Docker driver's callback is an IP literal; a declared IP (`192.168.5.2` on Rancher Desktop) works. `profile import` never overwrites a profile. |
 | Session signing | The provider signs with API-key fields or an `oci_signer`; a `CustomLogger.async_pre_call_deployment_hook` attaches a session signer per call. |
 
 ## Layout

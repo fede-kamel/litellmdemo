@@ -40,10 +40,10 @@ def main() -> int:
                 break
             except OSError:
                 time.sleep(1)
-        ask = post("/api/ask", {"prompt": "What is 18 percent of 4,217.50?", "max_tokens": 100})
+        ask = post("/api/ask", {"prompt": "What is 18 percent of 4,217.50?", "max_tokens": 100})   # host path
         results.append(("ask answered by the fallback gateway", ask["ok"] and ask["gateway"] == FALLBACK and bool(ask["route"].get("route")),
                         f"via {ask['gateway']}, route {ask['route'].get('route')}"))
-        rid = post("/api/runs", {"scenario": "code-explain"})["id"]
+        rid = post("/api/runs", {"scenario": "code-explain", "runtime": "host"})["id"]   # the host agent's failover
         events = []
         for line in urllib.request.urlopen(f"{APP}/api/runs/{rid}/stream", timeout=240):
             text = line.decode().strip()

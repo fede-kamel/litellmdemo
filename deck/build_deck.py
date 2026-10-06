@@ -263,11 +263,11 @@ def build(template: Path, out: Path) -> None:
     s = prs.slides.add_slide(blank)
     header(s, "One story, one live demo", "Agenda")
     agenda = [("The blog", "LiteLLM natively supports OCI Generative AI", "3–4"),
-              ("The architecture", "one gateway between every app and every model", "5"),
-              ("Why route", "the price spread, the toolbox, the use cases, the criteria", "6–9"),
-              ("The router", "where it sits, how we trained it, whether it pays", "10–15"),
-              ("Live demo", "ask and explain, the control room, then back to the slides", "16–20"),
-              ("Built with Codex, run on OKE", "skills as the harness; Kubernetes; field notes; what we would upstream", "21–25")]
+              ("The architecture", "one gateway between every app and every model; the agent in OpenShell", "5–6"),
+              ("Why route", "the price spread, the toolbox, the use cases, the criteria", "7–10"),
+              ("The router", "where it sits, how we trained it, whether it pays", "11–16"),
+              ("Live demo", "ask and explain, the control room, then back to the slides", "17–21"),
+              ("Built with Codex, run on OKE", "skills as the harness; Kubernetes; field notes; what we would upstream", "22–26")]
     for i, (t, sub, pages) in enumerate(agenda):
         y = 1.85 + i * 0.7
         rect(s, 0.72, y, 11.9, 0.6, SAND if i % 2 == 0 else WHITE, line=CARD_LINE)
@@ -318,6 +318,17 @@ def build(template: Path, out: Path) -> None:
     ], size=13)
     repo(s, "gateway/config.yaml · gateway/oci_session_signer.py")
     notes(s, "Left: anything that speaks the OpenAI API, including our langchain-oci agent and Codex. Middle: one process with one config file. Right: fifteen OCI models across five vendors.")
+
+    # 5b · isolation
+    s = prs.slides.add_slide(blank)
+    header(s, "OpenShell holds the agent; LiteLLM holds the decisions and the keys", "The agent holds nothing")
+    figure(s, "figure6-isolation.png", 2.95, 1.5, 7.4)
+    repo(s, "sandbox/ (image, profile, policy) · scripts/openshell.sh · gateway/route_headers.py · scripts/oci/deploy.sh")
+    notes(s, "The agent runs in an OpenShell sandbox with a placeholder key and one allowed endpoint: POST /v1/chat/completions on LiteLLM. "
+             "OpenShell's gateway holds the agent's LiteLLM virtual key and swaps it in on the way out. LiteLLM checks that key (5 model groups, "
+             "$5 per 30 days, 30 rpm), classifies with our plugin, routes, signs to OCI as the node, and accounts. Measured: 13 of 13 use cases ran "
+             "entirely in the sandbox; its only connections were 26 chat-completion POSTs to the gateway; OCI directly, api.openai.com and the "
+             "gateway's /key admin API were refused.")
 
     # 6 · why route
     s = prs.slides.add_slide(blank)
@@ -471,11 +482,11 @@ def build(template: Path, out: Path) -> None:
     rect(s, 0, 0, 13.333, 7.5, TEAL)
     text(s, 0.72, 2.2, 11.9, 0.4, "LIVE DEMO · SWITCH TO THE BROWSER", size=13, color=YELLOW, bold=True, spacing=220)
     text(s, 0.72, 2.7, 11.9, 1.0, "The routing control room", size=40, color=WHITE, bold=True)
-    beats = ["Ask and explain: type any request; the gateway picks the model and the screen shows why",
+    beats = ["Ask and explain: the agent runs in an OpenShell sandbox; LiteLLM checks its key, classifies, routes and signs",
              "Drag the quality bar: the same request moves between the fast, balanced and reasoning models",
              "Control room: an agent's calls routed live; Japanese and an invoice photo decided by rules",
              "Compare routers: LiteLLM's heuristic, its LLM classifier and our ladder on the same request",
-             "Resilience: a failing deployment falls back; the cluster gateway fails over to the laptop"]
+             "Try to escape: OCI, OpenAI and the admin API refused; a failing gateway fails over to the laptop"]
     text(s, 0.72, 3.85, 11.9, 3.0, [[(f"{i + 1}   ", {"bold": True, "color": YELLOW, "size": 15}), (b, {"color": WHITE, "size": 15})] for i, b in enumerate(beats)], line=1.5)
     text(s, 0.72, 7.08, 11.9, 0.3, FOOTER, size=8, color=RGBColor(0xC8, 0xD6, 0xDB))
     notes(s, "Before the talk: scripts/oci/forward.sh running (OKE gateway on 4100), scripts/gateway.sh as the fallback on 4000 with a fresh OCI session, "
@@ -496,15 +507,15 @@ def build(template: Path, out: Path) -> None:
 
     # 16b · ask and explain
     s = prs.slides.add_slide(blank)
-    header(s, "Type a request: the gateway picks the model and shows why", "Ask and explain")
-    shot(s, "00-ask.png", 0.72, 1.7, 7.2)
+    header(s, "One request, left to right: the sandbox, LiteLLM, the model", "Ask and explain")
+    shot(s, "00-ask-escape.png", 0.72, 1.7, 7.2)
     bullets(s, 8.15, 1.85, 4.5, 4.9, [
-        ("The decision path.", "Each rule, the code check, then every route cheapest first: its chance of a good answer against the bar."),
-        ("Where the number comes from.", "The request's own features, and the twelve most similar labelled requests."),
-        ("Precedent.", "The closest training requests and how often each route's answer passed the judge."),
-        ("Why that model.", "The route's group, its deployments, and the one latency-based routing chose."),
+        ("1 · OpenShell sandbox.", "The agent, its placeholder key, its one allowed endpoint, and the network decisions of this run. 'Try to escape' shows the refusals."),
+        ("2 · LiteLLM.", "Five steps, filled in live: key check, classify, route, sign, account."),
+        ("3 · OCI.", "The models that answered."),
+        ("Why this model.", "One sentence built from LiteLLM's own decision, the ladder against the bar, and on request every check and the closest training requests."),
     ], size=12.5)
-    repo(s, "POST /api/ask · classifier/explain.py · web/src/components/Ask.tsx")
+    repo(s, "ui/sandbox.py · gateway/route_headers.py · classifier/explain.py · web/src/components/Ask.tsx")
     notes(s, "Nothing on this screen is written by a model after the fact: every sentence is built from the router's own numbers and the labels on file.")
 
     # 17 · the control room
@@ -584,8 +595,10 @@ def build(template: Path, out: Path) -> None:
         ["The classifier sees the whole conversation: an agent's system prompt and tool turns drowned the request", "Pass the user turns (or the last one) to classifier plugins, or document it", "router change"],
         ["The LLM classifier's 3 s timeout falls back to the heuristic with no error", "Log a warning and count classifier fallbacks; the cause header already exists", "observability"],
         ["We run the classifier as its own service", "classifier_type: http (URL + timeout), declining to fallback_tier on error: our plugin, offered as is", "feature"],
+        ["A plugin's explanation is lost: routing_decision records only classifier-plugin:<tier>, and the response hook sees a copy of the metadata", "Let classify() return signals into routing_decision (we carry ours in x-litellm-route-decision today)", "router change"],
+        ["Tool requests reach deployments that write tool calls as text (Llama 4 Scout on OCI)", "Finish the pre-call TODO: skip deployments without supports_function_calling when tools are sent", "router change"],
         ["OTel v2 reports provider \"oci\"", "gen_ai.provider.name = oracle_cloud.generative_ai: BerriAI/litellm#41824, open", "open PR"],
-    ], col_w=[4.3, 6.0, 1.6], size=10.5)
+    ], col_w=[4.3, 6.0, 1.6], size=9.5)
     notes(s, "Each row has evidence in the repo: README field notes, evidence/, and the plugin in gateway/trained_classifier.py. Ask which they want as PRs first.")
 
     # 23 · next
@@ -608,7 +621,7 @@ def build(template: Path, out: Path) -> None:
     text(s, 0.72, 1.15, 11.9, 1.7, [[("The right model for every request", {"size": 34, "bold": True, "color": WHITE})],
         [("LiteLLM makes every OCI model one API; routing makes each request go to the cheapest model that does it well; a classifier we trained in seconds decides which.", {"size": 15, "color": WHITE})]], line=1.15)
     closing = [("1  Read the blog", "LiteLLM natively supports OCI Generative AI: one gateway, every model family, signing handled."),
-               ("2  Route by need", "Complexity router, tags, fallbacks and context-window checks: all in config."),
+               ("2  Route and isolate", "LiteLLM classifies, routes, signs and accounts; the agent in OpenShell holds no key at all."),
                ("3  Train your router", "Label by outcome, mini-train, plug in as classifier_type custom.")]
     for i, (t, b) in enumerate(closing):
         x = 0.72 + i * 4.12

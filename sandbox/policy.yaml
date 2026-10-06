@@ -1,0 +1,17 @@
+# Sandbox policy for the routing control room's agent.
+#
+# The provider profile (profile/litellm-gateway.yaml) contributes the one network
+# surface: POST /v1/chat/completions and GET /v1/models on the LiteLLM gateway,
+# for /usr/local/bin/python3.12 only. There is no other rule, so no other
+# connection opens: not OCI, not any model vendor, not the internet.
+version: 1
+filesystem_policy:
+  include_workdir: true
+  read_only: [/usr, /lib, /etc]
+  read_write: [/tmp, /sandbox]
+landlock:
+  compatibility: best_effort
+process:
+  run_as_user: "1500"
+  run_as_group: "1500"
+network_policies: {}

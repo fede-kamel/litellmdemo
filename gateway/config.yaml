@@ -31,7 +31,10 @@ model_list:
   - model_name: oci-fast                      # SIMPLE: quick facts, formatting, short rewrites
     litellm_params: {<<: *oci, model: oci/google.gemini-2.5-flash-lite}
     model_info: *gemini
-  - model_name: oci-fast
+  # Llama 4 Scout is a backup, not a primary: through LiteLLM on OCI it sometimes
+  # writes a tool call as text instead of making it, and LiteLLM's pre-call checks
+  # do not yet skip deployments without function calling (a TODO in router.py).
+  - model_name: oci-fast-backup
     litellm_params: {<<: *oci, model: oci/meta.llama-4-scout-17b-16e-instruct}
     model_info: *llama4
   - model_name: oci-fast-backup
@@ -179,7 +182,7 @@ router_settings:
     - {oci-compact: [oci-long]}
 
 litellm_settings:
-  callbacks: oci_session_signer.handler
+  callbacks: [oci_session_signer.handler, route_headers.handler]
   drop_params: true                           # e.g. temperature for GPT-5 reasoning models
 
 general_settings:

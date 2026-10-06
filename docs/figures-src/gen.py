@@ -364,3 +364,71 @@ f.text(1730, 925, "in compartment litellmdemo", 16, SUB, mono=True)
 f.text(1730, 962, "no key · no token stored", 16, OKG, weight="700")
 f.text(1000, 1130, "scripts/oci/up.sh · scripts/oci/deploy.sh · deploy/k8s/litellmdemo.yaml · scripts/oci/down.sh", 18, MUT, mono=True)
 f.save("figure5-kubernetes.svg")
+
+
+# ===================================================== Figure 6 · isolation: who holds what
+f = Fig(2000, 1300)
+f.header("FIGURE 6 · ISOLATION", "The agent holds nothing; LiteLLM decides, signs and accounts",
+         "an OpenShell sandbox can reach one endpoint; every key lives one layer away from the code that uses it", accent=INDIGO)
+# sandbox
+f.panel(60, 270, 520, 760, GREEN)
+f.text(320, 322, "OPENSHELL SANDBOX", 22, "#4C7A00", weight="700", spacing="4")
+f.text(320, 354, "litellmdemo-agent · on the operator's machine", 16, SUB, mono=True)
+f.rect(100, 385, 440, 150, stroke="#4C7A00", sw=2)
+f.text(320, 430, "the langchain-oci agent", 22, INK, weight="700")
+f.text(320, 465, "create_oci_agent · tools · the control room's", 16, SUB)
+f.text(320, 490, "requests, one exec each", 16, SUB)
+f.text(320, 520, "LITELLM_API_KEY = placeholder", 15, "#4C7A00", mono=True, weight="600")
+f.text(320, 585, "POLICY", 18, "#4C7A00", weight="700", spacing="3")
+for i, (ok, line) in enumerate([(True, "POST /v1/chat/completions"), (True, "GET /v1/models"),
+                                (False, "OCI Generative AI, directly"), (False, "api.openai.com"),
+                                (False, "the gateway's /key/* admin API"), (False, "anything else")]):
+    y = 615 + i * 52
+    f.rect(100, y, 440, 42, stroke=OKG if ok else BADR, sw=1.5, rx=10)
+    f.text(130, y + 28, "✓" if ok else "✕", 20, OKG if ok else BADR, weight="700")
+    f.text(165, y + 28, line, 16, INK, anchor="start", mono=ok)
+f.text(320, 960, "the OpenShell gateway holds the real key", 16, SUB, weight="600")
+f.text(320, 985, "and swaps it in on the way out", 16, SUB, weight="600")
+f.arrow(580, 520, 680, 520, color=INDIGO, sw=4)
+f.text(630, 490, "the agent's", 15, SUB, weight="600")
+f.text(630, 560, "virtual key", 15, SUB, weight="600")
+# LiteLLM on OKE
+f.panel(680, 270, 820, 760, INDIGO, fill="#F3F2FB")
+f.text(1090, 322, "LITELLM AI GATEWAY · OKE", 22, INDIGO, weight="700", spacing="3")
+f.text(1090, 354, "official image ghcr.io/berriai/litellm-database:v1.104.0", 16, SUB, mono=True)
+steps6 = [("1", "Key check", "virtual key openshell-agent: 5 model groups, $5 / 30 days, 30 rpm (Postgres)"),
+          ("2", "Classify", "complexity router → classifier_type: custom → route-classifier (the ladder)"),
+          ("3", "Route", "route → model group → fastest healthy deployment · fallbacks · retries"),
+          ("4", "Sign", "OCI request signing as the OKE node (instance principal)"),
+          ("5", "Account", "cost per call, spend per key · x-litellm-route-decision explains the route")]
+for i, (n, t, d) in enumerate(steps6):
+    y = 390 + i * 118
+    f.rect(720, y, 740, 100, stroke=INDIGO, sw=2)
+    f.badge(762, y + 50, n, INDIGO, r=19)
+    f.text(800, y + 42, t, 21, INDIGO, anchor="start", weight="700")
+    f.text(800, y + 74, d, 15.5, SUB, anchor="start")
+f.text(1090, 1000, "pods: litellm-gateway · route-classifier · postgres  (one Ampere A1 node)", 15, MUT)
+f.arrow(1500, 520, 1580, 520, color=RED, sw=4)
+f.text(1540, 490, "signed", 15, SUB, weight="600")
+# OCI
+f.panel(1580, 270, 360, 760, RED, fill="#FDF4F2")
+f.logo("oracle.png", 1660, 295, 200)
+f.text(1760, 390, "OCI Generative AI", 22, RED, weight="700")
+f.text(1760, 420, "us-chicago-1", 17, SUB)
+for i, v in enumerate(["OpenAI", "Google", "Meta", "xAI", "Cohere"]):
+    f.rect(1620, 450 + i * 70, 280, 56, stroke=RED, sw=1.5, rx=10)
+    f.text(1760, 485 + i * 70, v, 19, INK, weight="600")
+f.text(1760, 840, "IAM: a dynamic group", 16, SUB)
+f.text(1760, 866, "of the demo's nodes,", 16, SUB)
+f.text(1760, 892, "one policy:", 16, SUB)
+f.text(1760, 920, "use generative-ai-family", 15, SUB, mono=True)
+# who holds what
+f.panel(60, 1060, 1880, 200, NAVY)
+f.text(1000, 1105, "WHO HOLDS WHICH SECRET", 20, NAVY, weight="700", spacing="4")
+cols6 = [("the agent, in the sandbox", "nothing: a placeholder", OKG), ("the OpenShell gateway", "the agent's LiteLLM virtual key", "#4C7A00"),
+         ("LiteLLM", "its master key · Postgres: keys, budgets, spend", INDIGO), ("OCI", "no stored key: the node's identity", RED)]
+for i, (who, what, c) in enumerate(cols6):
+    x = 120 + i * 455
+    f.text(x + 200, 1160, who, 19, c, weight="700")
+    f.text(x + 200, 1195, what, 16, SUB)
+f.save("figure6-isolation.svg")

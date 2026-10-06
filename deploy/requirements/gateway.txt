@@ -1,4 +1,2 @@
-# litellm-gateway pod
-litellm[proxy]==1.104.0
+# OCI SDK for the litellm-gateway pod (the official LiteLLM image provides LiteLLM itself)
 oci==2.187.2
-httpx==0.28.1

@@ -38,6 +38,7 @@ from app import agent  # noqa: E402
 from app.scenarios import SCENARIOS, messages_for, summary  # noqa: E402
 from classifier.gateway_client import GATEWAYS, active_gateway, chat, mark_down  # noqa: E402
 from classifier.explain import explain  # noqa: E402
+from ui import sandbox  # noqa: E402
 from classifier.router_model import shared  # noqa: E402
 
 app = FastAPI(title="LiteLLM routing control room")
@@ -51,6 +52,8 @@ class RunRequest(BaseModel):
     prompt: str | None = Field(default=None, max_length=200_000)
     router: str = Field(default="oci-auto-trained", pattern=r"^oci-[a-z-]+$")
     tags: list[str] | None = None
+    bar: float | None = Field(default=None, ge=0.3, le=0.99)    # the ladder's quality bar; None: the trained one
+    runtime: str = Field(default="openshell", pattern=r"^(openshell|host)$")
 
 
 @app.get("/api/scenarios")
@@ -85,12 +88,24 @@ async def start_run(req: RunRequest) -> dict:
         asyncio.run_coroutine_threadsafe(_append(run, event), loop)
 
     gateway = await active_gateway()
+    in_sandbox = req.runtime == "openshell" and await asyncio.to_thread(sandbox.available)
 
     def work() -> None:
         tools = router not in ("oci-flaky", "oci-chat")
+        started = time.time()
         try:
+            if in_sandbox:
+                emit({"type": "runtime", "runtime": "openshell", "sandbox": sandbox.NAME, "gateway": sandbox.SANDBOX_GATEWAY})
+                if sandbox.run(_sandbox_request(messages, router, tags, req.bar), emit):
+                    _after_run(emit, messages, run, started)
+                    return
+                # The sandbox could not answer (its gateway down, the sandbox gone): say
+                # so, and answer from the host through the failover gateways instead.
+                emit({"type": "failover", "from": f"OpenShell sandbox {sandbox.NAME}", "to": "the host agent",
+                      "reason": "the sandbox path did not answer"})
+            emit({"type": "runtime", "runtime": "host", "gateway": gateway})
             try:
-                agent.run(messages, emit, router=router, tags=tags, use_tools=tools, gateway=gateway)
+                agent.run(messages, emit, router=router, tags=tags, use_tools=tools, gateway=gateway, bar=req.bar)
             except Exception as exc:  # noqa: BLE001
                 # A gateway that fails before any model call (unreachable, or its OCI
                 # signing broken) gets the run once more on the next gateway.
@@ -100,7 +115,8 @@ async def start_run(req: RunRequest) -> dict:
                     raise
                 mark_down(gateway)
                 emit({"type": "failover", "from": gateway, "to": spare[0], "reason": str(exc)[:200]})
-                agent.run(messages, emit, router=router, tags=tags, use_tools=tools, gateway=spare[0])
+                agent.run(messages, emit, router=router, tags=tags, use_tools=tools, gateway=spare[0], bar=req.bar)
+            _after_run(emit, messages, run, started, network=False)
         except Exception as exc:  # noqa: BLE001 - surfaced to the UI
             emit({"type": "error", "message": str(exc)[:500]})
         finally:
@@ -108,6 +124,31 @@ async def start_run(req: RunRequest) -> dict:
 
     threading.Thread(target=work, daemon=True).start()
     return {"id": rid}
+
+
+def _sandbox_request(messages: list[dict], router: str, tags: list[str] | None, bar: float | None) -> dict:
+    content = messages[-1]["content"]
+    prompt, image = (content, None) if isinstance(content, str) else (
+        next((p["text"] for p in content if p.get("type") == "text"), ""),
+        next((p["image_url"]["url"] for p in content if p.get("type") == "image_url"), None))
+    return {"prompt": prompt, "image": image, "router": router, "tags": tags, "bar": bar}
+
+
+def _after_run(emit, messages: list[dict], run: dict, started: float, network: bool = True) -> None:
+    """What the screen needs once the agent is done: the sandbox's network decisions,
+    LiteLLM's record of the agent key, and the first route explained."""
+    if network:
+        emit({"type": "sandbox_net", "events": sandbox.network(started)})
+        key = sandbox.agent_key()
+        if key:
+            emit({"type": "key", **key})
+    decision = next((e for e in run["events"] if e["type"] == "classify"), None)
+    if decision:
+        try:
+            why = explain(messages, 3, None, decision)
+            emit({"type": "explain", "call": decision.get("call", 1), **why})
+        except Exception as exc:  # noqa: BLE001 - an explanation must never fail the run
+            emit({"type": "explain", "error": str(exc)[:200]})
 
 
 async def _append(run: dict, event: dict) -> None:
@@ -300,6 +341,22 @@ async def warm() -> None:
 @app.get("/api/health")
 def health() -> dict:
     return {"ok": True, "classifier_trained": shared().trained}
+
+
+@app.get("/api/sandbox")
+async def sandbox_status() -> dict:
+    """Is the OpenShell sandbox up, and what can its agent key do (from LiteLLM)."""
+    ready = await asyncio.to_thread(sandbox.available)
+    return {"ready": ready, "name": sandbox.NAME, "gateway": sandbox.SANDBOX_GATEWAY,
+            "key": await asyncio.to_thread(sandbox.agent_key) if ready else None}
+
+
+@app.post("/api/sandbox/probe")
+async def sandbox_probe() -> dict:
+    """The agent tries to leave: OCI directly, a model vendor, the gateway's admin API."""
+    started = time.time()
+    tries = await asyncio.to_thread(sandbox.probe)
+    return {"tries": tries, "network": await asyncio.to_thread(sandbox.network, started)}
 
 
 @app.get("/api/gateways")

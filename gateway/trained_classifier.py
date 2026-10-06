@@ -32,6 +32,20 @@ DECISIONS = Path(os.environ.get("ROUTE_DECISIONS_LOG", ROOT / "out" / "route-dec
 SERVICE = os.environ.get("ROUTE_CLASSIFIER_URL")   # e.g. http://route-classifier:8080
 
 
+def compact(decision: dict) -> dict:
+    """The parts of a decision a caller needs to explain it, small enough for a response header."""
+    d = decision.get("details") or {}
+    out = {"route": decision.get("route"), "criterion": decision.get("criterion"),
+           "p": {k: round(float(v), 3) for k, v in (decision.get("probabilities") or {}).items()},
+           "ms": decision.get("milliseconds")}
+    if "bar" in d:
+        out |= {"bar": d["bar"], "order": d.get("cost_order"), "cost": d.get("typical_cost"),
+                "features": d.get("logistic"), "precedent": d.get("precedent")}
+    if "code_probability" in d:
+        out["code"] = d["code_probability"]
+    return out
+
+
 class TrainedClassifier:
     def __init__(self) -> None:
         self._client = None
@@ -76,6 +90,14 @@ class TrainedClassifier:
                                     default=str) + "\n")
         except OSError:
             pass  # logging must never block routing
+        # Hand the decision to route_headers.py, which returns it to the caller in
+        # x-litellm-route-decision: the explanation comes from the gateway itself.
+        # LiteLLM 1.104 records only "classifier-plugin:<tier>" in its routing_decision
+        # and copies the metadata before the response hook runs; requester_metadata is
+        # the one object both see.
+        carrier = context.metadata.get("requester_metadata") if isinstance(context.metadata, dict) else None
+        if isinstance(carrier, dict):
+            carrier["_route_decision"] = compact(decision)
         return None if decision["criterion"].startswith("fallback") else decision["route"]
 
 

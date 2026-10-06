@@ -9,7 +9,9 @@ runner turns every call and tool step into an event for the web app.
 
 from __future__ import annotations
 
+import json
 import os
+import re
 import sys
 import time
 from collections.abc import Callable
@@ -27,7 +29,6 @@ from app.tools import TOOLS  # noqa: E402
 from langgraph.errors import GraphRecursionError  # noqa: E402
 
 from classifier.gateway_client import GATEWAY, key  # noqa: E402
-from classifier.router_model import shared  # noqa: E402
 
 SYSTEM = """You are Northwind Cloud's assistant for support, engineering and finance teams. Northwind Cloud is a
 fictional company. Use the tools for policies, accounts and arithmetic instead of guessing, and answer in the
@@ -39,15 +40,31 @@ ROUTE_HEADERS = {
     "x-litellm-model-group": "group", "x-litellm-model-name": "deployment",
     "x-litellm-attempted-fallbacks": "fallbacks", "x-litellm-attempted-retries": "retries",
     "x-litellm-response-cost": "cost", "x-litellm-response-duration-ms": "ms", "x-litellm-call-id": "call_id",
+    "x-litellm-key-spend": "key_spend",
 }
+DECISION_HEADER = "x-litellm-route-decision"
+
+
+def decision_of(headers: dict) -> dict | None:
+    """The classifier's decision as the gateway reported it, in the shape of a classify event."""
+    raw = {k.lower(): v for k, v in (headers or {}).items()}.get(DECISION_HEADER)
+    if not raw:
+        return None
+    try:
+        d = json.loads(raw)
+    except ValueError:
+        return None
+    details = {k: d[k] for k in ("bar", "order", "cost", "features", "precedent", "code") if k in d}
+    return {"route": d.get("route"), "criterion": d.get("criterion"), "probabilities": d.get("p") or {},
+            "milliseconds": d.get("ms"), "details": details, "source": "litellm"}
 
 
 def route_of(headers: dict) -> dict:
     h = {k.lower(): v for k, v in (headers or {}).items()}
     out: dict[str, Any] = {name: h[k] for k, name in ROUTE_HEADERS.items() if k in h}
-    for n in ("cost", "ms"):
+    for n in ("cost", "ms", "key_spend"):
         if n in out:
-            out[n] = round(float(out[n]), 6 if n == "cost" else 0)
+            out[n] = round(float(out[n]), 0 if n == "ms" else 6)
     for n in ("fallbacks", "retries"):
         out[n] = int(out.get(n) or 0)
     return out
@@ -61,10 +78,6 @@ class RouteRecorder(BaseCallbackHandler):
 
     def on_chat_model_start(self, serialized, messages, *, run_id, **kw):
         self.started[run_id] = time.time()
-        flat = [{"role": getattr(m, "type", "user"), "content": m.content} for m in messages[0]]
-        if self.router == "oci-auto-trained":
-            d = shared().classify([m for m in flat if m["role"] in ("human", "user")] or flat)
-            self.emit({"type": "classify", "call": self.calls + 1, **d.as_dict()})
 
     def on_llm_end(self, response, *, run_id, **kw):
         self.calls += 1
@@ -73,6 +86,9 @@ class RouteRecorder(BaseCallbackHandler):
         meta = getattr(msg, "response_metadata", {}) or {}
         tool_calls = [c["name"] for c in (getattr(msg, "tool_calls", None) or [])]
         usage = meta.get("token_usage") or {}
+        decision = decision_of(meta.get("headers"))
+        if decision:
+            self.emit({"type": "classify", "call": self.calls, **decision})
         self.emit({"type": "llm", "call": self.calls, "asked": self.router, "gateway": self.gateway,
                    **route_of(meta.get("headers")),
                    "seconds": round(time.time() - self.started.pop(run_id, time.time()), 2),
@@ -86,8 +102,11 @@ class RouteRecorder(BaseCallbackHandler):
         self.emit({"type": "tool_result", "output": str(getattr(output, "content", output))[:600]})
 
 
-def chat_model(router: str, tags: list[str] | None = None, gateway: str = GATEWAY) -> ChatOpenAI:
-    extra = {"tags": tags} if tags else {}
+def chat_model(router: str, tags: list[str] | None = None, gateway: str = GATEWAY,
+               bar: float | None = None) -> ChatOpenAI:
+    extra: dict = {"tags": tags} if tags else {}
+    if bar is not None:
+        extra["metadata"] = {"route_quality_bar": bar}
     return ChatOpenAI(model=router, base_url=f"{gateway}/v1", api_key=key(), include_response_headers=True,
                       max_retries=0, timeout=300, extra_body=extra or None)
 
@@ -104,6 +123,14 @@ def _final_from_transcript(history: list, model) -> str:
     return _text(model.invoke([{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt}]))
 
 
+_TOOL_TEXT = re.compile(r"\[?\s*(calculate|lookup_policy|get_account)\s*\(", re.S)
+
+
+def _tool_call_as_text(answer: str) -> bool:
+    """A short answer that names one of our tools as a call: the model wrote it instead of making it."""
+    return len(answer) < 400 and bool(_TOOL_TEXT.search(answer))
+
+
 def _text(message) -> str:
     content = getattr(message, "content", "")
     if isinstance(content, list):   # content blocks
@@ -112,8 +139,9 @@ def _text(message) -> str:
 
 
 def run(messages: list[dict], emit: Callable[[dict], None], router: str = "oci-auto-trained",
-        tags: list[str] | None = None, use_tools: bool = True, gateway: str = GATEWAY) -> dict:
-    agent = create_oci_agent(model=chat_model(router, tags, gateway), tools=TOOLS if use_tools else [], system_prompt=SYSTEM,
+        tags: list[str] | None = None, use_tools: bool = True, gateway: str = GATEWAY,
+        bar: float | None = None) -> dict:
+    agent = create_oci_agent(model=chat_model(router, tags, gateway, bar), tools=TOOLS if use_tools else [], system_prompt=SYSTEM,
                              name="northwind-assistant")
     recorder = RouteRecorder(emit, router, gateway)
     started = time.time()
@@ -130,11 +158,12 @@ def run(messages: list[dict], emit: Callable[[dict], None], router: str = "oci-a
         # rather than end the run with an error.
         capped = True
         result = state
-        answer = _final_from_transcript(state["messages"], chat_model(router, tags, gateway))
+        answer = _final_from_transcript(state["messages"], chat_model(router, tags, gateway, bar))
     retried = False
-    if not answer.strip() and not capped:
-        # Some models (Gemini Flash-Lite after a tool result) return an empty final
-        # message; ask once more rather than end the run with nothing to show.
+    if (not answer.strip() or _tool_call_as_text(answer)) and not capped:
+        # Some models return an empty final message (Gemini Flash-Lite after a tool
+        # result) or write a tool call as text instead of making it (Llama 4 Scout,
+        # sometimes); ask once more rather than end the run with no answer.
         retried = True
         result = agent.invoke({"messages": [*result["messages"], {"role": "user", "content": FINAL_NUDGE}]}, config=config)
         answer = _text(result["messages"][-1])

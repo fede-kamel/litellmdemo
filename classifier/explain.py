@@ -84,8 +84,29 @@ def _language_name(code: str) -> str:
     return LANGUAGE_NAMES.get(code, code)
 
 
-def explain(messages: list[dict], k: int = 3, bar: float | None = None) -> dict:
-    decision = shared().classify(messages, bar)
+def from_gateway(d: dict):
+    """A Decision rebuilt from the gateway's x-litellm-route-decision (as app/agent.py reports it)."""
+    from classifier.router_model import Decision
+
+    g = d.get("details") or {}
+    details = {}
+    if "bar" in g:
+        p = d.get("probabilities") or {}
+        cleared = [r for r in g.get("order", []) if p.get(r, 0) >= g["bar"]]
+        details = {"bar": g["bar"], "cost_order": g.get("order", []), "typical_cost": g.get("cost", {}),
+                   "logistic": g.get("features", {}), "precedent": g.get("precedent", {}),
+                   "cleared": d.get("route") in cleared}
+    if "code" in g:
+        details["code_probability"] = g["code"]
+    return Decision(d.get("route") or "MEDIUM", d.get("criterion") or "fallback", d.get("probabilities") or {},
+                    d.get("milliseconds") or 0.0, details)
+
+
+def explain(messages: list[dict], k: int = 3, bar: float | None = None, decision: dict | None = None) -> dict:
+    """Explain a route. With `decision` (what the gateway reported), explain that decision;
+    without, classify here first. Precedent always comes from the labels on file."""
+    source = "litellm" if decision else "local"
+    decision = from_gateway(decision) if decision else shared().classify(messages, bar)
     text, image = text_of(messages)
     letters = sum(ch.isalpha() for ch in text)
     lang, lang_conf = language_confidence(text)
@@ -121,7 +142,7 @@ def explain(messages: list[dict], k: int = 3, bar: float | None = None) -> dict:
         sims = index["vectors"] @ np.asarray(shared().embed([text[:4000]]))[0]
         precedent = [_precedent_of(index["rows"][i], sims[i]) for i in np.argsort(-sims)[:k]]
 
-    return {"decision": decision.as_dict(), "checks": checks, "precedent": precedent,
+    return {"decision": decision.as_dict(), "source": source, "checks": checks, "precedent": precedent,
             "meaning": MEANING.get(decision.route, ""), "summary": _summary(decision, rule, precedent, lang, lang_conf)}
 
 

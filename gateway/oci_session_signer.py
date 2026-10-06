@@ -27,6 +27,13 @@ import time
 
 from litellm.integrations.custom_logger import CustomLogger
 
+# In the official LiteLLM image the OCI SDK is installed beside the image's own
+# packages (OCI_SDK_PATH); appended, not prepended, so the image's versions win.
+if os.environ.get("OCI_SDK_PATH"):
+    import sys
+
+    sys.path.append(os.environ["OCI_SDK_PATH"])
+
 PROFILE = os.environ.get("OCI_CONFIG_PROFILE", "DEFAULT")
 AUTH = os.environ.get("OCI_AUTH", "session")      # "session" or "instance_principal"
 REFRESH_SECONDS = 60

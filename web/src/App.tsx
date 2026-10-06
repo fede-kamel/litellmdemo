@@ -23,12 +23,11 @@ export default function App() {
   const [tab, setTab] = useState<Tab>("ask");
   const [stats, setStats] = useState<Stats | null>(null);
   const [gw, setGw] = useState<{ active: string; role: string } | null>(null);
-  useEffect(() => {
-    const poll = () => getJSON<{ active: string; role: string }>("/api/gateways").then(setGw).catch(() => setGw(null));
-    poll(); const id = setInterval(poll, 10000); return () => clearInterval(id);
-  }, []);
   const refresh = useCallback(() => { getJSON<Stats>("/api/stats").then(setStats).catch(() => undefined); }, []);
-  useEffect(refresh, [refresh]);
+  useEffect(() => {
+    const poll = () => { getJSON<{ active: string; role: string }>("/api/gateways").then(setGw).catch(() => setGw(null)); refresh(); };
+    poll(); const id = setInterval(poll, 5000); return () => clearInterval(id);
+  }, [refresh]);
 
   return (
     <div className="flex min-h-full flex-col">

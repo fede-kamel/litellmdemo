@@ -12,6 +12,11 @@
 # classifier head come from ConfigMaps that scripts/oci/deploy.sh builds from
 # this repository. The only Secret is the gateway's master key and the
 # compartment; no OCI key or token is stored in the cluster.
+#
+#   postgres          LiteLLM's database: virtual keys, budgets, spend
+#
+# The gateway runs the official LiteLLM image (ghcr.io/berriai/litellm-database);
+# an init container adds the OCI SDK beside it.
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -80,7 +85,7 @@ spec:
             - {name: code, mountPath: /app/classifier}
             - {name: tmp, mountPath: /tmp}
           securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
-          resources: {requests: {cpu: 250m, memory: 900Mi}, limits: {memory: 2Gi}}
+          resources: {requests: {cpu: 200m, memory: 900Mi}, limits: {memory: 2Gi}}
       volumes:
         - {name: deps, hostPath: {path: /var/lib/litellmdemo-deps, type: DirectoryOrCreate}}
         - {name: tmp, emptyDir: {}}
@@ -124,39 +129,41 @@ spec:
                         seccompProfile: {type: RuntimeDefault}}
       initContainers:
         - name: prepare-cache
-          image: python:3.12-slim
+          image: ghcr.io/astral-sh/uv:python3.13-bookworm-slim
           command: ["chown", "10001:10001", "/deps"]
           securityContext: {runAsNonRoot: false, runAsUser: 0, allowPrivilegeEscalation: false,
                             capabilities: {drop: [ALL], add: [CHOWN]}}
           volumeMounts: [{name: deps, mountPath: /deps}]
-        - name: install
-          image: python:3.12-slim
+        - name: install-oci-sdk
+          # The official LiteLLM image carries no OCI SDK; the session signer needs it
+          # for instance-principal signing. Python 3.13, like the LiteLLM image.
+          image: ghcr.io/astral-sh/uv:python3.13-bookworm-slim
           command: ["sh", "-c"]
           args:
             - |
               set -e
               H=$( (python -V; cat /reqs/gateway.txt) | sha256sum | cut -c1-12)
-              D=/deps/gateway-$H
+              D=/deps/oci-sdk-$H
               if [ ! -f "$D/.ok" ]; then
-                rm -rf "$D"; python -m venv "$D/venv"
-                "$D/venv/bin/pip" install -q --no-cache-dir -r /reqs/gateway.txt
+                rm -rf "$D"; uv pip install -q --no-cache --target "$D/site" -r /reqs/gateway.txt
                 touch "$D/.ok"
               fi
-              ln -sfn "$D" /deps/gateway-current
-              find /deps -maxdepth 1 -name "gateway-*" ! -name "gateway-$H" ! -name "gateway-current" -exec rm -rf {} +
-          env: [{name: HOME, value: /tmp}]
+              ln -sfn "$D" /deps/oci-sdk-current
+              find /deps -maxdepth 1 -name "oci-sdk-*" ! -name "oci-sdk-$H" ! -name "oci-sdk-current" -exec rm -rf {} +
+          env: [{name: HOME, value: /tmp}, {name: UV_CACHE_DIR, value: /tmp/uv}]
           volumeMounts: [{name: deps, mountPath: /deps}, {name: reqs, mountPath: /reqs}, {name: tmp, mountPath: /tmp}]
           securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
-          resources: {requests: {cpu: 200m, memory: 512Mi}, limits: {memory: 1536Mi}}
+          resources: {requests: {cpu: 100m, memory: 256Mi}, limits: {memory: 768Mi}}
       containers:
         - name: gateway
-          image: python:3.12-slim
-          workingDir: /app/gateway
-          command: ["/deps/gateway-current/venv/bin/litellm", "--config", "/app/gateway/config.yaml", "--host", "0.0.0.0", "--port", "4000"]
+          # The official LiteLLM proxy image with its database tooling (Prisma).
+          image: ghcr.io/berriai/litellm-database:v1.104.0
+          args: ["--config", "/app/gateway/config.yaml", "--host", "0.0.0.0", "--port", "4000"]
           env:
             - {name: HOME, value: /tmp}
             - {name: OCI_AUTH, value: instance_principal}
             - {name: OCI_REGION, value: us-chicago-1}
+            - {name: OCI_SDK_PATH, value: /deps/oci-sdk-current/site}
             - {name: ROUTE_CLASSIFIER_URL, value: "http://route-classifier:8080"}
             - {name: ROUTE_DECISIONS_LOG, value: /tmp/route-decisions.jsonl}
             - {name: LITELLM_LOG, value: ERROR}
@@ -164,16 +171,18 @@ spec:
               valueFrom: {secretKeyRef: {name: gateway, key: compartment_id}}
             - name: LITELLM_MASTER_KEY
               valueFrom: {secretKeyRef: {name: gateway, key: master_key}}
+            - name: DATABASE_URL
+              valueFrom: {secretKeyRef: {name: gateway, key: database_url}}
           ports: [{name: http, containerPort: 4000}]
           readinessProbe: {httpGet: {path: /health/readiness, port: http}, periodSeconds: 5}
           startupProbe: {httpGet: {path: /health/liveliness, port: http}, periodSeconds: 5, failureThreshold: 60}
           livenessProbe: {httpGet: {path: /health/liveliness, port: http}, periodSeconds: 20}
           volumeMounts:
-            - {name: deps, mountPath: /deps}
+            - {name: deps, mountPath: /deps, readOnly: true}
             - {name: code, mountPath: /app/gateway}
             - {name: tmp, mountPath: /tmp}
           securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
-          resources: {requests: {cpu: 250m, memory: 768Mi}, limits: {memory: 1536Mi}}
+          resources: {requests: {cpu: 220m, memory: 768Mi}, limits: {memory: 1536Mi}}
       volumes:
         - {name: deps, hostPath: {path: /var/lib/litellmdemo-deps, type: DirectoryOrCreate}}
         - {name: tmp, emptyDir: {}}
@@ -188,6 +197,57 @@ metadata:
 spec:
   selector: {app: litellm-gateway}
   ports: [{name: http, port: 4000, targetPort: http}]
+---
+# LiteLLM's database: virtual keys, budgets, spend per key. Its data lives on the
+# node, so a pod restart keeps every key; a new node starts empty and
+# scripts/oci/deploy.sh issues the agent's key again.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: litellmdemo
+  labels: {app: postgres}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector: {matchLabels: {app: postgres}}
+  template:
+    metadata:
+      labels: {app: postgres}
+    spec:
+      securityContext: {runAsNonRoot: true, runAsUser: 26, runAsGroup: 26, fsGroup: 26, seccompProfile: {type: RuntimeDefault}}
+      initContainers:
+        - name: prepare-data
+          image: ghcr.io/astral-sh/uv:python3.13-bookworm-slim
+          command: ["chown", "26:26", "/var/lib/pgsql/data"]
+          securityContext: {runAsNonRoot: false, runAsUser: 0, allowPrivilegeEscalation: false,
+                            capabilities: {drop: [ALL], add: [CHOWN]}}
+          volumeMounts: [{name: data, mountPath: /var/lib/pgsql/data}]
+      containers:
+        - name: postgres
+          image: quay.io/sclorg/postgresql-16-c9s:latest
+          env:
+            - {name: POSTGRESQL_USER, value: litellm}
+            - {name: POSTGRESQL_DATABASE, value: litellm}
+            - name: POSTGRESQL_PASSWORD
+              valueFrom: {secretKeyRef: {name: gateway, key: postgres_password}}
+          ports: [{name: pg, containerPort: 5432}]
+          readinessProbe: {exec: {command: ["pg_isready", "-q"]}, periodSeconds: 5}
+          livenessProbe: {exec: {command: ["pg_isready", "-q"]}, periodSeconds: 20}
+          volumeMounts: [{name: data, mountPath: /var/lib/pgsql/data}]
+          securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+          resources: {requests: {cpu: 50m, memory: 128Mi}, limits: {memory: 512Mi}}
+      volumes:
+        - {name: data, hostPath: {path: /var/lib/litellmdemo-pg, type: DirectoryOrCreate}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: litellmdemo
+spec:
+  selector: {app: postgres}
+  ports: [{name: pg, port: 5432, targetPort: pg}]
 ---
 # Only the gateway may call the classifier. (Flannel does not enforce
 # NetworkPolicy; on a cluster with an enforcing CNI this holds as written.)
