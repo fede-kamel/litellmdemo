@@ -126,19 +126,25 @@ function ZoomFrame({ height, children }: { height: number; children: React.React
     document.addEventListener("fullscreenchange", on);
     return () => document.removeEventListener("fullscreenchange", on);
   }, []);
-  useEffect(() => {   // a non-passive wheel listener, so zooming does not scroll the page
+  useEffect(() => {   // a non-passive wheel listener, so a zoom gesture does not also scroll the page
     const el = box.current;
     if (!el) return;
     const wheel = (e: WheelEvent) => {
+      // Zoom on a pinch (the trackpad sends it as ctrl + wheel), on cmd/ctrl + scroll, or anywhere in full screen;
+      // a plain scroll over the map scrolls the page.
+      if (!(e.ctrlKey || e.metaKey || document.fullscreenElement)) return;
       e.preventDefault();
+      // Proportional to how far the wheel or the fingers moved, so a trackpad's many small events zoom smoothly.
+      const px = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * 400 : e.deltaY;
+      const f = Math.exp(-Math.max(-60, Math.min(60, px)) * (e.ctrlKey ? 0.0045 : 0.002));
       const r = el.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
-      setZ((v) => { const s = Math.min(4, Math.max(0.6, v.s * (e.deltaY < 0 ? 1.12 : 1 / 1.12))); return { s, x: mx - ((mx - v.x) * s) / v.s, y: my - ((my - v.y) * s) / v.s }; });
+      setZ((v) => { const s = Math.min(3, Math.max(0.6, v.s * f)); return { s, x: mx - ((mx - v.x) * s) / v.s, y: my - ((my - v.y) * s) / v.s }; });
     };
     el.addEventListener("wheel", wheel, { passive: false });
     return () => el.removeEventListener("wheel", wheel);
   }, []);
   const step = (f: number) => setZ((v) => {
-    const r = box.current!.getBoundingClientRect(), cx = r.width / 2, cy = r.height / 2, s = Math.min(4, Math.max(0.6, v.s * f));
+    const r = box.current!.getBoundingClientRect(), cx = r.width / 2, cy = r.height / 2, s = Math.min(3, Math.max(0.6, v.s * f));
     return { s, x: cx - ((cx - v.x) * s) / v.s, y: cy - ((cy - v.y) * s) / v.s };
   });
   const btn = "grid size-7 place-items-center rounded-md border border-line bg-panel/95 text-ink-2 shadow-sm hover:border-oracle/50";
@@ -150,14 +156,14 @@ function ZoomFrame({ height, children }: { height: number; children: React.React
       onPointerUp={() => { drag.current = null; }} onDoubleClick={() => setZ({ s: 1, x: 0, y: 0 })}>
       <div className="h-full w-full origin-top-left" style={{ transform: `translate(${z.x}px, ${z.y}px) scale(${z.s})` }}>{children}</div>
       <div className="absolute right-3 top-3 z-10 flex gap-1" onPointerDown={(e) => e.stopPropagation()}>
-        <button className={btn} onClick={() => step(1 / 1.25)} title="zoom out"><Minus className="size-3.5" /></button>
+        <button className={btn} onClick={() => step(1 / 1.15)} title="zoom out"><Minus className="size-3.5" /></button>
         <span className="grid h-7 min-w-[46px] place-items-center rounded-md border border-line bg-panel/95 font-mono text-[11px] text-ink-2">{Math.round(z.s * 100)}%</span>
-        <button className={btn} onClick={() => step(1.25)} title="zoom in"><Plus className="size-3.5" /></button>
+        <button className={btn} onClick={() => step(1.15)} title="zoom in"><Plus className="size-3.5" /></button>
         <button className={btn} onClick={() => setZ({ s: 1, x: 0, y: 0 })} title="reset (or double-click)"><RotateCcw className="size-3.5" /></button>
         <button className={btn} title={full ? "exit full screen" : "full screen"}
           onClick={() => (full ? document.exitFullscreen() : box.current?.requestFullscreen())}>{full ? <Minimize2 className="size-3.5" /> : <Maximize2 className="size-3.5" />}</button>
       </div>
-      <div className="pointer-events-none absolute bottom-2 right-3 text-[10.5px] text-ink-3">scroll to zoom · drag to move · double-click to reset</div>
+      <div className="pointer-events-none absolute bottom-2 right-3 text-[10.5px] text-ink-3">pinch or ⌘ + scroll to zoom · drag to move · double-click to reset</div>
     </div>
   );
 }
