@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { Scale, RotateCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getJSON, postJSON, usd, type CompareResult, type Decision, type Scenario } from "../api";
-import { Bars, ModelChip, Panel, RouteChip } from "./bits";
+import { Answer, Bars, ModelChip, Panel, RouteChip } from "./bits";
 
 const LABEL: Record<string, string> = {
   "oci-auto-trained": "Trained classifier", "oci-auto-llm": "LLM classifier", "oci-auto": "Built-in heuristic",
@@ -43,7 +43,7 @@ export function Compare() {
                 right={<span className={clsx("rounded-md px-2 py-0.5 text-[11px] font-semibold", right ? "bg-moss-soft text-moss" : "bg-oracle-soft text-oracle")}>{right ? "right route" : "different route"}</span>}>
                 <div className="flex flex-wrap items-center gap-2"><RouteChip route={r.route} size="lg" /><ModelChip deployment={r.deployment} /></div>
                 <div className="mt-2 flex gap-4 font-mono text-[11.5px] text-ink-3"><span>{r.seconds}s</span><span>{usd(r.cost)}</span><span>by {r.cause ?? "—"}</span></div>
-                <p className="scroll-thin mt-3 max-h-[300px] overflow-y-auto whitespace-pre-wrap text-[12.5px] leading-relaxed text-ink-2">{r.ok ? r.text : "request failed"}</p>
+                <div className="scroll-thin mt-3 max-h-[300px] overflow-y-auto">{r.ok ? <Answer text={r.text} /> : <p className="text-[12.5px] text-oracle">request failed</p>}</div>
               </Panel>
             );
           })}

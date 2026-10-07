@@ -85,6 +85,8 @@ try {
   await page.locator("button:has-text('Send to all three')").click();
   check("the three routers answer", await visible("Built-in heuristic", 240000) && (await page.getByText("right route", { exact: true }).count()) + (await page.getByText("different route", { exact: true }).count()) === 3);
   await shot("06-compare");
+  // for the deck: the three routers' answers, without the header and the console
+  await page.screenshot({ path: `${out}/06-compare-crop.png`, clip: { x: 0, y: 60, width: 1600, height: 745 } });
 
   await sub("The classifier");
   check("the classifier view shows held-out quality and cost", await visible("unseen prompts") && await visible("always the reasoning models"));

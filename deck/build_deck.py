@@ -223,6 +223,14 @@ def versus(slide, y, h, left, right, left_items, right_items, size=12.5, chosen_
             p.space_after = Pt(8)
 
 
+def sandbox_run() -> tuple[int, int, int]:
+    """(use cases passed, use cases, chat-completion POSTs) from the last e2e run in the sandbox."""
+    path = EVIDENCE / "openshell" / "e2e.jsonl"
+    rows = [json.loads(line) for line in path.read_text().splitlines()] if path.exists() else []
+    posts = sum(1 for r in rows for n in r.get("sandbox_network", []) if n.get("kind") == "HTTP:POST" and n.get("verdict") == "ALLOWED")
+    return sum(r["passed"] and r.get("runtime") == ["openshell"] for r in rows), len(rows), posts
+
+
 def load(path: Path):
     return json.loads(path.read_text()) if path.exists() else None
 
@@ -328,7 +336,7 @@ def build(template: Path, out: Path) -> None:
         ["One API for every model", "an OpenAI-compatible endpoint; the oci/ provider covers every OCI vendor", "21 OCI models from 5 vendors; the agent names a model group, never a vendor model"],
         ["Routing as configuration", "complexity router, tags, context-window checks, latency balancing", "8 routes; our classifier plugs in as classifier_type: custom: 86% good answers at 38% less than always-reasoning"],
         ["Keys, budgets, limits", "virtual keys with allowed models, budget, rate limit and spend (Postgres)", "the OpenShell agent's key: 5 model groups, $5 per 30 days, 30 requests a minute; anything else is a 403"],
-        ["Reliability", "fallbacks, retries, timeouts, cooldowns", "a failing deployment falls back; a classifier outage routes to fallback_tier; 13 of 13 use cases"],
+        ["Reliability", "fallbacks, retries, timeouts, cooldowns", "a failing deployment falls back; a classifier outage routes to fallback_tier; {0} of {1} use cases answered".format(*sandbox_run())],
         ["Observability", "cost and route on every response, spend per key, logging callbacks", "x-litellm-* headers on every call; one ROUTE line per request in the console"],
         ["Extensibility", "CustomLogger hooks, CustomLLM providers, classifier plugins", "OCI signing hook, the decision header, Codex through OCI's Responses API"],
         ["Credentials in one place", "provider auth lives in the gateway; applications hold a virtual key", "the sandbox holds a placeholder; only LiteLLM signs to OCI"],
@@ -345,8 +353,8 @@ def build(template: Path, out: Path) -> None:
     repo(s, "sandbox/ (image, profile, policy) · scripts/openshell.sh · gateway/route_headers.py · scripts/oci/deploy.sh")
     notes(s, "The agent runs in an OpenShell sandbox with a placeholder key and one allowed endpoint: POST /v1/chat/completions on LiteLLM. "
              "OpenShell's gateway holds the agent's LiteLLM virtual key and swaps it in on the way out. LiteLLM checks that key (5 model groups, "
-             "$5 per 30 days, 30 rpm), classifies with our plugin, routes, signs to OCI as the node, and accounts. Measured: 13 of 13 use cases ran "
-             "entirely in the sandbox; its only connections were 21 chat-completion POSTs to the gateway; OCI directly, api.openai.com and the "
+             "$5 per 30 days, 30 rpm), classifies with our plugin, routes, signs to OCI as the node, and accounts. Measured: {0} of {1} use cases ran "
+             "entirely in the sandbox; its only connections were {2} chat-completion POSTs to the gateway;".format(*sandbox_run()) + " OCI directly, api.openai.com and the "
              "gateway's /key admin API were refused.")
 
     # 5b2 · why this order
@@ -641,7 +649,7 @@ def build(template: Path, out: Path) -> None:
     # 18 · compare
     s = prs.slides.add_slide(blank)
     header(s, "Same request, three classifiers", "Compare routers")
-    shot(s, "06-compare-crop.png", 0.72, 1.7, 11.9)
+    shot(s, "06-compare-crop.png", 1.17, 1.65, 11.0)
     repo(s, "POST /api/compare · web/src/components/Compare.tsx")
     notes(s, "Same request through LiteLLM's heuristic, its LLM classifier and our ladder. Point at the route each chose and its cost; the held-out numbers behind the comparison are on the 'Does routing pay?' slide.")
 
