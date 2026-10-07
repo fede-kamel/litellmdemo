@@ -182,15 +182,18 @@ in the language its result must be written in. A coding step is a spec: the prog
 signature, its inputs and output. Results of earlier steps are passed to later ones.
 Use only facts stated in the request. Never assume or invent a number, a fee, a threshold or a policy: a step that
 needs one says to look it up (the assistant has tools for accounts and policies) or to use an earlier step's result.
-Reply with JSON only: {"steps": [{"title": "<three to six words>", "instruction": "<the task>"}]}"""
+If an image is attached to the request, the step that must read it sets "image": true; it gets the image.
+Reply with JSON only: {"steps": [{"title": "<three to six words>", "instruction": "<the task>", "image": false}]}"""
 
 
 def plan(request: str, router: str = "oci-auto-trained", tags: list[str] | None = None, gateway: str = GATEWAY,
-         bar: float | None = None, emit: Callable[[dict], None] | None = None) -> list[dict]:
-    """The planner is a model call like any other: LiteLLM routes it too."""
+         bar: float | None = None, emit: Callable[[dict], None] | None = None, has_image: bool = False) -> list[dict]:
+    """The planner is a model call like any other: LiteLLM routes it too. It sees the request's text;
+    with an image attached it is told so, and marks the step that must read it."""
     recorder = RouteRecorder(emit or (lambda e: None), router, gateway)
     model = chat_model(router, tags, gateway, bar)
-    reply = model.invoke([{"role": "system", "content": PLANNER}, {"role": "user", "content": request}],
+    note = "\n\n(An image is attached to this request.)" if has_image else ""
+    reply = model.invoke([{"role": "system", "content": PLANNER}, {"role": "user", "content": request + note}],
                          config={"callbacks": [recorder]})
     match = re.search(r"\{.*\}", _text(reply), re.S)
     try:
@@ -211,6 +214,7 @@ def run_plan(messages: list[dict], emit: Callable[[dict], None], router: str = "
     """
     content = messages[-1]["content"]
     request = content if isinstance(content, str) else " ".join(p.get("text", "") for p in content if p.get("type") == "text")
+    image = None if isinstance(content, str) else next((p for p in content if p.get("type") == "image_url"), None)
     started, offset = time.time(), 0
 
     def tagged(step: int):
@@ -224,10 +228,12 @@ def run_plan(messages: list[dict], emit: Callable[[dict], None], router: str = "
         return out
 
     planner_events: list[dict] = []
-    steps = plan(request, router, tags, gateway, bar, emit=lambda e: (planner_events.append(e), tagged(0)(e)))
+    steps = plan(request, router, tags, gateway, bar, emit=lambda e: (planner_events.append(e), tagged(0)(e)), has_image=bool(image))
+    if image and not any(s.get("image") is True for s in steps):
+        steps[0]["image"] = True     # the planner forgot to say: the first step reads the image
     offset = sum(1 for e in planner_events if e["type"] == "llm")
-    emit({"type": "plan", "steps": [{"step": i, "title": str(s.get("title") or f"Step {i}"), "instruction": s["instruction"]}
-                                    for i, s in enumerate(steps, 1)]})
+    emit({"type": "plan", "steps": [{"step": i, "title": str(s.get("title") or f"Step {i}"), "instruction": s["instruction"],
+                                     "image": bool(image and s.get("image") is True)} for i, s in enumerate(steps, 1)]})
     results: list[tuple[str, str]] = []
     for i, s in enumerate(steps, 1):
         title = str(s.get("title") or f"Step {i}")
@@ -235,7 +241,9 @@ def run_plan(messages: list[dict], emit: Callable[[dict], None], router: str = "
         context = f"This step is part of a larger job. The whole request:\n{request}"
         if results:
             context += "\n\nResults of the earlier steps of this job:\n" + "\n\n".join(f"## {t}\n{a}" for t, a in results)
-        out = run([{"role": "user", "content": s["instruction"]}], tagged(i), router=router, tags=tags,
+        # the step that must read the image gets it with its instruction: the image rule routes that step to VISION
+        turn = ([{"type": "text", "text": s["instruction"]}, image] if image and s.get("image") is True else s["instruction"])
+        out = run([{"role": "user", "content": turn}], tagged(i), router=router, tags=tags,
                   gateway=gateway, bar=bar, context=context)
         offset += out["calls"]
         results.append((title, out["answer"]))

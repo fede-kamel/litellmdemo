@@ -59,7 +59,35 @@ SCENARIOS = [
      "prompt": "Handle the escalation for enterprise customer NW-0093 end to end. They had three outages last month "
                "(2h10m, 45m, 3h30m). Look up the account and our SLA policy, work out the credit with the arithmetic, "
                "write the reply to their CTO in Spanish (she is based in Madrid), and give our billing team a Python "
-               "function that computes the SLA credit from a list of outage durations and a monthly fee."},
+               "function that computes the SLA credit from a list of outage durations and a monthly fee.",
+     # 385 minutes down in a 43,776-minute month is 99.12%: below 99.9%, so 10% of $48,000
+     "check": [["4,800", "4800"]]},
+    {"id": "agent-incident", "shows": "an incident turned into a breach number, a SQL query, a Japanese update and a summary",
+     "use_case": "Multi-step agent", "title": "Incident to customer update", "expect": "a route per step", "mode": "plan",
+     "why": "four different jobs in one request: arithmetic against the policy, SQL, a customer update in Japanese, a short summary",
+     "prompt": "Incident NW-INC-2291: on 2026-10-02 the Tokyo API region returned errors from 09:12 to 10:47 UTC. Using our SLA "
+               "policy, work out how many minutes this went past the monthly downtime allowance. Write a SQL query against "
+               "accounts(account_id, name, plan, region) that lists the Enterprise accounts in region ap-tokyo-1. Write the "
+               "status update for those customers in Japanese. Finish with a three-line internal summary for the on-call channel.",
+     # 09:12-10:47 is 95 minutes; the policy allows 43.8 minutes a month: 51.2 minutes over
+     "check": [["51.2"]]},
+    {"id": "agent-invoice", "shows": "an invoice photo read, checked against the account, answered, and turned into a billing check",
+     "use_case": "Multi-step agent", "title": "Invoice photo to reply", "expect": "a route per step", "mode": "plan", "image": True,
+     "why": "the step that reads the photo carries the image, so the image rule sends it to a vision model; the rest are text",
+     "prompt": "This invoice photo came from Tailspin Toys, account NW-4471. Read the total due from the photo, compare it with "
+               "the monthly fee on their account, and work out the difference. Then write them a short, polite reply about "
+               "it, and give our billing team a Python function that flags an invoice whose total is above the account's monthly fee.",
+     # the photo says $4,217.50; NW-4471's fee is $1,200.00: $3,017.50 above it
+     "check": [["4,217.50", "4217.5"], ["3,017.50", "3017.5"]]},
+    {"id": "agent-gpu", "shows": "a forecast, an executive summary, a plotting script and a Spanish version",
+     "use_case": "Multi-step agent", "title": "GPU budget pack", "expect": "a route per step", "mode": "plan",
+     "why": "planning arithmetic, short business writing, code and another language, in one job",
+     "prompt": "Our GPU spend was $1.2M last quarter. Model three growth scenarios for the next four quarters, 5%, 10% and 15% "
+               "a quarter, with each quarter's spend and the four-quarter total, and say whether a $2.1M quarterly cap ever "
+               "binds. Then write a five-line executive summary, give the finance team a Python script that plots the three "
+               "scenarios with matplotlib, and write the summary again in Spanish for the Madrid office.",
+     # at 15%: 1.38 + 1.587 + 1.825 + 2.0988 = 6.89 million; the cap never binds (2.0988 < 2.1)
+     "check": [["6.89", "6,890"]]},
     {"id": "code-explain", "shows": "code goes to Codex, on OCI's Responses API", "use_case": "Coding assistant", "title": "Explain a one-liner", "expect": "CODE",
      "prompt": "What does this Python do: `sorted(d.items(), key=lambda kv: (-kv[1], kv[0]))[:3]`?"},
     {"id": "code-race", "shows": "a debugging task goes to Codex", "use_case": "Coding assistant", "title": "Debug a race condition", "expect": "CODE",

@@ -1,0 +1,95 @@
+{
+ "date": "2026-10-07",
+ "what": "each multi-step use case run 3 times in the OpenShell sandbox (scripts/e2e.py --only agent-); routes are the first call of each task, in order (planner not included); a run passes when every task answered and the answer holds the facts in app/scenarios.py 'check'",
+ "runs": {
+  "agent-plan (escalation)": [
+   [
+    "SIMPLE/MEDIUM/MEDIUM/CODE",
+    true
+   ],
+   [
+    "MEDIUM/MEDIUM/SIMPLE/CODE",
+    false
+   ],
+   [
+    "REASONING/MEDIUM/MEDIUM/CODE",
+    true
+   ],
+   [
+    "(full e2e run)",
+    true
+   ]
+  ],
+  "agent-incident": [
+   [
+    "SIMPLE/SIMPLE/CODE/MEDIUM/REASONING",
+    true
+   ],
+   [
+    "MEDIUM/REASONING/CODE/MEDIUM/MEDIUM",
+    true
+   ],
+   [
+    "MEDIUM/MEDIUM/CODE/MEDIUM/REASONING",
+    false
+   ],
+   [
+    "SIMPLE/MEDIUM/CODE/MEDIUM/REASONING",
+    false
+   ]
+  ],
+  "agent-invoice": [
+   [
+    "VISION/SIMPLE/REASONING/CODE",
+    true
+   ],
+   [
+    "VISION/SIMPLE/REASONING/CODE",
+    true
+   ],
+   [
+    "VISION/SIMPLE/REASONING/CODE",
+    true
+   ],
+   [
+    "(full e2e run)",
+    true
+   ]
+  ],
+  "agent-gpu": [
+   [
+    "REASONING/REASONING/CODE/SIMPLE",
+    true
+   ],
+   [
+    "REASONING/REASONING/CODE/MEDIUM",
+    true
+   ],
+   [
+    "REASONING/REASONING/REASONING/MEDIUM",
+    true
+   ],
+   [
+    "(full e2e run)",
+    true
+   ]
+  ]
+ },
+ "facts_right": {
+  "agent-plan": "3 of 4",
+  "agent-incident": "2 of 4",
+  "agent-invoice": "4 of 4",
+  "agent-gpu": "4 of 4"
+ },
+ "both_misses": "every miss is an arithmetic task on the balanced route: the escalation credit ($12,000 instead of $4,800) and the incident overrun (91.2 and 33.2 minutes instead of 51.2); both incident misses were answered by xai.grok-4.20-non-reasoning",
+ "other_notes": [
+  "the Japanese and Spanish tasks went to the balanced route: the planner writes their instructions in English, and the language rule reads the instruction",
+  "one GPU run sent the plotting script to reasoning, not CODE"
+ ],
+ "overrun_task_alone_8_tries_each": {
+  "xai.grok-4.20-non-reasoning (balanced)": "3 of 8",
+  "openai.gpt-5.4-mini (balanced)": "8 of 8",
+  "xai.grok-4.20-reasoning (reasoning)": "8 of 8"
+ },
+ "reading": "the balanced route is a group of two deployments and LiteLLM's latency routing usually picks the faster, Grok 4.20 non-reasoning, which gets time-window arithmetic wrong 5 times in 8; GPT-5.4-mini in the same group gets it right 8 in 8"
+}

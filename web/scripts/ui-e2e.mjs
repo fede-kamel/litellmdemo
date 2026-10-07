@@ -92,6 +92,10 @@ try {
     && await page.locator('[data-testid="timeline"] > li').count() >= 3 && await visible("put together from"));
   await shot("06-plan");
   await page.locator("section").filter({ hasText: "Task 2:" }).last().screenshot({ path: `${out}/06-plan-panel.png` });
+  await runUseCase("Invoice photo to reply");
+  check("a multi-step job hands the photo to the task that reads it, and that task goes to VISION",
+    await visible("carries the image", 300000) && await page.locator('[data-testid="timeline"] >> text=VISION').count() > 0);
+  await shot("06-plan-invoice");
   await runUseCase("Japanese request");
   check("the language rule decided the Japanese request", await visible("written in Japanese", 30000));
   await shot("03-multilingual");

@@ -204,10 +204,30 @@ function. In plan mode (`app/agent.py`, `run_plan`):
    router does not read, so each task is routed on its own.
 3. The answers are put together in order.
 
-A run in the sandbox: the plan on balanced (GPT-5.4-mini), the lookup and
-the credit on reasoning (Grok 4.20 and Grok 4.7), the reply on balanced, the
-function on CODE (GPT-5.3-codex): 4 tasks, 11 calls, 4 models, $0.02-0.04 across five runs.
-The control room shows the plan with each task's route and model.
+Four multi-step jobs, each run four times in the sandbox
+([evidence/multi-step-runs.json](evidence/multi-step-runs.json)); routes are the
+first call of each task, in order:
+
+| Job | Tasks | A typical run | Facts right |
+|---|---|---|---|
+| Escalation, end to end | look up, credit, reply in Spanish, Python function | fast / balanced / balanced / CODE | 3 of 4 ($4,800) |
+| Incident to customer update | allowance, overrun, SQL, Japanese update, summary | fast / fast / CODE / balanced / reasoning | 2 of 4 (51.2 minutes over) |
+| Invoice photo to reply | read the photo, compare, reply, Python check | VISION / fast / reasoning / CODE | 4 of 4 ($4,217.50, $3,017.50 over) |
+| GPU budget pack | scenarios, summary, plotting script, Spanish summary | reasoning / reasoning / CODE / fast | 4 of 4 ($6.89M at 15%) |
+
+Every miss is an arithmetic task on the balanced route getting the number
+wrong ($12,000 for the credit; 91.2 and 33.2 minutes for the overrun). The
+balanced route holds two deployments and LiteLLM's latency routing usually
+picks the faster one, Grok 4.20 non-reasoning: on the overrun task alone it is
+right 3 times in 8, GPT-5.4-mini in the same route 8 in 8. A route's members
+are not equal, and the router's quality labels average them. On its own, the credit task is right 6 times in 8 on each balanced
+model and 8 in 8 on reasoning: at a 75% bar that is the trade-off the router
+accepts. Raise the bar for jobs like these. The Japanese and Spanish tasks
+went to balanced, not the multilingual route: the planner writes their
+instructions in English, and the language rule reads the instruction. In the
+invoice job the planner hands the photo to the task that reads it, and the
+image rule sends that task to VISION. The control room groups every call by
+task, with the decision LiteLLM made for it.
 
 **What the demo found.** The router decides from the task's words, and the
 planner writes tasks in the job's words. "Write a Python function named

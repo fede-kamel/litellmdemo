@@ -130,11 +130,14 @@ def card(slide, x, y, w, h, title, body, accent=RED, fill=SAND, title_size=15, b
          [[(title, {"bold": True, "color": INK, "size": title_size})], [(body, {"color": BODY, "size": body_size})]], line=1.15)
 
 
-def figure(slide, name, x, y, w, caption=None, frame=True):
+def figure(slide, name, x, y, w, caption=None, frame=True, max_h=None):
     path = FIG / name
     if frame:
         rect(slide, x - 0.08, y - 0.08, w + 0.16, 0.1, WHITE)  # placeholder, resized below
     pic = slide.shapes.add_picture(str(path), Inches(x), Inches(y), width=Inches(w))
+    if max_h and pic.height > Inches(max_h):    # a long screenshot: keep its top, crop the rest
+        pic.crop_bottom = 1 - Inches(max_h) / pic.height
+        pic.height = Inches(max_h)
     if frame:
         border = slide.shapes[-2]
         border.top, border.left = pic.top - Inches(0.08), pic.left - Inches(0.08)
@@ -235,9 +238,10 @@ def load(path: Path):
     return json.loads(path.read_text()) if path.exists() else None
 
 
-def shot(slide, name, x, y, w, caption=None):
+def shot(slide, name, x, y, w, caption=None, max_h=None):
+    """A screenshot; by default never lower than the footer, whatever its length."""
     if (SHOTS / name).exists():
-        figure(slide, f"../screenshots/{name}", x, y, w, caption)
+        figure(slide, f"../screenshots/{name}", x, y, w, caption, max_h=max_h or (6.85 - y))
 
 
 # ------------------------------------------------------------------- slides --
@@ -641,8 +645,9 @@ def build(template: Path, out: Path) -> None:
         ("1 · Plan.", "A planner call splits the request into tasks. LiteLLM routes the planner like any other call."),
         ("2 · Route each task.", "Each task reaches LiteLLM as its own request, so each is classified on its own words: a lookup, a calculation, a reply and a function can each get a different model."),
         ("3 · Every call inside a task is classified too.", "The screen groups the calls by task, each with its decision."),
+        ("Four jobs.", "Escalation, incident update, invoice photo, GPU budget pack. The invoice job's photo goes to the task that reads it, and from there to VISION; four runs each gave its facts right 13 times in 16; every miss was arithmetic on the balanced route."),
         ("What it found.", "A coding task in billing words went to balanced: no training example was worded that way. With 64 such requests and 64 counter-examples: 100% to Codex, 3% false alarms."),
-        ("What it costs.", "The balanced models get the tiered credit right 6 times in 8 on their own, reasoning 8 in 8: at a 75% bar, that trade-off is the router's to make. Raise the bar for jobs like this."),
+        ("What it costs.", "The misses are a route's weakest member: LiteLLM's latency routing usually picks Grok 4.20 non-reasoning in the balanced route, right 3 in 8 on the overrun task alone; GPT-5.4-mini, same route, 8 in 8. Raise the bar for jobs like these, or drop the weak deployment and relabel."),
     ], size=11.5)
     notes(s, "Runs differ a little because the planner words tasks differently; "
              "every run in testing sent the coding task to Codex after the fix. Earlier results travel in the system prompt, which the router does not read, "
