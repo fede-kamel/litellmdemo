@@ -13,8 +13,8 @@ type Hood = "compare" | "classifier" | "gateway";
 type Stats = { calls: number; spend_usd: number; by_route: Record<string, number>; by_deployment: Record<string, number>; fallbacks: number };
 
 const TABS: { id: Tab; label: string; icon: typeof Route }[] = [
-  { id: "demo", label: "Demo", icon: MessageSquareText },
-  { id: "hood", label: "Under the hood", icon: Network },
+  { id: "demo", label: "Run the demo", icon: MessageSquareText },
+  { id: "hood", label: "How the router decides", icon: Network },
 ];
 const HOOD: { id: Hood; label: string; icon: typeof Route; note: string }[] = [
   { id: "compare", label: "Compare routers", icon: Scale, note: "the same request through LiteLLM's heuristic, its LLM classifier and our ladder" },
@@ -69,14 +69,16 @@ export default function App() {
         {tab === "demo" && <Ask />}
         {tab === "hood" && (
           <div className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              {HOOD.map((h) => (
-                <button key={h.id} onClick={() => setHood(h.id)}
-                  className={clsx("flex max-w-[360px] items-start gap-2 rounded-xl border px-3 py-2 text-left", hood === h.id ? "border-oracle bg-oracle-soft/50" : "border-line bg-panel hover:border-oracle/40")}>
-                  <h.icon className="mt-0.5 size-4 shrink-0 text-oracle" />
-                  <span><span className="block text-[13px] font-semibold">{h.label}</span><span className="block text-[11.5px] text-ink-3">{h.note}</span></span>
-                </button>
-              ))}
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex rounded-xl bg-sand p-1">
+                {HOOD.map((h) => (
+                  <button key={h.id} onClick={() => setHood(h.id)}
+                    className={clsx("flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12.5px] font-semibold", hood === h.id ? "bg-panel text-ink shadow-sm" : "text-ink-3 hover:text-ink")}>
+                    <h.icon className="size-3.5" />{h.label}
+                  </button>
+                ))}
+              </div>
+              <span className="text-[12px] text-ink-3">{HOOD.find((h) => h.id === hood)?.note}</span>
             </div>
             {hood === "compare" && <Compare />}
             {hood === "classifier" && <ClassifierView />}

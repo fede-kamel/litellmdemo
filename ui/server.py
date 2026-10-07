@@ -144,7 +144,10 @@ RECORDINGS = ROOT / "out" / "recordings"
 def _recording_key(req: "RunRequest") -> str:
     import hashlib
 
-    raw = json.dumps({"s": req.scenario, "m": req.mode, "p": req.prompt, "r": req.router, "t": req.tags, "b": req.bar,
+    s = next((x for x in SCENARIOS if x["id"] == req.scenario), None) if req.scenario else None
+    default = (s or {}).get("mode") or "single"
+    mode = req.mode if req.mode and req.mode != default else None    # the default mode keys like an unset one
+    raw = json.dumps({"s": req.scenario, "m": mode, "p": req.prompt, "r": req.router, "t": req.tags, "b": req.bar,
                       "i": hashlib.sha256((req.image or "").encode()).hexdigest()}, sort_keys=True)
     return hashlib.sha256(raw.encode()).hexdigest()[:20]
 

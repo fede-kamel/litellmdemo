@@ -396,7 +396,7 @@ f.text(630, 560, "virtual key", 15, SUB, weight="600")
 f.panel(680, 270, 820, 760, INDIGO, fill="#F3F2FB")
 f.text(1090, 322, "LITELLM AI GATEWAY · KUBERNETES", 22, INDIGO, weight="700", spacing="3")
 f.text(1090, 354, "official image ghcr.io/berriai/litellm-database:v1.104.0", 16, SUB, mono=True)
-steps6 = [("1", "Key check", "virtual key openshell-agent: 5 model groups, $5 / 30 days, 30 rpm (Postgres)"),
+steps6 = [("1", "Key check", "virtual key openshell-agent: 5 model groups, $5 / 30 days, 120 rpm (Postgres)"),
           ("2", "Classify", "complexity router → classifier_type: custom → route-classifier (the ladder)"),
           ("3", "Route", "route → model group → fastest healthy deployment · fallbacks · retries"),
           ("4", "Sign", "OCI request signing: on OKE as the node (instance principal); on the laptop with the OCI session"),

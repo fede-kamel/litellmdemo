@@ -45,7 +45,7 @@ their own terminal; the gateway picks it up within a minute, no restart.
 The Kubernetes gateway runs LiteLLM's official image
 (`ghcr.io/berriai/litellm-database:v1.104.0`) with Postgres for virtual keys;
 an init container adds the OCI SDK. The agent's virtual key
-(`openshell-agent`: five model groups, $5 per 30 days, 30 requests a minute)
+(`openshell-agent`: five model groups, $5 per 30 days, 120 requests a minute)
 is issued by the deploy script into a 0600 file; OpenShell holds it.
 
 ## Codex: OCI's Responses API

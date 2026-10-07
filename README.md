@@ -180,7 +180,7 @@ scripts/openshell.sh probe     # OCI directly, api.openai.com, the gateway's /ke
   policy allows `POST /v1/chat/completions` and `GET /v1/models` on the
   gateway, for the Python interpreter only.
 - **LiteLLM** checks the agent's virtual key (five model groups, $5 per 30 days,
-  30 requests a minute, kept in Postgres), classifies the request with our
+  120 requests a minute, kept in Postgres), classifies the request with our
   plugin, routes it, signs the OCI call as the OKE node, and charges the cost
   to the key. Its decision comes back in `x-litellm-route-decision`
   (`gateway/route_headers.py`), so the screen explains what LiteLLM decided,
@@ -237,18 +237,29 @@ signature, inputs, output).
 
 ## See why a request got its model
 
-The control room opens on the **Demo** screen: type any request, attach an
-image, or pick a use case, and follow it left to right, the OpenShell sandbox, LiteLLM's five steps (key check,
-classify, route, sign, account), the OCI model. The "why" card shows the decision path (each rule, the code
-check, then every route cheapest first with its chance of a good answer
-against the bar), where that number comes from (the request's own features
-and its twelve most similar labelled requests), the closest training requests
-with how often each route passed, and why that deployment answered. Drag the
-quality bar to move the same request between models. Nothing on the screen is
-written by a model after the fact (`classifier/explain.py`). Below: the plan
-(for multi-step runs), every model call on the route map, the answer, and the
-live console of LiteLLM's and OpenShell's own log lines. **Under the hood**
-holds the router comparison, the classifier and the gateway's configuration.
+The control room opens on **Run the demo**. On the left, the use cases in the
+order of the talk, each with the one thing it shows. Pick one (or type your own,
+or attach an image), choose **One pass** or **Multi-step**, set the quality bar,
+and Route it.
+
+- **Sandbox → LiteLLM → OCI**: where the request went. Click for each one's
+  part (the sandbox's network decisions; LiteLLM's key check, classify, route,
+  sign, account; the models that answered). "Try to escape" shows the
+  sandbox's refusals.
+- **What happened**: every model call, with the decision LiteLLM made for it.
+  LiteLLM classifies every call, not just the first. In one pass every call
+  carries the same request and gets the same route, and the screen says so; in
+  multi-step the calls are grouped by task, and each task gets its own route.
+  Click a call for its ladder against the bar; switch to the route map to see
+  the paths light up.
+- **The answer** and **why the first call got its route**: the decision path
+  (each rule, the code check, every route cheapest first against the bar),
+  where the number comes from, and the closest training requests. Nothing on
+  the screen is written by a model after the fact (`classifier/explain.py`).
+- **The console**: LiteLLM's and OpenShell's own log lines, live.
+
+**How the router decides** holds the router comparison, the classifier and the
+gateway's configuration.
 
 ## Run it
 

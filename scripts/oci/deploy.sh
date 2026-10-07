@@ -72,8 +72,10 @@ k rollout status -n "$NS" deployment/litellm-gateway --timeout=15m
 # the pod's own environment; the key goes straight into a 0600 file.
 AGENT_KEY="${AGENT_KEY_FILE:-$CONF_DIR/agent_key}"
 AGENT_MODELS='["oci-auto-trained", "oci-auto", "oci-auto-llm", "oci-chat", "oci-flaky"]'
+# requests a minute for the agent's key: a multi-step run makes 10-15 calls in under a minute
+AGENT_RPM="${AGENT_RPM:-120}"
 issue_key() {
-  k exec -n "$NS" deploy/litellm-gateway -c gateway -- env AGENT_MODELS="$AGENT_MODELS" python3 -c '
+  k exec -n "$NS" deploy/litellm-gateway -c gateway -- env AGENT_MODELS="$AGENT_MODELS" AGENT_RPM="$AGENT_RPM" python3 -c '
 import json, os, urllib.request
 base, master = "http://127.0.0.1:4000", os.environ["LITELLM_MASTER_KEY"]
 def call(path, body=None):
@@ -85,7 +87,7 @@ tokens = [k["token"] for k in old if isinstance(k, dict) and k.get("token")]
 if tokens:
     call("/key/delete", {"keys": tokens})
 new = call("/key/generate", {"key_alias": "openshell-agent", "models": json.loads(os.environ["AGENT_MODELS"]),
-                             "max_budget": 5, "budget_duration": "30d", "rpm_limit": 30,
+                             "max_budget": 5, "budget_duration": "30d", "rpm_limit": int(os.environ["AGENT_RPM"]),
                              "metadata": {"owner": "OpenShell sandbox: the routing control room agent"}})
 print(new["key"], end="")' </dev/null
 }
@@ -98,19 +100,19 @@ req = urllib.request.Request("http://127.0.0.1:4000/key/info", headers={"Authori
 sys.exit(0 if urllib.request.urlopen(req, timeout=15).status == 200 else 1)' < "$AGENT_KEY" >/dev/null 2>&1
 }
 scope_key() {  # keep the existing key, enforce its allowed models
-  k exec -n "$NS" deploy/litellm-gateway -c gateway -i -- env AGENT_MODELS="$AGENT_MODELS" python3 -c '
+  k exec -n "$NS" deploy/litellm-gateway -c gateway -i -- env AGENT_MODELS="$AGENT_MODELS" AGENT_RPM="$AGENT_RPM" python3 -c '
 import json, os, sys, urllib.request
 key = sys.stdin.read().strip()
 req = urllib.request.Request("http://127.0.0.1:4000/key/update", method="POST",
-    data=json.dumps({"key": key, "models": json.loads(os.environ["AGENT_MODELS"])}).encode(),
+    data=json.dumps({"key": key, "models": json.loads(os.environ["AGENT_MODELS"]), "rpm_limit": int(os.environ["AGENT_RPM"])}).encode(),
     headers={"Authorization": "Bearer " + os.environ["LITELLM_MASTER_KEY"], "Content-Type": "application/json"})
 urllib.request.urlopen(req, timeout=15)' < "$AGENT_KEY" >/dev/null
 }
 if key_works; then
-  scope_key && echo "agent key: still valid, models enforced ($AGENT_KEY)"
+  scope_key && echo "agent key: still valid, models and $AGENT_RPM rpm enforced ($AGENT_KEY)"
 else
   ( umask 077; issue_key > "$AGENT_KEY.new" ) && [[ -s "$AGENT_KEY.new" ]] && mv "$AGENT_KEY.new" "$AGENT_KEY" \
-    && echo "agent key: issued (openshell-agent: 3 routers + 2 demo lanes, \$5 / 30 days, 30 rpm) -> $AGENT_KEY" \
+    && echo "agent key: issued (openshell-agent: 3 routers + 2 demo lanes, \$5 / 30 days, $AGENT_RPM rpm) -> $AGENT_KEY" \
     || { rm -f "$AGENT_KEY.new"; echo "ABORT: could not issue the agent key" >&2; exit 1; }
 fi
 k get pods -n "$NS" -o wide

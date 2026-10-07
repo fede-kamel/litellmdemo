@@ -335,7 +335,7 @@ def build(template: Path, out: Path) -> None:
         ["Benefit", "How LiteLLM does it", "Proved in this demo"],
         ["One API for every model", "an OpenAI-compatible endpoint; the oci/ provider covers every OCI vendor", "21 OCI models from 5 vendors; the agent names a model group, never a vendor model"],
         ["Routing as configuration", "complexity router, tags, context-window checks, latency balancing", "8 routes; our classifier plugs in as classifier_type: custom: 86% good answers at 38% less than always-reasoning"],
-        ["Keys, budgets, limits", "virtual keys with allowed models, budget, rate limit and spend (Postgres)", "the OpenShell agent's key: 5 model groups, $5 per 30 days, 30 requests a minute; anything else is a 403"],
+        ["Keys, budgets, limits", "virtual keys with allowed models, budget, rate limit and spend (Postgres)", "the OpenShell agent's key: 5 model groups, $5 per 30 days, 120 requests a minute; anything else is a 403"],
         ["Reliability", "fallbacks, retries, timeouts, cooldowns", "a failing deployment falls back; a classifier outage routes to fallback_tier; {0} of {1} use cases answered".format(*sandbox_run())],
         ["Observability", "cost and route on every response, spend per key, logging callbacks", "x-litellm-* headers on every call; one ROUTE line per request in the console"],
         ["Extensibility", "CustomLogger hooks, CustomLLM providers, classifier plugins", "OCI signing hook, the decision header, Codex through OCI's Responses API"],
@@ -353,7 +353,7 @@ def build(template: Path, out: Path) -> None:
     repo(s, "sandbox/ (image, profile, policy) · scripts/openshell.sh · gateway/route_headers.py · scripts/oci/deploy.sh")
     notes(s, "The agent runs in an OpenShell sandbox with a placeholder key and one allowed endpoint: POST /v1/chat/completions on LiteLLM. "
              "OpenShell's gateway holds the agent's LiteLLM virtual key and swaps it in on the way out. LiteLLM checks that key (5 model groups, "
-             "$5 per 30 days, 30 rpm), classifies with our plugin, routes, signs to OCI as the node, and accounts. Measured: {0} of {1} use cases ran "
+             "$5 per 30 days, 120 rpm), classifies with our plugin, routes, signs to OCI as the node, and accounts. Measured: {0} of {1} use cases ran "
              "entirely in the sandbox; its only connections were {2} chat-completion POSTs to the gateway;".format(*sandbox_run()) + " OCI directly, api.openai.com and the "
              "gateway's /key admin API were refused.")
 
@@ -610,25 +610,25 @@ def build(template: Path, out: Path) -> None:
 
     # 16b · ask and explain
     s = prs.slides.add_slide(blank)
-    header(s, "One request, left to right: the sandbox, LiteLLM, the model", "The demo screen")
+    header(s, "Pick a use case, route it, and see every decision LiteLLM made", "The demo screen")
     shot(s, "00-ask-escape.png", 0.72, 1.7, 7.2)
     bullets(s, 8.15, 1.85, 4.5, 4.9, [
-        ("1 · OpenShell sandbox.", "The agent, its placeholder key, its one allowed endpoint, and the network decisions of this run. 'Try to escape' shows the refusals."),
-        ("2 · LiteLLM.", "Five steps, filled in live: key check, classify, route, sign, account."),
-        ("3 · OCI.", "The models that answered."),
-        ("Why this model.", "One sentence built from LiteLLM's own decision, the ladder against the bar, and on request every check and the closest training requests."),
+        ("Use cases, in the order of the talk.", "Each says the one thing it shows: a cheap model, reasoning, Codex, a rule, a fallback."),
+        ("The request.", "One pass or multi-step, an image, and the quality bar."),
+        ("Sandbox → LiteLLM → OCI.", "Where the request went: no key in the sandbox; key check, classify, route, sign and account in LiteLLM; the models that answered. 'Try to escape' shows the refusals."),
+        ("What happened.", "Every model call with the decision LiteLLM made for it; click a call for its ladder. Then the answer, and why the first call got its route."),
     ], size=12.5)
     repo(s, "ui/sandbox.py · gateway/route_headers.py · classifier/explain.py · web/src/components/Ask.tsx")
     notes(s, "Nothing on this screen is written by a model after the fact: every sentence is built from the router's own numbers and the labels on file.")
 
     # 17 · the control room
     s = prs.slides.add_slide(blank)
-    header(s, "Each model call the agent made, on the route map", "This run")
+    header(s, "LiteLLM classifies every call, not just the first", "What happened")
     shot(s, "02-this-run.png", 0.72, 1.7, 7.6)
     bullets(s, 8.5, 1.85, 4.1, 4.9, [
-        ("Every call.", "The route LiteLLM chose, the OCI model, latency, cost, fallbacks, and the tools the agent called in between."),
+        ("Every call is classified.", "The agent calls the model, runs a tool, calls again: each call reaches LiteLLM, and each gets a decision."),
+        ("One pass, one route.", "Every call carries the same request, so every call gets the same route. The screen says so, and points to multi-step."),
         ("The route map.", "Request, classifier, eight routes, every model: the path lights up live. Zoom, pan and full screen for the room."),
-        ("The agent.", "langchain-oci create_oci_agent, running in the OpenShell sandbox; its model is the gateway, asked for oci-auto-trained."),
     ], size=12.5)
     repo(s, "app/agent.py · ui/server.py · web/src/components/Ask.tsx · web/src/components/RouteMap.tsx")
     notes(s, "The UI is a thin client over the gateway's own headers.")
@@ -636,13 +636,15 @@ def build(template: Path, out: Path) -> None:
     # 17b · multi-step agent
     s = prs.slides.add_slide(blank)
     header(s, "One job, split into tasks; each task routed on its own", "A multi-step agent: a model per task")
-    shot(s, "06-plan-panel.png", 1.42, 1.6, 10.5)
-    steps(s, 0.72, 4.95, 11.9, 1.9, [
-        ("Plan", "A planner call splits the request into tasks. LiteLLM routes the planner like any other call.", INDIGO),
-        ("Route each task", "Each task reaches LiteLLM as its own request: a lookup, a calculation, a reply and a function can each get a different model.", TEAL),
-        ("What it found", "A coding task in billing words went to balanced: no training example was worded that way. 64 such requests plus 64 counter-examples later: 100% to Codex, 3% false alarms.", RED),
-    ], body_size=11.5)
-    notes(s, "The run on screen: 4 tasks on four routes (reasoning, fast, Codex), 5 models, about 2 cents. Runs differ a little because the planner words tasks differently; "
+    shot(s, "06-plan-panel.png", 0.6, 1.55, 6.4)
+    bullets(s, 7.3, 1.7, 5.4, 5.2, [
+        ("1 · Plan.", "A planner call splits the request into tasks. LiteLLM routes the planner like any other call."),
+        ("2 · Route each task.", "Each task reaches LiteLLM as its own request, so each is classified on its own words: a lookup, a calculation, a reply and a function can each get a different model."),
+        ("3 · Every call inside a task is classified too.", "The screen groups the calls by task, each with its decision."),
+        ("What it found.", "A coding task in billing words went to balanced: no training example was worded that way. With 64 such requests and 64 counter-examples: 100% to Codex, 3% false alarms."),
+        ("What it costs.", "The balanced models get the tiered credit right 6 times in 8 on their own, reasoning 8 in 8: at a 75% bar, that trade-off is the router's to make. Raise the bar for jobs like this."),
+    ], size=11.5)
+    notes(s, "Runs differ a little because the planner words tasks differently; "
              "every run in testing sent the coding task to Codex after the fix. Earlier results travel in the system prompt, which the router does not read, "
              "so a task is routed on its own words, not on the whole job's.")
 

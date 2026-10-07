@@ -32,12 +32,16 @@ try {
   check("the gateway in use is shown", await visible("gateway: primary") || await visible("gateway: fallback"));
   check("the OCI session countdown is shown", await visible("OCI session"));
 
-  // Ask and explain: any prompt, in the OpenShell sandbox, through LiteLLM, and why
+  // the demo screen: any prompt, in the OpenShell sandbox, through LiteLLM, and why
   check("the three stages are shown", await visible("OpenShell sandbox") && await visible("LiteLLM AI Gateway") && await visible("OCI Generative AI"));
   await page.locator("textarea").fill("Draft a short, polite reply to a customer who was charged twice in September, explaining the refund steps.");
   await page.locator("button:has-text('Route it')").click();
   check("a typed request is answered", await visible("The answer", 300000));
   check("LiteLLM's key check names the agent's virtual key", await visible("openshell-agent"));
+  check("every call shows the decision LiteLLM made for it", await visible("LiteLLM classified", 30000) && await visible("each classified by LiteLLM"));
+  await page.locator('[data-testid="timeline"] li button').first().click();
+  check("a call opens its own ladder against the bar", await visible("each route's chance of a good answer", 15000));
+  await page.locator("button:has-text('Show what each one did')").click();
   check("the sandbox's network decisions are shown", await visible("ALLOWED POST", 30000));
   check("the route is explained from LiteLLM's decision", await visible("decided inside LiteLLM") && await visible("likely", 30000) && await visible("Where that", 30000));
   await page.locator("button:has-text('Show the details')").click();
@@ -59,17 +63,20 @@ try {
   await shot("00-ask-french");
 
   // the use cases, from their chips on the same screen
-  check("the use cases are on the demo screen", await visible("Use cases:") && await visible("Customer support") && await visible("Coding assistant"));
+  check("the use cases are on the demo screen, each with what it shows", await visible("Use cases") && await visible("Customer support") && await visible("Coding assistant") && await visible("goes to Codex"));
   await runUseCase("Escalation with SLA credits");
-  check("a hard support request answers, with every model call", await visible("This run") && await page.locator("text=/model calls?, each routed by LiteLLM/").count() > 0);
-  check("the route map shows the route", await page.locator("svg text").filter({ hasText: /SIMPLE|MEDIUM|REASONING/ }).count() > 0);
+  check("a hard support request answers, with every model call", await visible("What happened") && await page.locator("text=/model calls?, each classified by LiteLLM/").count() > 0);
+  check("a one-pass run explains why its calls share a route", await page.locator("text=/same route|Multi-step:/").count() > 0);
+  await page.locator("button:has-text('Route map')").click();
+  check("the route map shows the route", await page.locator("svg text").filter({ hasText: /SIMPLE|MEDIUM|REASONING/ }).first().waitFor({ timeout: 15000 }).then(() => true, () => false));
   await shot("02-escalation");
-  await page.locator("section").filter({ hasText: "each routed by LiteLLM" }).first().screenshot({ path: `${out}/02-this-run.png` });
+  await page.locator("section").filter({ hasText: "each classified by LiteLLM" }).last().screenshot({ path: `${out}/02-this-run.png` });
+  await page.locator("button:has-text('Every call')").click();
   await runUseCase("Escalation, end to end");
-  check("the multi-step agent plans, then routes every task", await visible("tasks, each routed by LiteLLM on its own", 300000)
-    && await page.locator('[data-testid="plan"] li').count() >= 3);
+  check("the multi-step agent plans, then classifies every task on its own", await visible("Task 2:", 300000)
+    && await page.locator('[data-testid="timeline"] > li').count() >= 3 && await visible("put together from"));
   await shot("06-plan");
-  await page.locator("section").filter({ hasText: "each routed by LiteLLM on its own" }).first().screenshot({ path: `${out}/06-plan-panel.png` });
+  await page.locator("section").filter({ hasText: "Task 2:" }).last().screenshot({ path: `${out}/06-plan-panel.png` });
   await runUseCase("Japanese request");
   check("the language rule decided the Japanese request", await visible("written in Japanese", 30000));
   await shot("03-multilingual");
@@ -80,7 +87,7 @@ try {
   check("the failing deployment still answers, through a fallback", await visible("fallback ×", 30000));
   await shot("05-fallback");
 
-  await tab("Under the hood");
+  await tab("How the router decides");
   await sub("Compare routers");
   await page.locator("button:has-text('Send to all three')").click();
   check("the three routers answer", await visible("Built-in heuristic", 240000) && (await page.getByText("right route", { exact: true }).count()) + (await page.getByText("different route", { exact: true }).count()) === 3);
