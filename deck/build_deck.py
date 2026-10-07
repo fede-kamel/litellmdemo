@@ -602,7 +602,7 @@ def build(template: Path, out: Path) -> None:
 
     # 16b · ask and explain
     s = prs.slides.add_slide(blank)
-    header(s, "One request, left to right: the sandbox, LiteLLM, the model", "Ask and explain")
+    header(s, "One request, left to right: the sandbox, LiteLLM, the model", "The demo screen")
     shot(s, "00-ask-escape.png", 0.72, 1.7, 7.2)
     bullets(s, 8.15, 1.85, 4.5, 4.9, [
         ("1 · OpenShell sandbox.", "The agent, its placeholder key, its one allowed endpoint, and the network decisions of this run. 'Try to escape' shows the refusals."),

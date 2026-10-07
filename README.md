@@ -186,8 +186,8 @@ scripts/openshell.sh probe     # OCI directly, api.openai.com, the gateway's /ke
   (`gateway/route_headers.py`), so the screen explains what LiteLLM decided,
   not what a second copy of the classifier thinks.
 - **Measured** ([evidence/openshell/e2e.jsonl](evidence/openshell/e2e.jsonl)):
-  13 of 13 use cases ran entirely in the sandbox; its only connections were 21
-  chat-completion requests to the gateway. If the sandbox cannot reach the
+  14 of 14 use cases ran entirely in the sandbox; its only connections were 30
+  chat-completion requests to the gateway, none refused. If the sandbox cannot reach the
   gateway, the control room says so and answers from the host agent instead.
 
 ## A multi-step agent: a model per task
@@ -237,15 +237,18 @@ signature, inputs, output).
 
 ## See why a request got its model
 
-The control room opens on **Ask and explain**: type any request and follow
-it left to right, the OpenShell sandbox, LiteLLM's five steps (key check,
+The control room opens on the **Demo** screen: type any request, attach an
+image, or pick a use case, and follow it left to right, the OpenShell sandbox, LiteLLM's five steps (key check,
 classify, route, sign, account), the OCI model. The "why" card shows the decision path (each rule, the code
 check, then every route cheapest first with its chance of a good answer
 against the bar), where that number comes from (the request's own features
 and its twelve most similar labelled requests), the closest training requests
 with how often each route passed, and why that deployment answered. Drag the
 quality bar to move the same request between models. Nothing on the screen is
-written by a model after the fact (`classifier/explain.py`).
+written by a model after the fact (`classifier/explain.py`). Below: the plan
+(for multi-step runs), every model call on the route map, the answer, and the
+live console of LiteLLM's and OpenShell's own log lines. **Under the hood**
+holds the router comparison, the classifier and the gateway's configuration.
 
 ## Run it
 

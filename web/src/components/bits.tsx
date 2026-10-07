@@ -1,5 +1,7 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { ROUTE_STYLE, shortModel, vendor } from "../api";
 
 export function RouteChip({ route, size = "sm" }: { route?: string; size?: "sm" | "lg" }) {
@@ -53,6 +55,15 @@ export function Bars({ values, max }: { values: Record<string, number>; max?: nu
           <span className="w-10 text-right font-mono text-ink-2">{v < 1 ? `${Math.round(v * 100)}%` : v}</span>
         </div>
       ))}
+    </div>
+  );
+}
+
+/** A model's answer: markdown (headings, lists, tables, code), styled for the panel. */
+export function Answer({ text }: { text?: string }) {
+  return (
+    <div className="answer text-[13px] leading-relaxed text-ink-2">
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{text ?? ""}</ReactMarkdown>
     </div>
   );
 }

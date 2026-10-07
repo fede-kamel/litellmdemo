@@ -54,7 +54,10 @@ def check(s: dict, events: list[dict]) -> tuple[bool, str]:
         done = {e["step"] for e in events if e["type"] == "step_done"}
         routes = [next((c.get("route") for c in calls if c.get("step") == i), None) for i in range(1, len(plan["steps"]) + 1)]
         ok = len(plan["steps"]) >= 2 and done == set(range(1, len(plan["steps"]) + 1)) and all(routes)
-        return ok, f"steps={len(plan['steps'])} routes={'/'.join(r or '-' for r in routes)} calls={len(calls)} spend=${sum(c.get('cost') or 0 for c in calls):.5f}"
+        # the answer is checkable: 385 minutes down in a 43,776-minute month is 99.12%, below 99.9%,
+        # so the policy (app/tools.py) gives 10% of the $48,000 fee
+        ok = ok and ("4,800" in answer["text"] or "4800" in answer["text"])
+        return ok, f"credit={'4,800' if ('4,800' in answer['text'] or '4800' in answer['text']) else 'MISSING'} steps={len(plan['steps'])} routes={'/'.join(r or '-' for r in routes)} calls={len(calls)} spend=${sum(c.get('cost') or 0 for c in calls):.5f}"
     else:
         ok = first.get("route") in s.get("accept", [expect])
     spend = sum(c.get("cost") or 0 for c in calls)

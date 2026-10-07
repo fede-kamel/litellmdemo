@@ -180,6 +180,8 @@ in the order they must be done: two to five steps, each one job (look something 
 Write each step as a complete instruction that can be done on its own, with the facts it needs (ids, numbers),
 in the language its result must be written in. A coding step is a spec: the programming language, the function
 signature, its inputs and output. Results of earlier steps are passed to later ones.
+Use only facts stated in the request. Never assume or invent a number, a fee, a threshold or a policy: a step that
+needs one says to look it up (the assistant has tools for accounts and policies) or to use an earlier step's result.
 Reply with JSON only: {"steps": [{"title": "<three to six words>", "instruction": "<the task>"}]}"""
 
 
@@ -230,7 +232,9 @@ def run_plan(messages: list[dict], emit: Callable[[dict], None], router: str = "
     for i, s in enumerate(steps, 1):
         title = str(s.get("title") or f"Step {i}")
         emit({"type": "step", "step": i, "title": title, "instruction": s["instruction"]})
-        context = ("Results of the earlier steps of this job:\n" + "\n\n".join(f"## {t}\n{a}" for t, a in results)) if results else ""
+        context = f"This step is part of a larger job. The whole request:\n{request}"
+        if results:
+            context += "\n\nResults of the earlier steps of this job:\n" + "\n\n".join(f"## {t}\n{a}" for t, a in results)
         out = run([{"role": "user", "content": s["instruction"]}], tagged(i), router=router, tags=tags,
                   gateway=gateway, bar=bar, context=context)
         offset += out["calls"]

@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { ArrowRight, Box, Check, ChevronDown, CornerDownLeft, ImagePlus, KeyRound, Lock, RotateCw, Route as RouteIcon, ShieldAlert, Sparkles, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ROUTE_STYLE, getJSON, postJSON, shortModel, usd, vendor, type RunEvent, type Scenario } from "../api";
-import { ModelChip, Panel, RouteChip } from "./bits";
+import { Answer, ModelChip, Panel, RouteChip } from "./bits";
 import { RouteMap } from "./RouteMap";
 
 type Step = { route: string; pass: number; cost: number; clears: boolean; chosen: boolean };
@@ -316,8 +316,8 @@ export function Ask() {
 
       {(answer || why) && (
         <div className="grid grid-cols-[1.2fr_1fr] gap-4">
-          <Panel kicker="The answer" title={first ? `from ${shortModel(calls[calls.length - 1]?.deployment)}` : ""} right={answer && <span className="font-mono text-[11.5px] text-ink-3">{answer.seconds}s · {usd(spend)}</span>}>
-            <p className="scroll-thin max-h-[360px] overflow-y-auto whitespace-pre-wrap text-[13px] leading-relaxed text-ink-2">{answer?.text}</p>
+          <Panel kicker="The answer" title={!first ? "" : plan ? `${plan.length} tasks, put together from ${new Set(calls.map((c) => c.deployment)).size} models` : `from ${shortModel(calls[calls.length - 1]?.deployment)}`} right={answer && <span className="font-mono text-[11.5px] text-ink-3">{answer.seconds}s · {usd(spend)}</span>}>
+            <div className="scroll-thin max-h-[480px] overflow-y-auto"><Answer text={answer?.text} /></div>
           </Panel>
           <Panel kicker={planned ? "Why the planner's model" : "Why this model"} title={decision ? <span className="flex items-center gap-2"><RouteChip route={decision.route} size="lg" /> decided inside LiteLLM</span> : ""}>
             {why && <p className="text-[14px] leading-relaxed text-ink">{why.summary}</p>}

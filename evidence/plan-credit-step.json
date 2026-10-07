@@ -1,0 +1,10 @@
+{
+ "date": "2026-10-07",
+ "what": "The multi-step use case's credit step (385 minutes down in a 43,776-minute month = 99.12%, below 99.9% -> 10% of $48,000 = $4,800), checked end to end and on its own",
+ "plan_runs_correct_credit": {"bar 0.75": "5 of 8", "bar 0.85": "4 of 5", "bar 0.90": "5 of 6"},
+ "every_wrong_run": "the credit step was routed to the balanced route",
+ "credit_step_alone_8_tries_each": {"xai.grok-4.20-non-reasoning (balanced)": "6 of 8", "openai.gpt-5.4-mini (balanced)": "6 of 8", "xai.grok-4.20-reasoning (reasoning)": "8 of 8"},
+ "wrong_answers_seen": ["$12,000 (25% tier: misread 'below 99.9%' as needing 'below 99.0%')", "$24,000"],
+ "reading": "the balanced models are right about 75% of the time on this step, which is what the ladder's 75% bar accepts; a wrong credit on stage is the bar's trade-off, not a routing bug",
+ "also_fixed": "before 2026-10-07 the planner invented facts (a 12,000 euro fee, its own credit thresholds); it is now told to use only facts in the request, and every step sees the whole request"
+}
