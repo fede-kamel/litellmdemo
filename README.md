@@ -79,8 +79,8 @@ grades the request) and `oci-auto-trained` (ours, `classifier_type: custom`).
    on a laptop CPU; the shipped model is 210 KB.
 5. **Choose the route set and the quality bar** inside the training split by
    5-fold cross-validation: the cheapest combination at least as good as always
-   using the reasoning models. It chose all four routes with a bar of 80%. Each
-   request may set its own bar (`metadata.route_quality_bar`).
+   using the reasoning models. It chose the fast, strong and reasoning routes with a
+   bar of 75%. Each request may set its own bar (`metadata.route_quality_bar`).
 6. **Plug in**: `gateway/trained_classifier.py` implements LiteLLM's
    `ClassifierPlugin` (`async classify(context) -> route`).
 
@@ -93,27 +93,31 @@ same judge ([evidence/classifier-eval.json](evidence/classifier-eval.json)):
 | Policy | Answers good enough | Cost of the answers | Code and language routes |
 |---|---|---|---|
 | always the fast models | 77% | $0.043 | — |
-| always the balanced models | 79% | $0.239 | — |
-| always the strong models | 82% | $0.378 | — |
+| always the balanced models | 80% | $0.242 | — |
+| always the strong models | 82% | $0.375 | — |
 | always the reasoning models | 89% | $0.376 | — |
-| LiteLLM heuristic (`oci-auto`) | 80% | $0.082 | 0% |
-| LiteLLM LLM classifier (`oci-auto-llm`) | 85% | $0.342 | 0% |
-| **our ladder (`oci-auto-trained`, bar 80%)** | **86%** | **$0.314** | **100%** (see below) |
-| the labelled route (perfect routing) | 89% | $0.215 | 100% |
+| LiteLLM heuristic (`oci-auto`) | 79% | $0.082 | 0% |
+| LiteLLM LLM classifier (`oci-auto-llm`) | 84% | $0.338 | 0% |
+| **our ladder (`oci-auto-trained`, bar 75%)** | **84%** | **$0.306** | **100%** (see below) |
+| the labelled route (perfect routing) | 89% | $0.221 | 100% |
 
 ![Quality against cost](docs/figures/figure4-quality-cost.png)
 
 With the newer models even the cheapest route gives a good answer 77% of the
 time, and the strong and reasoning routes cost the same: routing pays most by
-sending each request to the kind of model it needs. The ladder gives 6 points
-more good answers than LiteLLM's heuristic, 1 point more than its LLM
-classifier at 8% less, and stays 3 points under always using the reasoning
-models for 17% less. Cross-validated over all 359 prompts it ties
-always-reasoning at about 27% less ([evidence/ladder-lab.json](evidence/ladder-lab.json)).
-Perfect routing gives always-reasoning's quality at 43% less: the headroom is
-in the predictor, not the models. The ladder is the only router that sends code
+sending each request to the kind of model it needs. The ladder gives 5 points
+more good answers than LiteLLM's heuristic, matches its LLM classifier at 9%
+less, and stays 5 points under always using the reasoning models for 19% less.
+Cross-validated over all 359 prompts it ties always-reasoning at about 25% less
+([evidence/ladder-lab.json](evidence/ladder-lab.json)). Perfect routing gives
+always-reasoning's quality at 41% less: the headroom is in the predictor, not
+the models. The ladder can be wrong on a single request: on two demo prompts it
+picks the strong route, which passed 1 and 0 times in 4 where reasoning passed
+4 and 2 ([evidence/strong-vs-reasoning.json](evidence/strong-vs-reasoning.json)). The ladder is the only router that sends code
 and other languages to their own models: 24 of 24 held-out code and language
-prompts through the gateway, after the relabel for the current portfolio.
+prompts through the gateway, after the relabel for the current portfolio
+(every label run a retired deployment answered was run again:
+`classifier/label.py --redo`).
 Held-out is 73 prompts: one prompt moves a score by 1.4 points; see
 "Does it hold up?" below for fresh prompts and a second judge.
 

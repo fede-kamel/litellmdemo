@@ -3,6 +3,7 @@
     uv run python classifier/label.py            # prompts.jsonl -> labels.jsonl
     uv run python classifier/label.py --votes 3  # label each prompt three times; keep the median
     uv run python classifier/label.py --reasoning  # also answer and judge each with the REASONING route
+    uv run python classifier/label.py --redo openai.gpt-6.1-sol   # label again the runs a retired deployment answered
 
 For every prompt that is not CODE or MULTILINGUAL (those are task-type
 routes and keep their family's label), the SIMPLE, MEDIUM and COMPLEX routes
@@ -147,6 +148,39 @@ async def vote(n: int) -> None:
     print(json.dumps({"labelled": len(results), "votes": n, "label_changed_by_votes": changed}))
 
 
+async def redo(deployment: str) -> None:
+    """Label again every run a deployment answered, after it left the portfolio.
+
+    The whole run is done again (all three routes, one judging), so it stays comparable
+    with the runs it sits next to; the votes and pass rates are then settled as before.
+    """
+    out = DATA / "labels.jsonl"
+    rows = [json.loads(line) for line in out.read_text().splitlines()]
+    rng = random.Random(29)
+    hit = lambda run: any((t.get("deployment") or "").endswith(deployment) for t in run["tiers"])  # noqa: E731
+
+    async def one(row: dict) -> tuple[dict, int]:
+        if row.get("label_source") != "outcome":
+            return row, 0
+        runs = [{"route": row.get("first_route", row["route"]),
+                 "tiers": [{k: v for k, v in t.items() if k != "pass_rate"} for t in row["tiers"]]}] + row.get("vote_runs", [])
+        again = [i for i, r in enumerate(runs) if hit(r)]
+        if not again:
+            return row, 0
+        base = {k: v for k, v in row.items() if k in ("id", "family", "route_hint", "difficulty", "prompt")}
+        fresh = await asyncio.gather(*(label(base, random.Random(rng.random())) for _ in again))
+        for i, f in zip(again, fresh):
+            runs[i] = {"route": f["route"], "tiers": f["tiers"]}
+        first = {**row, "route": runs[0]["route"], "first_route": runs[0]["route"], "tiers": runs[0]["tiers"],
+                 "judge_cost": row.get("judge_cost", 0) + sum(f["judge_cost"] for f in fresh)}
+        return settle(first, [{**r, "judge_cost": 0.0} for r in runs[1:]]), len(again)
+
+    results = await asyncio.gather(*(one(r) for r in rows))
+    out.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r, _ in results))
+    print(json.dumps({"deployment": deployment, "runs_labelled_again": sum(n for _, n in results),
+                      "prompts": sum(1 for _, n in results if n), "label_changed": sum(1 for (r, n), old in zip(results, rows) if n and r["route"] != old["route"])}))
+
+
 async def reasoning(previous_eval: Path) -> None:
     """Record, for every outcome-labelled prompt, whether the REASONING route's answer passes.
 
@@ -186,6 +220,8 @@ async def reasoning(previous_eval: Path) -> None:
 async def main() -> None:
     if "--reasoning" in sys.argv:
         return await reasoning(ROOT_OUT.parent / "evidence" / "classifier-eval.json")
+    if "--redo" in sys.argv:
+        return await redo(sys.argv[sys.argv.index("--redo") + 1])
     if "--votes" in sys.argv:
         return await vote(int(sys.argv[sys.argv.index("--votes") + 1]))
     rows = [json.loads(line) for line in (DATA / "prompts.jsonl").read_text().splitlines()]

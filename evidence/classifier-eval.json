@@ -4,26 +4,26 @@
  "policies": [
   {
    "policy": "always SIMPLE",
-   "quality": 0.772,
-   "cost_usd": 0.04319,
+   "quality": 0.767,
+   "cost_usd": 0.04312,
    "classifier_cost_usd": 0.0,
-   "route_match": 0.795,
+   "route_match": 0.767,
    "task_type_accuracy": null
   },
   {
    "policy": "always MEDIUM",
-   "quality": 0.79,
-   "cost_usd": 0.23944,
+   "quality": 0.799,
+   "cost_usd": 0.24223,
    "classifier_cost_usd": 0.0,
-   "route_match": 0.082,
+   "route_match": 0.123,
    "task_type_accuracy": null
   },
   {
    "policy": "always COMPLEX",
    "quality": 0.822,
-   "cost_usd": 0.37785,
+   "cost_usd": 0.37508,
    "classifier_cost_usd": 0.0,
-   "route_match": 0.055,
+   "route_match": 0.041,
    "task_type_accuracy": null
   },
   {
@@ -36,32 +36,32 @@
   },
   {
    "policy": "heuristic",
-   "quality": 0.795,
-   "cost_usd": 0.08181,
+   "quality": 0.79,
+   "cost_usd": 0.08173,
    "classifier_cost_usd": 0.0,
-   "route_match": 0.699,
+   "route_match": 0.671,
    "task_type_accuracy": 0.0
   },
   {
    "policy": "llm",
-   "quality": 0.854,
-   "cost_usd": 0.34247,
-   "classifier_cost_usd": 0.00295,
-   "route_match": 0.192,
+   "quality": 0.845,
+   "cost_usd": 0.3375,
+   "classifier_cost_usd": 0.00296,
+   "route_match": 0.123,
    "task_type_accuracy": 0.0
   },
   {
    "policy": "trained",
-   "quality": 0.858,
-   "cost_usd": 0.31391,
+   "quality": 0.84,
+   "cost_usd": 0.30625,
    "classifier_cost_usd": 0.0,
-   "route_match": 0.411,
+   "route_match": 0.534,
    "task_type_accuracy": 1.0
   },
   {
    "policy": "oracle",
-   "quality": 0.89,
-   "cost_usd": 0.21485,
+   "quality": 0.886,
+   "cost_usd": 0.22142,
    "classifier_cost_usd": 0.0,
    "route_match": 1.0,
    "task_type_accuracy": 1.0
@@ -81,21 +81,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 5.219210863113403,
+     "seconds": 3.8258800506591797,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 4.3899999999999996e-05,
-     "seconds": 9.339365005493164,
+     "seconds": 8.843860149383545,
      "ok": true
     },
     "trained": {
      "route": "CODE",
      "deployment": "oci-responses/openai.gpt-5.3-codex",
      "classifier_cost": 0.0,
-     "seconds": 7.747745037078857,
+     "seconds": 6.441107988357544,
      "ok": true
     }
    }
@@ -113,21 +113,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 2.6452620029449463,
+     "seconds": 1.9642598628997803,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 4.08e-05,
-     "seconds": 5.729259967803955,
+     "seconds": 4.170301914215088,
      "ok": true
     },
     "trained": {
      "route": "CODE",
      "deployment": "oci-responses/openai.gpt-5.3-codex",
      "classifier_cost": 0.0,
-     "seconds": 4.190406084060669,
+     "seconds": 4.084425926208496,
      "ok": true
     }
    }
@@ -145,21 +145,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 2.1915271282196045,
+     "seconds": 1.294754981994629,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.7199999999999996e-05,
-     "seconds": 2.915242910385132,
+     "seconds": 2.14241099357605,
      "ok": true
     },
     "trained": {
      "route": "CODE",
      "deployment": "oci-responses/openai.gpt-5.3-codex",
      "classifier_cost": 0.0,
-     "seconds": 1.2521650791168213,
+     "seconds": 1.6667640209197998,
      "ok": true
     }
    }
@@ -177,21 +177,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 5.845171928405762,
+     "seconds": 5.191771984100342,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 4.43e-05,
-     "seconds": 5.464270830154419,
+     "seconds": 5.924206018447876,
      "ok": true
     },
     "trained": {
      "route": "CODE",
      "deployment": "oci-responses/openai.gpt-5.3-codex",
      "classifier_cost": 0.0,
-     "seconds": 6.6633241176605225,
+     "seconds": 9.488317012786865,
      "ok": true
     }
    }
@@ -209,21 +209,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 6.273234844207764,
+     "seconds": 5.85839319229126,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 4.66e-05,
-     "seconds": 12.806404113769531,
+     "seconds": 13.970234870910645,
      "ok": true
     },
     "trained": {
      "route": "CODE",
      "deployment": "oci-responses/openai.gpt-5.3-codex",
      "classifier_cost": 0.0,
-     "seconds": 9.117111921310425,
+     "seconds": 9.167171001434326,
      "ok": true
     }
    }
@@ -241,21 +241,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 6.410567045211792,
+     "seconds": 5.84622597694397,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 3.92e-05,
-     "seconds": 10.90418004989624,
+     "seconds": 11.567874908447266,
      "ok": true
     },
     "trained": {
      "route": "CODE",
      "deployment": "oci-responses/openai.gpt-5.3-codex",
      "classifier_cost": 0.0,
-     "seconds": 10.051032066345215,
+     "seconds": 11.862446069717407,
      "ok": true
     }
    }
@@ -273,21 +273,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 1.1744799613952637,
+     "seconds": 1.015428066253662,
      "ok": true
     },
     "llm": {
-     "route": "COMPLEX",
-     "deployment": "oci/openai.gpt-6-sol",
-     "classifier_cost": 3.98e-05,
-     "seconds": 4.294607877731323,
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5.4-mini",
+     "classifier_cost": 3.9399999999999995e-05,
+     "seconds": 1.7244431972503662,
      "ok": true
     },
     "trained": {
      "route": "CODE",
      "deployment": "oci-responses/openai.gpt-5.3-codex",
      "classifier_cost": 0.0,
-     "seconds": 2.2293529510498047,
+     "seconds": 2.545173168182373,
      "ok": true
     }
    }
@@ -305,21 +305,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 12.793110132217407,
+     "seconds": 13.266547918319702,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 4e-05,
-     "seconds": 19.935231924057007,
+     "seconds": 24.047977924346924,
      "ok": true
     },
     "trained": {
      "route": "CODE",
      "deployment": "oci-responses/openai.gpt-5.3-codex",
      "classifier_cost": 0.0,
-     "seconds": 20.368704080581665,
+     "seconds": 18.482128858566284,
      "ok": true
     }
    }
@@ -337,21 +337,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 9.312803983688354,
+     "seconds": 8.581676006317139,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 5.04e-05,
-     "seconds": 11.697415113449097,
+     "seconds": 13.761636018753052,
      "ok": true
     },
     "trained": {
      "route": "CODE",
      "deployment": "oci-responses/openai.gpt-5.3-codex",
      "classifier_cost": 0.0,
-     "seconds": 13.991197109222412,
+     "seconds": 11.06167197227478,
      "ok": true
     }
    }
@@ -369,21 +369,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 1.1324658393859863,
+     "seconds": 0.851740837097168,
      "ok": true
     },
     "llm": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 3.62e-05,
-     "seconds": 3.045961856842041,
+     "seconds": 1.8123347759246826,
      "ok": true
     },
     "trained": {
      "route": "CODE",
      "deployment": "oci-responses/openai.gpt-5.3-codex",
      "classifier_cost": 0.0,
-     "seconds": 1.9646599292755127,
+     "seconds": 2.6213879585266113,
      "ok": true
     }
    }
@@ -404,9 +404,9 @@
      "cost": 5.755e-05,
      "ok": true,
      "scores": {
-      "correctness": 4,
-      "completeness": 4,
-      "instruction_following": 4
+      "correctness": 5,
+      "completeness": 5,
+      "instruction_following": 5
      },
      "passed": true,
      "pass_rate": 1.0
@@ -415,7 +415,7 @@
      "tier": "MEDIUM",
      "group": "oci-balanced",
      "deployment": "oci/openai.gpt-5.4-mini",
-     "cost": 0.000393,
+     "cost": 0.0004245,
      "ok": true,
      "scores": {
       "correctness": 5,
@@ -428,8 +428,8 @@
     {
      "tier": "COMPLEX",
      "group": "oci-strong",
-     "deployment": "oci/openai.gpt-6.1-sol",
-     "cost": 0.000428,
+     "deployment": "oci/openai.gpt-6-sol",
+     "cost": 0.001608,
      "ok": true,
      "scores": {
       "correctness": 5,
@@ -453,7 +453,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.004618250000000001,
+   "judge_cost": 0.006165250000000001,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -566,23 +566,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 3.0516719818115234,
+     "seconds": 1.402454137802124,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.8599999999999996e-05,
-     "seconds": 1.9895050525665283,
+     "seconds": 1.5950498580932617,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 3.241276979446411,
+     "seconds": 1.0020580291748047,
      "ok": true
     }
    }
@@ -767,21 +767,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 3.974591016769409,
+     "seconds": 4.554828882217407,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
-     "classifier_cost": 4.04e-05,
-     "seconds": 10.137547016143799,
+     "classifier_cost": 4.24e-05,
+     "seconds": 9.078270196914673,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 8.295658111572266,
+     "seconds": 8.04292917251587,
      "ok": true
     }
    }
@@ -966,21 +966,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.535618782043457,
+     "seconds": 0.9144299030303955,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.8599999999999996e-05,
-     "seconds": 1.1869471073150635,
+     "seconds": 1.3853580951690674,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 0.8513588905334473,
+     "seconds": 1.0448899269104004,
      "ok": true
     }
    }
@@ -1165,21 +1165,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 7.376766920089722,
+     "seconds": 8.559202194213867,
      "ok": true
     },
     "llm": {
      "route": "REASONING",
      "deployment": "oci/xai.grok-4.7",
      "classifier_cost": 3.9899999999999994e-05,
-     "seconds": 26.264500856399536,
+     "seconds": 33.01717805862427,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 13.425111055374146,
+     "seconds": 12.151770114898682,
      "ok": true
     }
    }
@@ -1249,7 +1249,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.00434,
+   "judge_cost": 0.00719775,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -1263,12 +1263,12 @@
       {
        "tier": "SIMPLE",
        "group": "oci-fast",
-       "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 5.5400000000000005e-05,
+       "deployment": "oci/openai.gpt-6-luna",
+       "cost": 4.069999999999999e-05,
        "ok": true,
        "scores": {
         "correctness": 5,
-        "completeness": 5,
+        "completeness": 4,
         "instruction_following": 5
        },
        "passed": true
@@ -1277,7 +1277,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.0001965,
+       "cost": 0.0002055,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -1289,8 +1289,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.001624,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.0013340000000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -1307,13 +1307,13 @@
       {
        "tier": "SIMPLE",
        "group": "oci-fast",
-       "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 6.29e-05,
+       "deployment": "oci/openai.gpt-6-luna",
+       "cost": 4.119999999999999e-05,
        "ok": true,
        "scores": {
         "correctness": 5,
         "completeness": 4,
-        "instruction_following": 4
+        "instruction_following": 5
        },
        "passed": true
       },
@@ -1321,7 +1321,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.000192,
+       "cost": 0.0001785,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -1333,8 +1333,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.001184,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.001004,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -1364,21 +1364,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 2.64624285697937,
+     "seconds": 1.463641881942749,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.98e-05,
-     "seconds": 1.5497500896453857,
+     "seconds": 1.4180960655212402,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.8592548370361328,
+     "seconds": 1.6392228603363037,
      "ok": true
     }
    }
@@ -1563,21 +1563,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 8.752201080322266,
+     "seconds": 10.095485925674438,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.8799999999999994e-05,
-     "seconds": 5.539684057235718,
+     "seconds": 5.148999929428101,
      "ok": true
     },
     "trained": {
-     "route": "REASONING",
-     "deployment": "oci/xai.grok-4.20-reasoning",
+     "route": "COMPLEX",
+     "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 13.380120038986206,
+     "seconds": 7.652168035507202,
      "ok": true
     }
    }
@@ -1762,21 +1762,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 30.12160587310791,
+     "seconds": 28.993662118911743,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 3.95e-05,
-     "seconds": 53.43002915382385,
+     "seconds": 40.304972887039185,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 45.57018685340881,
+     "seconds": 48.749950885772705,
      "ok": true
     }
    }
@@ -1961,21 +1961,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 17.751216888427734,
+     "seconds": 17.876519918441772,
      "ok": true
     },
     "llm": {
      "route": "REASONING",
-     "deployment": "oci/xai.grok-4.20-reasoning",
+     "deployment": "oci/xai.grok-4.7",
      "classifier_cost": 4.26e-05,
-     "seconds": 37.00176692008972,
+     "seconds": 67.15533089637756,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 22.83051896095276,
+     "seconds": 16.37051486968994,
      "ok": true
     }
    }
@@ -2045,7 +2045,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.008699249999999999,
+   "judge_cost": 0.014804999999999999,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -2060,7 +2060,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0007563,
+       "cost": 0.0006850500000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -2073,10 +2073,10 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.0013155,
+       "cost": 0.0011220000000000002,
        "ok": true,
        "scores": {
-        "correctness": 5,
+        "correctness": 4,
         "completeness": 4,
         "instruction_following": 4
        },
@@ -2085,12 +2085,12 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.003688,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.0030180000000000003,
        "ok": true,
        "scores": {
         "correctness": 5,
-        "completeness": 5,
+        "completeness": 4,
         "instruction_following": 5
        },
        "passed": true
@@ -2104,12 +2104,12 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.00066505,
+       "cost": 0.0007600500000000001,
        "ok": true,
        "scores": {
-        "correctness": 4,
+        "correctness": 5,
         "completeness": 5,
-        "instruction_following": 4
+        "instruction_following": 5
        },
        "passed": true
       },
@@ -2117,24 +2117,24 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.0010725,
+       "cost": 0.001248,
        "ok": true,
        "scores": {
-        "correctness": 4,
+        "correctness": 5,
         "completeness": 4,
-        "instruction_following": 4
+        "instruction_following": 5
        },
        "passed": true
       },
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.0029180000000000005,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.003458,
        "ok": true,
        "scores": {
         "correctness": 5,
-        "completeness": 5,
+        "completeness": 4,
         "instruction_following": 5
        },
        "passed": true
@@ -2160,21 +2160,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 2.0284008979797363,
+     "seconds": 2.4684479236602783,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 3.92e-05,
-     "seconds": 6.529823064804077,
+     "seconds": 6.141304016113281,
      "ok": true
     },
     "trained": {
-     "route": "MEDIUM",
-     "deployment": "oci/openai.gpt-5.4-mini",
+     "route": "SIMPLE",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 2.316143035888672,
+     "seconds": 6.0576088428497314,
      "ok": true
     }
    }
@@ -2357,23 +2357,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 3.221632957458496,
+     "seconds": 5.299983024597168,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.79e-05,
-     "seconds": 2.3144099712371826,
+     "seconds": 2.4343550205230713,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 4.0852439403533936,
+     "seconds": 2.4957211017608643,
      "ok": true
     }
    }
@@ -2556,23 +2556,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 2.2903499603271484,
+     "seconds": 3.0518860816955566,
      "ok": true
     },
     "llm": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 3.65e-05,
-     "seconds": 4.265264987945557,
+     "seconds": 4.326739072799683,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 2.4031569957733154,
+     "seconds": 3.8265540599823,
      "ok": true
     }
    }
@@ -2755,23 +2755,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 6.962228059768677,
+     "seconds": 12.167299032211304,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 3.77e-05,
-     "seconds": 7.330708980560303,
+     "seconds": 7.702203989028931,
      "ok": true
     },
     "trained": {
-     "route": "COMPLEX",
-     "deployment": "oci/openai.gpt-6-sol",
+     "route": "SIMPLE",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 6.917442798614502,
+     "seconds": 6.775078058242798,
      "ok": true
     }
    }
@@ -2954,23 +2954,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 14.365914106369019,
+     "seconds": 16.56546187400818,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 3.89e-05,
-     "seconds": 10.900465965270996,
+     "seconds": 11.695029020309448,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 10.84428095817566,
+     "seconds": 10.918914079666138,
      "ok": true
     }
    }
@@ -3153,23 +3153,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 2.79325008392334,
+     "seconds": 1.6028101444244385,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.65e-05,
-     "seconds": 1.754384994506836,
+     "seconds": 1.949718952178955,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 2.0845720767974854,
+     "seconds": 1.6512889862060547,
      "ok": true
     }
    }
@@ -3354,21 +3354,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.8933260440826416,
+     "seconds": 1.5444772243499756,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 4.85e-05,
-     "seconds": 1.5421428680419922,
+     "seconds": 1.4812891483306885,
      "ok": true
     },
     "trained": {
-     "route": "MEDIUM",
-     "deployment": "oci/openai.gpt-5.4-mini",
+     "route": "SIMPLE",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 0.9608199596405029,
+     "seconds": 1.956017017364502,
      "ok": true
     }
    }
@@ -3553,21 +3553,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.3866097927093506,
+     "seconds": 1.1746480464935303,
      "ok": true
     },
     "llm": {
-     "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.6599999999999995e-05,
-     "seconds": 1.988429069519043,
+     "seconds": 1.7388989925384521,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.2890229225158691,
+     "seconds": 1.8004930019378662,
      "ok": true
     }
    }
@@ -3752,21 +3752,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 4.457563877105713,
+     "seconds": 5.157851934432983,
      "ok": true
     },
     "llm": {
      "route": "REASONING",
      "deployment": "oci/xai.grok-4.7",
      "classifier_cost": 4.7199999999999995e-05,
-     "seconds": 13.835571050643921,
+     "seconds": 31.477373838424683,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 9.047493934631348,
+     "seconds": 6.410481929779053,
      "ok": true
     }
    }
@@ -3951,21 +3951,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.9867799282073975,
+     "seconds": 2.0451979637145996,
      "ok": true
     },
     "llm": {
-     "route": "MEDIUM",
-     "deployment": "oci/openai.gpt-5.4-mini",
-     "classifier_cost": 3.95e-05,
-     "seconds": 2.0273430347442627,
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "classifier_cost": 4.03e-05,
+     "seconds": 4.495965003967285,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 1.4649419784545898,
+     "seconds": 1.608288049697876,
      "ok": true
     }
    }
@@ -4035,7 +4035,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.0062562500000000005,
+   "judge_cost": 0.01039675,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -4063,7 +4063,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.0006735,
+       "cost": 0.000678,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -4075,8 +4075,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.001456,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.0013460000000000002,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -4094,7 +4094,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0001846,
+       "cost": 0.0001796,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -4107,7 +4107,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.0006645,
+       "cost": 0.000678,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -4119,8 +4119,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.0014860000000000001,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.001396,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -4150,21 +4150,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 2.0593960285186768,
+     "seconds": 1.907710075378418,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 4.95e-05,
-     "seconds": 1.9759070873260498,
+     "seconds": 2.58081316947937,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 1.9493260383605957,
+     "seconds": 2.286569118499756,
      "ok": true
     }
    }
@@ -4234,7 +4234,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.005817,
+   "judge_cost": 0.00970725,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -4249,7 +4249,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0001589,
+       "cost": 0.0001614,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -4262,7 +4262,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.000531,
+       "cost": 0.00054,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -4274,8 +4274,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.001214,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.0023840000000000003,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -4293,7 +4293,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.00015765,
+       "cost": 0.00015265,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -4306,7 +4306,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.000531,
+       "cost": 0.0005535,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -4318,8 +4318,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.001534,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.003114,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -4349,21 +4349,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 1.2771987915039062,
+     "seconds": 2.1729049682617188,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 4.79e-05,
-     "seconds": 1.7319109439849854,
+     "seconds": 1.793910026550293,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 3.8596479892730713,
+     "seconds": 3.4661498069763184,
      "ok": true
     }
    }
@@ -4433,7 +4433,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.01090775,
+   "judge_cost": 0.018025,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -4448,7 +4448,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.00069855,
+       "cost": 0.0007748000000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -4461,7 +4461,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.00232725,
+       "cost": 0.00247125,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -4473,12 +4473,12 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.0033380000000000007,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.0022080000000000003,
        "ok": true,
        "scores": {
         "correctness": 5,
-        "completeness": 5,
+        "completeness": 4,
         "instruction_following": 5
        },
        "passed": true
@@ -4492,7 +4492,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0007085500000000001,
+       "cost": 0.0008060500000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -4505,7 +4505,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.0026332499999999997,
+       "cost": 0.00261075,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -4517,8 +4517,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.0033480000000000003,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.0021080000000000005,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -4548,21 +4548,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 3.0871188640594482,
+     "seconds": 2.7527029514312744,
      "ok": true
     },
     "llm": {
      "route": "REASONING",
      "deployment": "oci/xai.grok-4.20-reasoning",
      "classifier_cost": 4.0199999999999995e-05,
-     "seconds": 13.00605297088623,
+     "seconds": 10.56968092918396,
      "ok": true
     },
     "trained": {
-     "route": "MEDIUM",
-     "deployment": "oci/openai.gpt-5.4-mini",
+     "route": "SIMPLE",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 3.2562670707702637,
+     "seconds": 3.236583948135376,
      "ok": true
     }
    }
@@ -4747,21 +4747,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 1.109591007232666,
+     "seconds": 1.1380090713500977,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.8799999999999994e-05,
-     "seconds": 1.6474318504333496,
+     "seconds": 1.8657810688018799,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 4.346474885940552,
+     "seconds": 1.5927441120147705,
      "ok": true
     }
    }
@@ -4946,21 +4946,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 1.7210891246795654,
+     "seconds": 1.5850179195404053,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 4.76e-05,
-     "seconds": 1.7946569919586182,
+     "seconds": 1.7534759044647217,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 2.068580150604248,
+     "seconds": 2.0773890018463135,
      "ok": true
     }
    }
@@ -5145,21 +5145,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 4.571666955947876,
+     "seconds": 4.0356080532073975,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.79e-05,
-     "seconds": 4.359065055847168,
+     "seconds": 5.194910049438477,
      "ok": true
     },
     "trained": {
-     "route": "CODE",
-     "deployment": "oci-responses/openai.gpt-5.3-codex",
+     "route": "COMPLEX",
+     "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 8.80112600326538,
+     "seconds": 4.381622076034546,
      "ok": true
     }
    }
@@ -5229,7 +5229,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.0099155,
+   "judge_cost": 0.01642375,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -5244,7 +5244,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0006303500000000001,
+       "cost": 0.0006803500000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -5257,7 +5257,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.00140175,
+       "cost": 0.00179775,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -5269,8 +5269,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.0037760000000000007,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.0031460000000000004,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -5288,7 +5288,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0006728500000000001,
+       "cost": 0.0006441000000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -5301,7 +5301,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.00189675,
+       "cost": 0.00168975,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -5313,8 +5313,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.0035160000000000005,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.0031560000000000004,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -5344,21 +5344,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 2.7460269927978516,
+     "seconds": 3.1643998622894287,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.7999999999999995e-05,
-     "seconds": 3.435189962387085,
+     "seconds": 3.1915149688720703,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 7.656625986099243,
+     "seconds": 4.549554109573364,
      "ok": true
     }
    }
@@ -5428,7 +5428,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.010206,
+   "judge_cost": 0.01676675,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -5443,7 +5443,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0006695500000000001,
+       "cost": 0.0005383000000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -5456,7 +5456,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.00213225,
+       "cost": 0.00227625,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -5468,8 +5468,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.003098,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.002378,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -5487,7 +5487,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0007133,
+       "cost": 0.0006645500000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -5500,7 +5500,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.00206925,
+       "cost": 0.0021997500000000003,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -5512,8 +5512,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.003288,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.002648,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -5543,21 +5543,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 4.355886936187744,
+     "seconds": 3.519373893737793,
      "ok": true
     },
     "llm": {
      "route": "REASONING",
      "deployment": "oci/xai.grok-4.7",
      "classifier_cost": 3.7999999999999995e-05,
-     "seconds": 23.051809072494507,
+     "seconds": 18.091349124908447,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 4.755494832992554,
+     "seconds": 4.3375420570373535,
      "ok": true
     }
    }
@@ -5742,21 +5742,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 6.45318603515625,
+     "seconds": 4.9046409130096436,
      "ok": true
     },
     "llm": {
      "route": "REASONING",
-     "deployment": "oci/xai.grok-4.7",
+     "deployment": "oci/xai.grok-4.20-reasoning",
      "classifier_cost": 4.03e-05,
-     "seconds": 133.98858404159546,
+     "seconds": 89.07335591316223,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 6.819576978683472,
+     "seconds": 8.863421201705933,
      "ok": true
     }
    }
@@ -5826,7 +5826,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.00460425,
+   "judge_cost": 0.007665,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -5841,51 +5841,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 8.020000000000001e-05,
-       "ok": true,
-       "scores": {
-        "correctness": 5,
-        "completeness": 5,
-        "instruction_following": 5
-       },
-       "passed": true
-      },
-      {
-       "tier": "MEDIUM",
-       "group": "oci-balanced",
-       "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.0003075,
-       "ok": true,
-       "scores": {
-        "correctness": 5,
-        "completeness": 5,
-        "instruction_following": 5
-       },
-       "passed": true
-      },
-      {
-       "tier": "COMPLEX",
-       "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.000792,
-       "ok": true,
-       "scores": {
-        "correctness": 5,
-        "completeness": 5,
-        "instruction_following": 5
-       },
-       "passed": true
-      }
-     ]
-    },
-    {
-     "route": "SIMPLE",
-     "tiers": [
-      {
-       "tier": "SIMPLE",
-       "group": "oci-fast",
-       "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 5.1450000000000004e-05,
+       "cost": 8.895000000000001e-05,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -5910,8 +5866,52 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.000802,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.000742,
+       "ok": true,
+       "scores": {
+        "correctness": 5,
+        "completeness": 5,
+        "instruction_following": 5
+       },
+       "passed": true
+      }
+     ]
+    },
+    {
+     "route": "SIMPLE",
+     "tiers": [
+      {
+       "tier": "SIMPLE",
+       "group": "oci-fast",
+       "deployment": "oci/openai.gpt-5.4-nano",
+       "cost": 8.020000000000001e-05,
+       "ok": true,
+       "scores": {
+        "correctness": 5,
+        "completeness": 5,
+        "instruction_following": 5
+       },
+       "passed": true
+      },
+      {
+       "tier": "MEDIUM",
+       "group": "oci-balanced",
+       "deployment": "oci/openai.gpt-5.4-mini",
+       "cost": 0.000276,
+       "ok": true,
+       "scores": {
+        "correctness": 5,
+        "completeness": 5,
+        "instruction_following": 5
+       },
+       "passed": true
+      },
+      {
+       "tier": "COMPLEX",
+       "group": "oci-strong",
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.001152,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -5941,21 +5941,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 1.2205109596252441,
+     "seconds": 1.3440427780151367,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.73e-05,
-     "seconds": 1.8645319938659668,
+     "seconds": 1.3797900676727295,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 1.3558909893035889,
+     "seconds": 1.4125380516052246,
      "ok": true
     }
    }
@@ -6025,7 +6025,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.004018000000000001,
+   "judge_cost": 0.006655250000000001,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -6033,6 +6033,50 @@
     "SIMPLE"
    ],
    "vote_runs": [
+    {
+     "route": "SIMPLE",
+     "tiers": [
+      {
+       "tier": "SIMPLE",
+       "group": "oci-fast",
+       "deployment": "oci/openai.gpt-5.4-nano",
+       "cost": 2.7150000000000003e-05,
+       "ok": true,
+       "scores": {
+        "correctness": 5,
+        "completeness": 5,
+        "instruction_following": 5
+       },
+       "passed": true
+      },
+      {
+       "tier": "MEDIUM",
+       "group": "oci-balanced",
+       "deployment": "oci/openai.gpt-5.4-mini",
+       "cost": 0.00011175,
+       "ok": true,
+       "scores": {
+        "correctness": 5,
+        "completeness": 5,
+        "instruction_following": 5
+       },
+       "passed": true
+      },
+      {
+       "tier": "COMPLEX",
+       "group": "oci-strong",
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.00016400000000000003,
+       "ok": true,
+       "scores": {
+        "correctness": 5,
+        "completeness": 5,
+        "instruction_following": 5
+       },
+       "passed": true
+      }
+     ]
+    },
     {
      "route": "SIMPLE",
      "tiers": [
@@ -6065,52 +6109,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.00029400000000000004,
-       "ok": true,
-       "scores": {
-        "correctness": 5,
-        "completeness": 5,
-        "instruction_following": 5
-       },
-       "passed": true
-      }
-     ]
-    },
-    {
-     "route": "SIMPLE",
-     "tiers": [
-      {
-       "tier": "SIMPLE",
-       "group": "oci-fast",
-       "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 2.7150000000000003e-05,
-       "ok": true,
-       "scores": {
-        "correctness": 5,
-        "completeness": 5,
-        "instruction_following": 5
-       },
-       "passed": true
-      },
-      {
-       "tier": "MEDIUM",
-       "group": "oci-balanced",
-       "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.00012525,
-       "ok": true,
-       "scores": {
-        "correctness": 5,
-        "completeness": 5,
-        "instruction_following": 5
-       },
-       "passed": true
-      },
-      {
-       "tier": "COMPLEX",
-       "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.000284,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.00016400000000000003,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -6140,21 +6140,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 0.9351551532745361,
+     "seconds": 0.9551270008087158,
      "ok": true
     },
     "llm": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 3.5799999999999996e-05,
-     "seconds": 2.141083002090454,
+     "seconds": 1.5077199935913086,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 1.176867961883545,
+     "seconds": 1.0005600452423096,
      "ok": true
     }
    }
@@ -6224,7 +6224,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.0051695000000000005,
+   "judge_cost": 0.008387750000000001,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -6239,7 +6239,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.00013765,
+       "cost": 0.00014890000000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -6252,7 +6252,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.000393,
+       "cost": 0.0003885,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -6264,12 +6264,12 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.001024,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.0005340000000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
-        "completeness": 5,
+        "completeness": 4,
         "instruction_following": 5
        },
        "passed": true
@@ -6282,8 +6282,8 @@
       {
        "tier": "SIMPLE",
        "group": "oci-fast",
-       "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.00018140000000000002,
+       "deployment": "oci/openai.gpt-6-luna",
+       "cost": 5.1699999999999996e-05,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -6296,7 +6296,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.000447,
+       "cost": 0.000483,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -6308,8 +6308,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.001054,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.0006840000000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -6339,21 +6339,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 1.5041401386260986,
+     "seconds": 1.4794948101043701,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.84e-05,
-     "seconds": 2.0016069412231445,
+     "seconds": 1.5604579448699951,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.9895880222320557,
+     "seconds": 1.986583948135376,
      "ok": true
     }
    }
@@ -6536,23 +6536,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 2.489546060562134,
+     "seconds": 1.5620508193969727,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.67e-05,
-     "seconds": 1.9640250205993652,
+     "seconds": 1.92340087890625,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 2.5979177951812744,
+     "seconds": 1.846662998199463,
      "ok": true
     }
    }
@@ -6737,21 +6737,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 1.918699026107788,
+     "seconds": 2.329694986343384,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 4.07e-05,
-     "seconds": 2.836988925933838,
+     "seconds": 2.2106211185455322,
      "ok": true
     },
     "trained": {
-     "route": "MEDIUM",
-     "deployment": "oci/openai.gpt-5.4-mini",
+     "route": "SIMPLE",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 2.1334750652313232,
+     "seconds": 1.9400639533996582,
      "ok": true
     }
    }
@@ -6821,7 +6821,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.004035500000000001,
+   "judge_cost": 0.006690250000000001,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -6835,8 +6835,8 @@
       {
        "tier": "SIMPLE",
        "group": "oci-fast",
-       "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 3.9200000000000004e-05,
+       "deployment": "oci/openai.gpt-6-luna",
+       "cost": 2.16e-05,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -6849,7 +6849,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.00010125000000000001,
+       "cost": 0.00010575000000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -6861,7 +6861,7 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
+       "deployment": "oci/openai.gpt-6-sol",
        "cost": 0.000232,
        "ok": true,
        "scores": {
@@ -6879,8 +6879,8 @@
       {
        "tier": "SIMPLE",
        "group": "oci-fast",
-       "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 4.295e-05,
+       "deployment": "oci/openai.gpt-6-luna",
+       "cost": 2.31e-05,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -6905,7 +6905,7 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
+       "deployment": "oci/openai.gpt-6-sol",
        "cost": 0.000232,
        "ok": true,
        "scores": {
@@ -6936,21 +6936,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 1.0382788181304932,
+     "seconds": 0.9350719451904297,
      "ok": true
     },
     "llm": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 3.6599999999999995e-05,
-     "seconds": 4.428011178970337,
+     "seconds": 1.603606939315796,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.2564971446990967,
+     "seconds": 1.1757071018218994,
      "ok": true
     }
    }
@@ -7135,21 +7135,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 1.9469890594482422,
+     "seconds": 2.077397108078003,
      "ok": true
     },
     "llm": {
      "route": "REASONING",
      "deployment": "oci/xai.grok-4.20-reasoning",
      "classifier_cost": 3.81e-05,
-     "seconds": 9.134249925613403,
+     "seconds": 11.228484153747559,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 2.465670108795166,
+     "seconds": 3.2069709300994873,
      "ok": true
     }
    }
@@ -7219,7 +7219,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.0077350000000000006,
+   "judge_cost": 0.01301475,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -7234,7 +7234,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.00038455,
+       "cost": 0.00041705,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -7247,7 +7247,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.001341,
+       "cost": 0.001305,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -7259,13 +7259,13 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.0024980000000000002,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.0017380000000000002,
        "ok": true,
        "scores": {
         "correctness": 5,
-        "completeness": 5,
-        "instruction_following": 5
+        "completeness": 4,
+        "instruction_following": 4
        },
        "passed": true
       }
@@ -7278,7 +7278,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.00042455000000000005,
+       "cost": 0.00041955000000000003,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -7291,7 +7291,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.001341,
+       "cost": 0.001314,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -7303,8 +7303,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.0025280000000000003,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.002548,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -7332,23 +7332,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 2.237393856048584,
+     "seconds": 4.442744016647339,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 4.02e-05,
-     "seconds": 2.9698359966278076,
+     "seconds": 4.214130878448486,
      "ok": true
     },
     "trained": {
-     "route": "REASONING",
-     "deployment": "oci/xai.grok-4.20-reasoning",
+     "route": "SIMPLE",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 8.450464963912964,
+     "seconds": 2.899970054626465,
      "ok": true
     }
    }
@@ -7533,21 +7533,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 1.409653902053833,
+     "seconds": 0.9469599723815918,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.8599999999999996e-05,
-     "seconds": 1.4577491283416748,
+     "seconds": 2.345184087753296,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 2.601809024810791,
+     "seconds": 1.2702419757843018,
      "ok": true
     }
    }
@@ -7730,23 +7730,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 5.62438702583313,
+     "seconds": 4.747215032577515,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 4.43e-05,
-     "seconds": 6.014883995056152,
+     "seconds": 5.995642185211182,
      "ok": true
     },
     "trained": {
-     "route": "REASONING",
-     "deployment": "oci/xai.grok-4.7",
+     "route": "COMPLEX",
+     "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 30.901293992996216,
+     "seconds": 6.42782998085022,
      "ok": true
     }
    }
@@ -7931,21 +7931,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 6.843747854232788,
+     "seconds": 6.762571096420288,
      "ok": true
     },
     "llm": {
      "route": "REASONING",
      "deployment": "oci/xai.grok-4.7",
      "classifier_cost": 4.6299999999999994e-05,
-     "seconds": 26.618475914001465,
+     "seconds": 95.46432590484619,
      "ok": true
     },
     "trained": {
-     "route": "MEDIUM",
-     "deployment": "oci/openai.gpt-5.4-mini",
+     "route": "SIMPLE",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 3.2993831634521484,
+     "seconds": 6.189083099365234,
      "ok": true
     }
    }
@@ -8128,23 +8128,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 3.613339900970459,
+     "seconds": 3.086287021636963,
      "ok": true
     },
     "llm": {
-     "route": "MEDIUM",
-     "deployment": "oci/openai.gpt-5.4-mini",
-     "classifier_cost": 3.9699999999999996e-05,
-     "seconds": 2.1666030883789062,
+     "route": "COMPLEX",
+     "deployment": "oci/openai.gpt-6-sol",
+     "classifier_cost": 4.01e-05,
+     "seconds": 5.149090051651001,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 5.688205003738403,
+     "seconds": 7.844291925430298,
      "ok": true
     }
    }
@@ -8327,23 +8327,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 31.26724410057068,
+     "seconds": 11.700958013534546,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 4.91e-05,
-     "seconds": 32.96911001205444,
+     "seconds": 31.601732969284058,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 32.15653204917908,
+     "seconds": 29.268898010253906,
      "ok": true
     }
    }
@@ -8413,7 +8413,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.00430675,
+   "judge_cost": 0.0057365,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -8428,7 +8428,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 5.8250000000000006e-05,
+       "cost": 4.9500000000000004e-05,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -8441,7 +8441,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.00019725,
+       "cost": 0.00017925,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -8453,7 +8453,7 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
+       "deployment": "oci/openai.gpt-6-sol",
        "cost": 0.00041,
        "ok": true,
        "scores": {
@@ -8528,21 +8528,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.065007209777832,
+     "seconds": 1.8784449100494385,
      "ok": true
     },
     "llm": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 3.79e-05,
-     "seconds": 1.9319829940795898,
+     "seconds": 3.1467370986938477,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.1850659847259521,
+     "seconds": 1.7060999870300293,
      "ok": true
     }
    }
@@ -8725,23 +8725,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 12.933977842330933,
+     "seconds": 7.450725078582764,
      "ok": true
     },
     "llm": {
      "route": "REASONING",
-     "deployment": "oci/xai.grok-4.7",
+     "deployment": "oci/xai.grok-4.20-reasoning",
      "classifier_cost": 4.0499999999999995e-05,
-     "seconds": 40.0206139087677,
+     "seconds": 23.14951801300049,
      "ok": true
     },
     "trained": {
-     "route": "COMPLEX",
-     "deployment": "oci/openai.gpt-6-sol",
+     "route": "SIMPLE",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 7.919820070266724,
+     "seconds": 11.188374996185303,
      "ok": true
     }
    }
@@ -8926,21 +8926,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 0.9170022010803223,
+     "seconds": 1.122680902481079,
      "ok": true
     },
     "llm": {
-     "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.67e-05,
-     "seconds": 2.2508158683776855,
+     "seconds": 1.6082980632781982,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 1.0467700958251953,
+     "seconds": 0.9175348281860352,
      "ok": true
     }
    }
@@ -9123,23 +9123,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 0.8097450733184814,
+     "seconds": 1.0955619812011719,
      "ok": true
     },
     "llm": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 3.76e-05,
-     "seconds": 1.687283992767334,
+     "seconds": 1.5966219902038574,
      "ok": true
     },
     "trained": {
-     "route": "MEDIUM",
-     "deployment": "oci/openai.gpt-5.4-mini",
+     "route": "SIMPLE",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 2.4350638389587402,
+     "seconds": 0.9719491004943848,
      "ok": true
     }
    }
@@ -9322,23 +9322,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 8.288246154785156,
+     "seconds": 7.016832113265991,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.82e-05,
-     "seconds": 4.968050956726074,
+     "seconds": 5.180235147476196,
      "ok": true
     },
     "trained": {
-     "route": "MEDIUM",
-     "deployment": "oci/openai.gpt-5.4-mini",
+     "route": "SIMPLE",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 5.561426877975464,
+     "seconds": 8.2461838722229,
      "ok": true
     }
    }
@@ -9521,23 +9521,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 18.80198907852173,
+     "seconds": 21.06392478942871,
      "ok": true
     },
     "llm": {
      "route": "REASONING",
-     "deployment": "oci/xai.grok-4.20-reasoning",
+     "deployment": "oci/xai.grok-4.7",
      "classifier_cost": 5.29e-05,
-     "seconds": 24.355305910110474,
+     "seconds": 131.10906600952148,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 12.992654085159302,
+     "seconds": 8.694847106933594,
      "ok": true
     }
    }
@@ -9720,23 +9720,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 0.9774580001831055,
+     "seconds": 2.628124952316284,
      "ok": true
     },
     "llm": {
-     "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.7399999999999994e-05,
-     "seconds": 1.7375798225402832,
+     "seconds": 1.5095369815826416,
      "ok": true
     },
     "trained": {
      "route": "CODE",
      "deployment": "oci-responses/openai.gpt-5.3-codex",
      "classifier_cost": 0.0,
-     "seconds": 1.7631809711456299,
+     "seconds": 1.6310749053955078,
      "ok": true
     }
    }
@@ -9806,7 +9806,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.0060235,
+   "judge_cost": 0.009964500000000001,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -9821,7 +9821,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.00023035000000000002,
+       "cost": 0.00025785,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -9834,7 +9834,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.0006367500000000001,
+       "cost": 0.0005242500000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -9846,8 +9846,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.0021760000000000004,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.001376,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -9865,7 +9865,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.00022785,
+       "cost": 0.00024660000000000003,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -9878,11 +9878,11 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.00062325,
+       "cost": 0.00060525,
        "ok": true,
        "scores": {
         "correctness": 5,
-        "completeness": 5,
+        "completeness": 4,
         "instruction_following": 5
        },
        "passed": true
@@ -9890,11 +9890,11 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.0021460000000000003,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.001716,
        "ok": true,
        "scores": {
-        "correctness": 5,
+        "correctness": 4,
         "completeness": 5,
         "instruction_following": 5
        },
@@ -9921,21 +9921,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 2.280673027038574,
+     "seconds": 2.158184051513672,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.78e-05,
-     "seconds": 2.143854856491089,
+     "seconds": 2.0546889305114746,
      "ok": true
     },
     "trained": {
-     "route": "MEDIUM",
-     "deployment": "oci/openai.gpt-5.4-mini",
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.20-reasoning",
      "classifier_cost": 0.0,
-     "seconds": 1.5419049263000488,
+     "seconds": 11.483989000320435,
      "ok": true
     }
    }
@@ -10005,7 +10005,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.00417375,
+   "judge_cost": 0.006956250000000001,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -10045,7 +10045,7 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
+       "deployment": "oci/openai.gpt-6-sol",
        "cost": 0.00033800000000000003,
        "ok": true,
        "scores": {
@@ -10089,7 +10089,7 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
+       "deployment": "oci/openai.gpt-6-sol",
        "cost": 0.00033800000000000003,
        "ok": true,
        "scores": {
@@ -10120,21 +10120,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.3270678520202637,
+     "seconds": 1.5599579811096191,
      "ok": true
     },
     "llm": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 3.7199999999999996e-05,
-     "seconds": 4.057525873184204,
+     "seconds": 2.1830201148986816,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 1.1343660354614258,
+     "seconds": 0.9443531036376953,
      "ok": true
     }
    }
@@ -10145,7 +10145,7 @@
    "route_hint": "COMPLEX",
    "difficulty": 1,
    "prompt": "We’re choosing between sending marketing emails through Mailchimp or using AWS SES. Explain the trade-offs in deliverability, cost at 50k emails/month, ease of templates/automation, and how much engineering effort each needs.",
-   "route": "SIMPLE",
+   "route": "MEDIUM",
    "label_source": "outcome",
    "tiers": [
     {
@@ -10160,7 +10160,7 @@
       "instruction_following": 5
      },
      "passed": true,
-     "pass_rate": 0.667
+     "pass_rate": 0.333
     },
     {
      "tier": "MEDIUM",
@@ -10174,7 +10174,7 @@
       "instruction_following": 5
      },
      "passed": true,
-     "pass_rate": 0.667
+     "pass_rate": 1.0
     },
     {
      "tier": "COMPLEX",
@@ -10204,48 +10204,48 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.020296500000000002,
+   "judge_cost": 0.033446000000000004,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
-    "SIMPLE",
+    "MEDIUM",
     "MEDIUM"
    ],
    "vote_runs": [
     {
-     "route": "SIMPLE",
+     "route": "MEDIUM",
      "tiers": [
       {
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.00212895,
+       "cost": 0.0022289500000000004,
        "ok": true,
        "scores": {
-        "correctness": 4,
-        "completeness": 4,
-        "instruction_following": 5
-       },
-       "passed": true
-      },
-      {
-       "tier": "MEDIUM",
-       "group": "oci-balanced",
-       "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.00607275,
-       "ok": true,
-       "scores": {
-        "correctness": 4,
+        "correctness": 3,
         "completeness": 3,
         "instruction_following": 4
        },
        "passed": false
       },
       {
+       "tier": "MEDIUM",
+       "group": "oci-balanced",
+       "deployment": "oci/openai.gpt-5.4-mini",
+       "cost": 0.0055147500000000006,
+       "ok": true,
+       "scores": {
+        "correctness": 5,
+        "completeness": 5,
+        "instruction_following": 5
+       },
+       "passed": true
+      },
+      {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.012092000000000002,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.007892000000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -10263,10 +10263,10 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0022452,
+       "cost": 0.0022939500000000003,
        "ok": true,
        "scores": {
-        "correctness": 3,
+        "correctness": 4,
         "completeness": 3,
         "instruction_following": 4
        },
@@ -10276,20 +10276,20 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.005636250000000001,
+       "cost": 0.00638325,
        "ok": true,
        "scores": {
-        "correctness": 5,
-        "completeness": 5,
-        "instruction_following": 5
+        "correctness": 4,
+        "completeness": 4,
+        "instruction_following": 4
        },
        "passed": true
       },
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.010962000000000001,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.007612000000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -10319,21 +10319,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 14.670459032058716,
+     "seconds": 10.797382116317749,
      "ok": true
     },
     "llm": {
      "route": "REASONING",
-     "deployment": "oci/xai.grok-4.20-reasoning",
+     "deployment": "oci/xai.grok-4.7",
      "classifier_cost": 4.069999999999999e-05,
-     "seconds": 32.66000509262085,
+     "seconds": 35.337384939193726,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 14.895979881286621,
+     "seconds": 13.437885999679565,
      "ok": true
     }
    }
@@ -10518,21 +10518,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 16.518962144851685,
+     "seconds": 20.221686840057373,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 3.99e-05,
-     "seconds": 16.73809289932251,
+     "seconds": 14.818331956863403,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 18.12507700920105,
+     "seconds": 14.55802297592163,
      "ok": true
     }
    }
@@ -10715,23 +10715,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 3.4154200553894043,
+     "seconds": 11.441550970077515,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.9899999999999994e-05,
-     "seconds": 2.600790023803711,
+     "seconds": 2.6093130111694336,
      "ok": true
     },
     "trained": {
-     "route": "COMPLEX",
-     "deployment": "oci/openai.gpt-6-sol",
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.7",
      "classifier_cost": 0.0,
-     "seconds": 9.19617486000061,
+     "seconds": 6.395476818084717,
      "ok": true
     }
    }
@@ -10916,21 +10916,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 8.792366027832031,
+     "seconds": 8.313943147659302,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 3.9e-05,
-     "seconds": 14.662693977355957,
+     "seconds": 14.651287078857422,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 15.984609842300415,
+     "seconds": 14.664338111877441,
      "ok": true
     }
    }
@@ -10970,7 +10970,7 @@
       "instruction_following": 3
      },
      "passed": false,
-     "pass_rate": 0.333
+     "pass_rate": 0.0
     },
     {
      "tier": "COMPLEX",
@@ -10984,7 +10984,7 @@
       "instruction_following": 5
      },
      "passed": true,
-     "pass_rate": 0.667
+     "pass_rate": 1.0
     },
     {
      "tier": "REASONING",
@@ -11000,7 +11000,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.021041999999999998,
+   "judge_cost": 0.034692,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -11015,12 +11015,12 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0022514,
+       "cost": 0.0022864,
        "ok": true,
        "scores": {
         "correctness": 5,
         "completeness": 4,
-        "instruction_following": 4
+        "instruction_following": 5
        },
        "passed": true
       },
@@ -11028,27 +11028,27 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.00934875,
+       "cost": 0.008930249999999999,
        "ok": true,
        "scores": {
-        "correctness": 4,
-        "completeness": 4,
-        "instruction_following": 4
+        "correctness": 3,
+        "completeness": 3,
+        "instruction_following": 2
        },
-       "passed": true
+       "passed": false
       },
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.012424,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.0072840000000000005,
        "ok": true,
        "scores": {
         "correctness": 5,
-        "completeness": 4,
-        "instruction_following": 3
+        "completeness": 5,
+        "instruction_following": 5
        },
-       "passed": false
+       "passed": true
       }
      ]
     },
@@ -11059,12 +11059,12 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0022664,
+       "cost": 0.0025051500000000003,
        "ok": true,
        "scores": {
         "correctness": 4,
-        "completeness": 2,
-        "instruction_following": 2
+        "completeness": 3,
+        "instruction_following": 4
        },
        "passed": false
       },
@@ -11072,7 +11072,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.00965925,
+       "cost": 0.01000125,
        "ok": true,
        "scores": {
         "correctness": 4,
@@ -11084,8 +11084,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.011884,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.006784000000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -11113,23 +11113,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 12.848589897155762,
+     "seconds": 12.342983961105347,
      "ok": true
     },
     "llm": {
      "route": "REASONING",
      "deployment": "oci/xai.grok-4.7",
      "classifier_cost": 4.0999999999999994e-05,
-     "seconds": 29.5315899848938,
+     "seconds": 79.925302028656,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 12.670127868652344,
+     "seconds": 15.013913869857788,
      "ok": true
     }
    }
@@ -11314,21 +11314,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 6.771050930023193,
+     "seconds": 8.070019960403442,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 3.98e-05,
-     "seconds": 7.748344898223877,
+     "seconds": 9.064729928970337,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 11.260186910629272,
+     "seconds": 8.623943090438843,
      "ok": true
     }
    }
@@ -11511,23 +11511,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 34.3278648853302,
+     "seconds": 19.252159118652344,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 4.06e-05,
-     "seconds": 36.27515697479248,
+     "seconds": 30.537614107131958,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 27.46403217315674,
+     "seconds": 20.55115008354187,
      "ok": true
     }
    }
@@ -11712,21 +11712,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 8.570492029190063,
+     "seconds": 11.632660865783691,
      "ok": true
     },
     "llm": {
-     "route": "COMPLEX",
-     "deployment": "oci/openai.gpt-6-sol",
-     "classifier_cost": 3.92e-05,
-     "seconds": 11.492573022842407,
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5.4-mini",
+     "classifier_cost": 3.8799999999999994e-05,
+     "seconds": 4.9103920459747314,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 11.58006501197815,
+     "seconds": 10.353971004486084,
      "ok": true
     }
    }
@@ -11909,23 +11909,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 8.36698293685913,
+     "seconds": 43.54375696182251,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 4.63e-05,
-     "seconds": 56.4641010761261,
+     "seconds": 62.29713988304138,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 56.03831601142883,
+     "seconds": 63.683090925216675,
      "ok": true
     }
    }
@@ -12110,21 +12110,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 31.864542961120605,
+     "seconds": 36.91577887535095,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 3.95e-05,
-     "seconds": 30.520527124404907,
+     "seconds": 26.92078399658203,
      "ok": true
     },
     "trained": {
-     "route": "REASONING",
-     "deployment": "oci/xai.grok-4.7",
+     "route": "COMPLEX",
+     "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 66.40600085258484,
+     "seconds": 32.37461614608765,
      "ok": true
     }
    }
@@ -12307,23 +12307,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.4098360538482666,
+     "seconds": 2.1329238414764404,
      "ok": true
     },
     "llm": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 3.62e-05,
-     "seconds": 4.292366981506348,
+     "seconds": 3.2882208824157715,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.929034948348999,
+     "seconds": 3.498353958129883,
      "ok": true
     }
    }
@@ -12506,23 +12506,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 1.9644129276275635,
+     "seconds": 1.7378849983215332,
      "ok": true
     },
     "llm": {
-     "route": "MEDIUM",
-     "deployment": "oci/openai.gpt-5.4-mini",
-     "classifier_cost": 4.21e-05,
-     "seconds": 2.419546127319336,
+     "route": "COMPLEX",
+     "deployment": "oci/openai.gpt-6-sol",
+     "classifier_cost": 4.25e-05,
+     "seconds": 3.128775119781494,
      "ok": true
     },
     "trained": {
-     "route": "COMPLEX",
-     "deployment": "oci/openai.gpt-6-sol",
+     "route": "SIMPLE",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 2.6501312255859375,
+     "seconds": 2.0551700592041016,
      "ok": true
     }
    }
@@ -12705,23 +12705,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 43.935261964797974,
+     "seconds": 27.85993504524231,
      "ok": true
     },
     "llm": {
-     "route": "COMPLEX",
-     "deployment": "oci/openai.gpt-6-sol",
-     "classifier_cost": 4.37e-05,
-     "seconds": 32.68566298484802,
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "classifier_cost": 4.4099999999999995e-05,
+     "seconds": 56.74934196472168,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 32.8140389919281,
+     "seconds": 32.15107321739197,
      "ok": true
     }
    }
@@ -12906,21 +12906,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 8.305623054504395,
+     "seconds": 10.717740058898926,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 4.86e-05,
-     "seconds": 21.91229009628296,
+     "seconds": 30.641180992126465,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 21.254823923110962,
+     "seconds": 15.444304943084717,
      "ok": true
     }
    }
@@ -12931,7 +12931,7 @@
    "route_hint": "MEDIUM",
    "difficulty": 2,
    "prompt": "Our object storage upload is failing with a 403. Please help me troubleshoot permissions (bucket policy vs IAM role) and confirm what logs I should check.",
-   "route": "SIMPLE",
+   "route": "MEDIUM",
    "label_source": "outcome",
    "tiers": [
     {
@@ -12946,7 +12946,7 @@
       "instruction_following": 5
      },
      "passed": true,
-     "pass_rate": 0.667
+     "pass_rate": 0.333
     },
     {
      "tier": "MEDIUM",
@@ -12990,12 +12990,12 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.021859249999999997,
+   "judge_cost": 0.0371315,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
     "MEDIUM",
-    "SIMPLE"
+    "MEDIUM"
    ],
    "vote_runs": [
     {
@@ -13005,10 +13005,10 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0026586500000000002,
+       "cost": 0.00239865,
        "ok": true,
        "scores": {
-        "correctness": 3,
+        "correctness": 4,
         "completeness": 3,
         "instruction_following": 4
        },
@@ -13018,20 +13018,20 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.00644025,
+       "cost": 0.0073672500000000005,
        "ok": true,
        "scores": {
         "correctness": 4,
-        "completeness": 5,
-        "instruction_following": 5
+        "completeness": 4,
+        "instruction_following": 4
        },
        "passed": true
       },
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.009894,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.007534,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -13043,42 +13043,42 @@
      ]
     },
     {
-     "route": "SIMPLE",
+     "route": "MEDIUM",
      "tiers": [
       {
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0024274,
+       "cost": 0.0021674,
        "ok": true,
        "scores": {
         "correctness": 4,
+        "completeness": 3,
+        "instruction_following": 2
+       },
+       "passed": false
+      },
+      {
+       "tier": "MEDIUM",
+       "group": "oci-balanced",
+       "deployment": "oci/openai.gpt-5.4-mini",
+       "cost": 0.00771375,
+       "ok": true,
+       "scores": {
+        "correctness": 5,
         "completeness": 4,
         "instruction_following": 4
        },
        "passed": true
       },
       {
-       "tier": "MEDIUM",
-       "group": "oci-balanced",
-       "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.00575625,
+       "tier": "COMPLEX",
+       "group": "oci-strong",
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.007154000000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
-        "completeness": 5,
-        "instruction_following": 5
-       },
-       "passed": true
-      },
-      {
-       "tier": "COMPLEX",
-       "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.009814,
-       "ok": true,
-       "scores": {
-        "correctness": 4,
         "completeness": 5,
         "instruction_following": 5
        },
@@ -13105,21 +13105,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 17.51788902282715,
+     "seconds": 11.781471967697144,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 3.86e-05,
-     "seconds": 11.842432022094727,
+     "seconds": 16.033347129821777,
      "ok": true
     },
     "trained": {
-     "route": "MEDIUM",
-     "deployment": "oci/openai.gpt-5.4-mini",
+     "route": "SIMPLE",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 10.907446146011353,
+     "seconds": 11.223899841308594,
      "ok": true
     }
    }
@@ -13151,7 +13151,7 @@
      "tier": "MEDIUM",
      "group": "oci-balanced",
      "deployment": "oci/openai.gpt-5.4-mini",
-     "cost": 9.225e-05,
+     "cost": 0.00011025000000000001,
      "ok": true,
      "scores": {
       "correctness": 5,
@@ -13164,7 +13164,7 @@
     {
      "tier": "COMPLEX",
      "group": "oci-strong",
-     "deployment": "oci/openai.gpt-6.1-sol",
+     "deployment": "oci/openai.gpt-6-sol",
      "cost": 0.00021,
      "ok": true,
      "scores": {
@@ -13189,7 +13189,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.00393925,
+   "judge_cost": 0.0078785,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -13229,8 +13229,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.00021,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.00019,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -13261,7 +13261,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.00011025000000000001,
+       "cost": 0.00010125000000000001,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -13273,7 +13273,7 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
+       "deployment": "oci/openai.gpt-6-sol",
        "cost": 0.00021,
        "ok": true,
        "scores": {
@@ -13302,23 +13302,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.0675008296966553,
+     "seconds": 3.062530040740967,
      "ok": true
     },
     "llm": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 3.5799999999999996e-05,
-     "seconds": 1.7331340312957764,
+     "seconds": 3.6423051357269287,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 0.9702308177947998,
+     "seconds": 1.124734878540039,
      "ok": true
     }
    }
@@ -13503,21 +13503,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.6401419639587402,
+     "seconds": 1.2911479473114014,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.8599999999999996e-05,
-     "seconds": 1.26961088180542,
+     "seconds": 1.5822269916534424,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.3793599605560303,
+     "seconds": 1.5712559223175049,
      "ok": true
     }
    }
@@ -13534,8 +13534,8 @@
     {
      "tier": "SIMPLE",
      "group": "oci-fast",
-     "deployment": "oci/openai.gpt-5.4-nano",
-     "cost": 2.955e-05,
+     "deployment": "oci/openai.gpt-6-luna",
+     "cost": 1.19e-05,
      "ok": true,
      "scores": {
       "correctness": 5,
@@ -13549,21 +13549,21 @@
      "tier": "MEDIUM",
      "group": "oci-balanced",
      "deployment": "oci/openai.gpt-5.4-mini",
-     "cost": 0.00030075,
+     "cost": 0.00034575000000000003,
      "ok": true,
      "scores": {
       "correctness": 5,
-      "completeness": 4,
-      "instruction_following": 3
+      "completeness": 5,
+      "instruction_following": 4
      },
-     "passed": false,
-     "pass_rate": 0.333
+     "passed": true,
+     "pass_rate": 0.667
     },
     {
      "tier": "COMPLEX",
      "group": "oci-strong",
-     "deployment": "oci/openai.gpt-6.1-sol",
-     "cost": 0.000248,
+     "deployment": "oci/openai.gpt-6-sol",
+     "cost": 0.00035800000000000003,
      "ok": true,
      "scores": {
       "correctness": 5,
@@ -13587,7 +13587,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.0042175,
+   "judge_cost": 0.0056489999999999995,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -13702,21 +13702,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 1.047860860824585,
+     "seconds": 0.7965068817138672,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.73e-05,
-     "seconds": 1.7067821025848389,
+     "seconds": 1.8889291286468506,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.0095641613006592,
+     "seconds": 0.8750929832458496,
      "ok": true
     }
    }
@@ -13786,7 +13786,7 @@
      "passed": false
     }
    ],
-   "judge_cost": 0.020922999999999997,
+   "judge_cost": 0.03620925,
    "first_route": "REASONING",
    "votes": [
     "REASONING",
@@ -13801,11 +13801,11 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.00116815,
+       "cost": 0.0018706500000000002,
        "ok": true,
        "scores": {
-        "correctness": 5,
-        "completeness": 1,
+        "correctness": 2,
+        "completeness": 2,
         "instruction_following": 2
        },
        "passed": false
@@ -13814,11 +13814,11 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.009133500000000001,
+       "cost": 0.013354500000000002,
        "ok": true,
        "scores": {
         "correctness": 2,
-        "completeness": 3,
+        "completeness": 2,
         "instruction_following": 3
        },
        "passed": false
@@ -13826,13 +13826,13 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.012284000000000002,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.017314,
        "ok": true,
        "scores": {
         "correctness": 4,
-        "completeness": 2,
-        "instruction_following": 3
+        "completeness": 1,
+        "instruction_following": 2
        },
        "passed": false
       }
@@ -13845,12 +13845,12 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0034669,
+       "cost": 0.0022181500000000003,
        "ok": true,
        "scores": {
-        "correctness": 2,
+        "correctness": 3,
         "completeness": 2,
-        "instruction_following": 2
+        "instruction_following": 4
        },
        "passed": false
       },
@@ -13858,24 +13858,24 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.011685000000000001,
+       "cost": 0.012427500000000001,
        "ok": true,
        "scores": {
-        "correctness": 2,
+        "correctness": 1,
         "completeness": 2,
-        "instruction_following": 3
+        "instruction_following": 2
        },
        "passed": false
       },
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.011474000000000002,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.019914,
        "ok": true,
        "scores": {
-        "correctness": 4,
-        "completeness": 3,
+        "correctness": 5,
+        "completeness": 2,
         "instruction_following": 4
        },
        "passed": false
@@ -13899,23 +13899,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 45.128684997558594,
+     "seconds": 7.052524089813232,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 5.34e-05,
-     "seconds": 15.733072996139526,
+     "seconds": 25.865735054016113,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 25.22452998161316,
+     "seconds": 24.695775032043457,
      "ok": true
     }
    }
@@ -13933,10 +13933,10 @@
      "tier": "SIMPLE",
      "group": "oci-fast",
      "deployment": "oci/openai.gpt-5.4-nano",
-     "cost": 0.0021206000000000003,
+     "cost": 0.0021718500000000003,
      "ok": true,
      "scores": {
-      "correctness": 5,
+      "correctness": 4,
       "completeness": 4,
       "instruction_following": 4
      },
@@ -13947,21 +13947,7 @@
      "tier": "MEDIUM",
      "group": "oci-balanced",
      "deployment": "oci/openai.gpt-5.4-mini",
-     "cost": 0.0032430000000000002,
-     "ok": true,
-     "scores": {
-      "correctness": 5,
-      "completeness": 4,
-      "instruction_following": 5
-     },
-     "passed": true,
-     "pass_rate": 1.0
-    },
-    {
-     "tier": "COMPLEX",
-     "group": "oci-strong",
-     "deployment": "oci/openai.gpt-6.1-sol",
-     "cost": 0.009226000000000002,
+     "cost": 0.004152,
      "ok": true,
      "scores": {
       "correctness": 5,
@@ -13970,6 +13956,20 @@
      },
      "passed": true,
      "pass_rate": 1.0
+    },
+    {
+     "tier": "COMPLEX",
+     "group": "oci-strong",
+     "deployment": "oci/openai.gpt-6-sol",
+     "cost": 0.005085999999999999,
+     "ok": true,
+     "scores": {
+      "correctness": 5,
+      "completeness": 4,
+      "instruction_following": 5
+     },
+     "passed": true,
+     "pass_rate": 0.667
     },
     {
      "tier": "REASONING",
@@ -13985,7 +13985,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.02078125,
+   "judge_cost": 0.039543,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -14000,12 +14000,12 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0021931000000000003,
+       "cost": 0.0020943500000000005,
        "ok": true,
        "scores": {
         "correctness": 4,
         "completeness": 3,
-        "instruction_following": 3
+        "instruction_following": 4
        },
        "passed": false
       },
@@ -14013,7 +14013,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.0051915,
+       "cost": 0.0054210000000000005,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -14025,15 +14025,15 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.009926,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.0065260000000000006,
        "ok": true,
        "scores": {
-        "correctness": 5,
-        "completeness": 5,
-        "instruction_following": 5
+        "correctness": 3,
+        "completeness": 4,
+        "instruction_following": 4
        },
-       "passed": true
+       "passed": false
       }
      ]
     },
@@ -14044,10 +14044,10 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0018781000000000002,
+       "cost": 0.0021656,
        "ok": true,
        "scores": {
-        "correctness": 4,
+        "correctness": 3,
         "completeness": 4,
         "instruction_following": 3
        },
@@ -14057,25 +14057,25 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.0034410000000000005,
+       "cost": 0.003432,
        "ok": true,
        "scores": {
         "correctness": 5,
         "completeness": 4,
-        "instruction_following": 5
+        "instruction_following": 4
        },
        "passed": true
       },
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.010816000000000001,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.005516,
        "ok": true,
        "scores": {
-        "correctness": 5,
-        "completeness": 5,
-        "instruction_following": 5
+        "correctness": 4,
+        "completeness": 4,
+        "instruction_following": 4
        },
        "passed": true
       }
@@ -14100,21 +14100,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 14.387667179107666,
+     "seconds": 13.066915035247803,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.7199999999999996e-05,
-     "seconds": 7.282832145690918,
+     "seconds": 8.339787006378174,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 9.414372205734253,
+     "seconds": 9.529966831207275,
      "ok": true
     }
    }
@@ -14299,21 +14299,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 21.768757820129395,
+     "seconds": 29.957983016967773,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 4.54e-05,
-     "seconds": 17.642603158950806,
+     "seconds": 20.205394983291626,
      "ok": true
     },
     "trained": {
-     "route": "MEDIUM",
-     "deployment": "oci/openai.gpt-5.4-mini",
+     "route": "COMPLEX",
+     "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 5.106581926345825,
+     "seconds": 20.472559928894043,
      "ok": true
     }
    }
@@ -14498,21 +14498,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.5814900398254395,
+     "seconds": 1.804089069366455,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.79e-05,
-     "seconds": 1.3157439231872559,
+     "seconds": 1.8318560123443604,
      "ok": true
     },
     "trained": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 0.9768190383911133,
+     "seconds": 0.9476280212402344,
      "ok": true
     }
    }
@@ -14582,7 +14582,7 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.015772750000000002,
+   "judge_cost": 0.025424000000000002,
    "first_route": "SIMPLE",
    "votes": [
     "SIMPLE",
@@ -14597,7 +14597,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0014513500000000001,
+       "cost": 0.00133135,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -14610,7 +14610,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.0026925,
+       "cost": 0.003138,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -14622,8 +14622,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.006006000000000001,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.0029560000000000003,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -14641,7 +14641,7 @@
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0015888500000000002,
+       "cost": 0.00143135,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -14654,7 +14654,7 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.0028635,
+       "cost": 0.0030345,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -14666,8 +14666,8 @@
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.006216,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.0028860000000000005,
        "ok": true,
        "scores": {
         "correctness": 5,
@@ -14697,21 +14697,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 11.151652097702026,
+     "seconds": 7.940248012542725,
      "ok": true
     },
     "llm": {
-     "route": "COMPLEX",
-     "deployment": "oci/openai.gpt-6-sol",
-     "classifier_cost": 3.86e-05,
-     "seconds": 6.503847122192383,
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5.4-mini",
+     "classifier_cost": 3.82e-05,
+     "seconds": 5.356203079223633,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 5.304511070251465,
+     "seconds": 5.515137195587158,
      "ok": true
     }
    }
@@ -14722,45 +14722,45 @@
    "route_hint": "MEDIUM",
    "difficulty": 3,
    "prompt": "We’re seeing elevated 5xx errors from our load balancer. Please help isolate whether it’s backend health checks, TLS/cert issues, or capacity limits. Include the exact places in the console to pull logs and graphs.",
-   "route": "COMPLEX",
+   "route": "MEDIUM",
    "label_source": "outcome",
    "tiers": [
     {
      "tier": "SIMPLE",
      "group": "oci-fast",
      "deployment": "oci/openai.gpt-5.4-nano",
-     "cost": 0.00251415,
+     "cost": 0.00240415,
      "ok": true,
      "scores": {
       "correctness": 3,
-      "completeness": 2,
+      "completeness": 3,
       "instruction_following": 3
      },
      "passed": false,
-     "pass_rate": 0.0
+     "pass_rate": 0.333
     },
     {
      "tier": "MEDIUM",
      "group": "oci-balanced",
      "deployment": "oci/openai.gpt-5.4-mini",
-     "cost": 0.0080625,
+     "cost": 0.0098445,
      "ok": true,
      "scores": {
-      "correctness": 4,
-      "completeness": 3,
-      "instruction_following": 3
+      "correctness": 3,
+      "completeness": 4,
+      "instruction_following": 4
      },
      "passed": false,
-     "pass_rate": 0.0
+     "pass_rate": 0.333
     },
     {
      "tier": "COMPLEX",
      "group": "oci-strong",
-     "deployment": "oci/openai.gpt-6.1-sol",
-     "cost": 0.015974000000000002,
+     "deployment": "oci/openai.gpt-6-sol",
+     "cost": 0.016054000000000002,
      "ok": true,
      "scores": {
-      "correctness": 5,
+      "correctness": 4,
       "completeness": 4,
       "instruction_following": 5
      },
@@ -14781,51 +14781,51 @@
      "passed": true
     }
    ],
-   "judge_cost": 0.025907,
+   "judge_cost": 0.04964225,
    "first_route": "COMPLEX",
    "votes": [
     "COMPLEX",
-    "COMPLEX",
-    "COMPLEX"
+    "SIMPLE",
+    "MEDIUM"
    ],
    "vote_runs": [
     {
-     "route": "COMPLEX",
+     "route": "SIMPLE",
      "tiers": [
       {
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0015204,
+       "cost": 0.00225165,
        "ok": true,
        "scores": {
         "correctness": 4,
+        "completeness": 4,
+        "instruction_following": 4
+       },
+       "passed": true
+      },
+      {
+       "tier": "MEDIUM",
+       "group": "oci-balanced",
+       "deployment": "oci/openai.gpt-5.4-mini",
+       "cost": 0.0085035,
+       "ok": true,
+       "scores": {
+        "correctness": 3,
         "completeness": 3,
         "instruction_following": 3
        },
        "passed": false
       },
       {
-       "tier": "MEDIUM",
-       "group": "oci-balanced",
-       "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.0114555,
-       "ok": true,
-       "scores": {
-        "correctness": 3,
-        "completeness": 4,
-        "instruction_following": 4
-       },
-       "passed": false
-      },
-      {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.015304000000000002,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.013944000000000002,
        "ok": true,
        "scores": {
-        "correctness": 4,
+        "correctness": 5,
         "completeness": 5,
         "instruction_following": 5
        },
@@ -14834,13 +14834,13 @@
      ]
     },
     {
-     "route": "COMPLEX",
+     "route": "MEDIUM",
      "tiers": [
       {
        "tier": "SIMPLE",
        "group": "oci-fast",
        "deployment": "oci/openai.gpt-5.4-nano",
-       "cost": 0.0031654,
+       "cost": 0.0028704,
        "ok": true,
        "scores": {
         "correctness": 3,
@@ -14853,24 +14853,24 @@
        "tier": "MEDIUM",
        "group": "oci-balanced",
        "deployment": "oci/openai.gpt-5.4-mini",
-       "cost": 0.009984000000000002,
+       "cost": 0.010060500000000002,
        "ok": true,
        "scores": {
-        "correctness": 3,
-        "completeness": 2,
-        "instruction_following": 2
+        "correctness": 4,
+        "completeness": 4,
+        "instruction_following": 4
        },
-       "passed": false
+       "passed": true
       },
       {
        "tier": "COMPLEX",
        "group": "oci-strong",
-       "deployment": "oci/openai.gpt-6.1-sol",
-       "cost": 0.013734000000000001,
+       "deployment": "oci/openai.gpt-6-sol",
+       "cost": 0.014874000000000002,
        "ok": true,
        "scores": {
-        "correctness": 4,
-        "completeness": 5,
+        "correctness": 5,
+        "completeness": 4,
         "instruction_following": 5
        },
        "passed": true
@@ -14894,23 +14894,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 26.249238967895508,
+     "seconds": 16.221802949905396,
      "ok": true
     },
     "llm": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 4e-05,
-     "seconds": 22.406784057617188,
+     "seconds": 21.01566195487976,
      "ok": true
     },
     "trained": {
      "route": "COMPLEX",
      "deployment": "oci/openai.gpt-6-sol",
      "classifier_cost": 0.0,
-     "seconds": 27.0331768989563,
+     "seconds": 28.2450749874115,
      "ok": true
     }
    }
@@ -14928,21 +14928,21 @@
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 0.0,
-     "seconds": 5.638270139694214,
+     "seconds": 6.121680021286011,
      "ok": true
     },
     "llm": {
-     "route": "COMPLEX",
-     "deployment": "oci/openai.gpt-6-sol",
-     "classifier_cost": 4.17e-05,
-     "seconds": 18.00730299949646,
+     "route": "MEDIUM",
+     "deployment": "oci/openai.gpt-5.4-mini",
+     "classifier_cost": 4.1299999999999994e-05,
+     "seconds": 5.557394027709961,
      "ok": true
     },
     "trained": {
      "route": "MULTILINGUAL",
      "deployment": "oci/cohere.command-a-03-2025",
      "classifier_cost": 0.0,
-     "seconds": 52.40835094451904,
+     "seconds": 41.24258303642273,
      "ok": true
     }
    }
@@ -14960,21 +14960,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 20.6423020362854,
+     "seconds": 17.11484384536743,
      "ok": true
     },
     "llm": {
-     "route": "COMPLEX",
-     "deployment": "oci/openai.gpt-6-sol",
-     "classifier_cost": 4.05e-05,
-     "seconds": 15.729180097579956,
+     "route": "REASONING",
+     "deployment": "oci/xai.grok-4.20-reasoning",
+     "classifier_cost": 4.09e-05,
+     "seconds": 34.34235978126526,
      "ok": true
     },
     "trained": {
      "route": "MULTILINGUAL",
      "deployment": "oci/cohere.command-a-03-2025",
      "classifier_cost": 0.0,
-     "seconds": 36.75009489059448,
+     "seconds": 46.9995059967041,
      "ok": true
     }
    }
@@ -14990,23 +14990,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 3.578907012939453,
+     "seconds": 3.0204498767852783,
      "ok": true
     },
     "llm": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 3.6599999999999995e-05,
-     "seconds": 5.231024980545044,
+     "seconds": 3.063480854034424,
      "ok": true
     },
     "trained": {
      "route": "MULTILINGUAL",
      "deployment": "oci/cohere.command-a-03-2025",
      "classifier_cost": 0.0,
-     "seconds": 18.872976064682007,
+     "seconds": 12.361969947814941,
      "ok": true
     }
    }
@@ -15024,21 +15024,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 4.061897039413452,
+     "seconds": 4.4086151123046875,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.7399999999999994e-05,
-     "seconds": 3.7880470752716064,
+     "seconds": 3.7931368350982666,
      "ok": true
     },
     "trained": {
      "route": "MULTILINGUAL",
      "deployment": "oci/cohere.command-a-03-2025",
      "classifier_cost": 0.0,
-     "seconds": 25.00801181793213,
+     "seconds": 21.506116151809692,
      "ok": true
     }
    }
@@ -15054,23 +15054,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 3.6303601264953613,
+     "seconds": 1.7007949352264404,
      "ok": true
     },
     "llm": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 3.64e-05,
-     "seconds": 3.2138631343841553,
+     "seconds": 2.735106945037842,
      "ok": true
     },
     "trained": {
      "route": "MULTILINGUAL",
      "deployment": "oci/cohere.command-a-03-2025",
      "classifier_cost": 0.0,
-     "seconds": 11.050065040588379,
+     "seconds": 14.962118148803711,
      "ok": true
     }
    }
@@ -15086,23 +15086,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 1.1728429794311523,
+     "seconds": 1.8426778316497803,
      "ok": true
     },
     "llm": {
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 3.68e-05,
-     "seconds": 2.0698330402374268,
+     "seconds": 2.7248551845550537,
      "ok": true
     },
     "trained": {
      "route": "MULTILINGUAL",
      "deployment": "oci/cohere.command-a-03-2025",
      "classifier_cost": 0.0,
-     "seconds": 12.218343019485474,
+     "seconds": 6.6387059688568115,
      "ok": true
     }
    }
@@ -15120,21 +15120,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 1.1538031101226807,
+     "seconds": 1.0825650691986084,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.7199999999999996e-05,
-     "seconds": 1.3371539115905762,
+     "seconds": 1.4582669734954834,
      "ok": true
     },
     "trained": {
      "route": "MULTILINGUAL",
      "deployment": "oci/cohere.command-a-03-2025",
      "classifier_cost": 0.0,
-     "seconds": 2.357135057449341,
+     "seconds": 2.632194995880127,
      "ok": true
     }
    }
@@ -15152,21 +15152,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 3.441478967666626,
+     "seconds": 2.411129951477051,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.76e-05,
-     "seconds": 2.780853033065796,
+     "seconds": 3.4921140670776367,
      "ok": true
     },
     "trained": {
      "route": "MULTILINGUAL",
      "deployment": "oci/cohere.command-a-03-2025",
      "classifier_cost": 0.0,
-     "seconds": 14.781682968139648,
+     "seconds": 21.827518939971924,
      "ok": true
     }
    }
@@ -15184,21 +15184,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 1.3573410511016846,
+     "seconds": 1.3123588562011719,
      "ok": true
     },
     "llm": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 3.7e-05,
-     "seconds": 1.7022449970245361,
+     "seconds": 2.022804021835327,
      "ok": true
     },
     "trained": {
      "route": "MULTILINGUAL",
      "deployment": "oci/cohere.command-a-03-2025",
      "classifier_cost": 0.0,
-     "seconds": 0.631580114364624,
+     "seconds": 0.5460779666900635,
      "ok": true
     }
    }
@@ -15214,23 +15214,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 6.768856048583984,
+     "seconds": 5.629348993301392,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.79e-05,
-     "seconds": 3.7541470527648926,
+     "seconds": 4.381357192993164,
      "ok": true
     },
     "trained": {
      "route": "MULTILINGUAL",
      "deployment": "oci/cohere.command-a-03-2025",
      "classifier_cost": 0.0,
-     "seconds": 22.973600149154663,
+     "seconds": 15.43720006942749,
      "ok": true
     }
    }
@@ -15248,21 +15248,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 3.2671279907226562,
+     "seconds": 2.77394700050354,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.6899999999999996e-05,
-     "seconds": 2.252471923828125,
+     "seconds": 2.576018810272217,
      "ok": true
     },
     "trained": {
      "route": "MULTILINGUAL",
      "deployment": "oci/cohere.command-a-03-2025",
      "classifier_cost": 0.0,
-     "seconds": 24.23053002357483,
+     "seconds": 18.83135199546814,
      "ok": true
     }
    }
@@ -15278,23 +15278,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 1.2147629261016846,
+     "seconds": 1.1207690238952637,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.73e-05,
-     "seconds": 1.4891541004180908,
+     "seconds": 2.1191959381103516,
      "ok": true
     },
     "trained": {
      "route": "MULTILINGUAL",
      "deployment": "oci/cohere.command-a-03-2025",
      "classifier_cost": 0.0,
-     "seconds": 3.5663859844207764,
+     "seconds": 3.2941129207611084,
      "ok": true
     }
    }
@@ -15312,21 +15312,21 @@
      "route": "SIMPLE",
      "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 0.0,
-     "seconds": 3.53682804107666,
+     "seconds": 3.3221731185913086,
      "ok": true
     },
     "llm": {
      "route": "MEDIUM",
      "deployment": "oci/openai.gpt-5.4-mini",
      "classifier_cost": 3.7399999999999994e-05,
-     "seconds": 3.1104249954223633,
+     "seconds": 3.315584897994995,
      "ok": true
     },
     "trained": {
      "route": "MULTILINGUAL",
      "deployment": "oci/cohere.command-a-03-2025",
      "classifier_cost": 0.0,
-     "seconds": 32.839881896972656,
+     "seconds": 32.28872799873352,
      "ok": true
     }
    }
@@ -15342,23 +15342,23 @@
    "routed": {
     "heuristic": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-6-luna",
+     "deployment": "oci/openai.gpt-5.4-nano",
      "classifier_cost": 0.0,
-     "seconds": 1.050894021987915,
+     "seconds": 1.4362318515777588,
      "ok": true
     },
     "llm": {
      "route": "SIMPLE",
-     "deployment": "oci/openai.gpt-5.4-nano",
+     "deployment": "oci/openai.gpt-6-luna",
      "classifier_cost": 3.7199999999999996e-05,
-     "seconds": 1.7515339851379395,
+     "seconds": 2.5386459827423096,
      "ok": true
     },
     "trained": {
      "route": "MULTILINGUAL",
      "deployment": "oci/cohere.command-a-03-2025",
      "classifier_cost": 0.0,
-     "seconds": 3.502258062362671,
+     "seconds": 2.8467671871185303,
      "ok": true
     }
    }

@@ -25,10 +25,10 @@ Half the steps show a LiteLLM feature with no classifier in it; the "Shows" colu
 
 | # | Use case | Shows | Say | Point at |
 |---|---|---|---|---|
-| 1 | Customer support · FAQ: reset a password | router | "An easy question. LiteLLM sends it to the fastest, cheapest model." | What happened: SIMPLE, 83% ≥ 75% bar → gpt-5.4-nano, a fraction of a cent |
-| 2 | Customer support · Escalation with SLA credits | router | "A hard request. Same agent, same gateway: a reasoning model." | REASONING |
+| 1 | Customer support · FAQ: reset a password | router | "An easy question. LiteLLM sends it to the fastest, cheapest model." | What happened: SIMPLE, 89% ≥ 75% bar → a fast model (GPT-6-luna or GPT-5.4-nano), a fraction of a cent |
+| 2 | Customer support · Billing dispute | router + tools | "A routine reply that needs two lookups. Watch the agent work: it asks for a tool, the agent runs it, the model reads the result. LiteLLM classifies every one of those calls." | the agent trace: each call's decision, each tool with its arguments and what it returned |
 | 3 | (same run) | LiteLLM: keys | "The sandbox holds no key. LiteLLM gave the agent a virtual key: five model groups, $5 every 30 days, 120 requests a minute. Anything else is a 403, and the spend is LiteLLM's own accounting." | the LiteLLM card in the strip: allowed groups, spend against the budget |
-| 4 | (same run) | LiteLLM: every call | "The agent made three calls. LiteLLM classified every one of them, and they all got the same route, because they all carry the same request." | the grey hint under What happened |
+| 4 | (same run) | LiteLLM: every call | "LiteLLM classified every call, and they all got the same route, because they all carry the same request. To give each part its own model, split the job: that is step 6." | the grey hint under What happened |
 | 5 | Premium customer · Same request, premium contract | LiteLLM: tags | "No classifier here: a business rule. A premium tag on the request takes the premium lane. One line of config." | GPT-5.2, where untagged traffic gets Gemini 2.5 Flash |
 | 6 | Multi-step agent · Invoice photo to reply | router | "Now one job, split into tasks. Each task reaches LiteLLM as its own request." | the photo task goes to VISION, the compare to fast, the check to Codex: four routes in one job |
 | 7 | Coding assistant · Debug a race condition | LiteLLM: custom provider | "Code goes to Codex, which OCI serves only on its Responses API. LiteLLM plugs that in as a custom provider, behind the same route." | CODE → gpt-5.3-codex |
@@ -37,6 +37,10 @@ Half the steps show a LiteLLM feature with no classifier in it; the "Shows" colu
 | 10 | Try to escape the sandbox (in the strip) | OpenShell + LiteLLM | "The agent tries to reach OCI, OpenAI and the gateway's admin API directly. OpenShell refuses all three; the gateway is its only way out." | three REFUSED lines |
 
 If there is time:
+
+- **Customer support · Escalation with SLA credits**: the router sends it to the strong route. Said plainly, this is
+  the router's known miss: on this prompt the reasoning route passed 4 times in 4 and the strong route once
+  (`evidence/strong-vs-reasoning.json`). A good moment for "routing is a prediction; measure it".
 
 - **Multi-step agent · Escalation, end to end**: lookup, the credit, a reply in Spanish, a Python function; Codex on the last task, click a call to show its ladder.
 - **Drag the quality bar**, rerun step 2: one dial between spend and quality, per request.

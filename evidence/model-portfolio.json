@@ -2,8 +2,8 @@
  "models": 20,
  "route_pass_rate": {
   "SIMPLE": 0.734,
-  "MEDIUM": 0.763,
-  "COMPLEX": 0.85,
+  "MEDIUM": 0.759,
+  "COMPLEX": 0.847,
   "REASONING": 0.861
  },
  "rows": [
@@ -14,7 +14,7 @@
      "route": "SIMPLE",
      "role": "primary",
      "group": "oci-fast",
-     "route_pass_rate": 0.7344401114206128
+     "route_pass_rate": 0.7335069637883008
     },
     {
      "route": "VISION",
@@ -37,7 +37,7 @@
      "route": "SIMPLE",
      "role": "primary",
      "group": "oci-fast",
-     "route_pass_rate": 0.7344401114206128
+     "route_pass_rate": 0.7335069637883008
     }
    ],
    "price_per_1m": [
@@ -54,7 +54,7 @@
      "route": "SIMPLE",
      "role": "backup",
      "group": "oci-fast-backup",
-     "route_pass_rate": 0.7344401114206128
+     "route_pass_rate": 0.7335069637883008
     },
     {
      "route": "LLM classifier",
@@ -77,7 +77,7 @@
      "route": "SIMPLE",
      "role": "backup",
      "group": "oci-fast-backup",
-     "route_pass_rate": 0.7344401114206128
+     "route_pass_rate": 0.7335069637883008
     }
    ],
    "price_per_1m": [
@@ -94,7 +94,7 @@
      "route": "MEDIUM",
      "role": "primary",
      "group": "oci-balanced",
-     "route_pass_rate": 0.7632367688022285
+     "route_pass_rate": 0.7586044568245125
     }
    ],
    "price_per_1m": [
@@ -111,7 +111,7 @@
      "route": "MEDIUM",
      "role": "backup",
      "group": "oci-balanced-backup",
-     "route_pass_rate": 0.7632367688022285
+     "route_pass_rate": 0.7586044568245125
     }
    ],
    "price_per_1m": [
@@ -128,7 +128,7 @@
      "route": "MEDIUM",
      "role": "backup",
      "group": "oci-balanced-backup",
-     "route_pass_rate": 0.7632367688022285
+     "route_pass_rate": 0.7586044568245125
     },
     {
      "route": "VISION",
@@ -169,7 +169,7 @@
      "route": "COMPLEX",
      "role": "primary",
      "group": "oci-strong",
-     "route_pass_rate": 0.8495905292479108
+     "route_pass_rate": 0.8467994428969359
     }
    ],
    "price_per_1m": [
@@ -186,7 +186,7 @@
      "route": "COMPLEX",
      "role": "backup",
      "group": "oci-strong-backup",
-     "route_pass_rate": 0.8495905292479108
+     "route_pass_rate": 0.8467994428969359
     }
    ],
    "price_per_1m": [

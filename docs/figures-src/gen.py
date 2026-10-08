@@ -283,7 +283,7 @@ if os.path.exists(_ev_path):
         r = 22 if name == "trained" else 15
         dx, dy, anchor = {"always SIMPLE": (30, 48, "start"), "heuristic": (30, -34, "start"),
                           "always COMPLEX": (0, 100, "middle"), "oracle": (-30, -44, "end"), "always REASONING": (-30, -40, "end"),
-                          "llm": (-20, 58, "middle"), "always MEDIUM": (30, 44, "start"), "trained": (-34, -46, "end")}.get(name, (30, -10, "start"))
+                          "llm": (0, -40, "middle"), "always MEDIUM": (30, 44, "start"), "trained": (-34, -46, "end")}.get(name, (30, -10, "start"))
         f.e.append(f'<circle cx="{x}" cy="{y}" r="{r}" fill="{color}" opacity="0.9"/>')
         f.text(x + dx, y + dy, label, 19 if name != "trained" else 22, color, anchor=anchor, weight="700")
         f.text(x + dx, y + dy + 28, f"{int(round(p['quality'] * 100))}% · ${p['cost_usd']:.3f}", 17, SUB, anchor=anchor, mono=True)
