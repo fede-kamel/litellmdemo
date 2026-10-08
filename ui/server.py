@@ -121,7 +121,7 @@ async def start_run(req: RunRequest) -> dict:
                 spare = [g for g in GATEWAYS if g != gateway]
                 if calls or not spare or not _looks_like_gateway_fault(exc):
                     raise
-                mark_down(gateway)
+                mark_down(gateway, f"host run: {type(exc).__name__}")
                 emit({"type": "failover", "from": gateway, "to": spare[0], "reason": str(exc)[:200]})
                 agent.execute(messages, emit, mode=mode, router=router, tags=tags, use_tools=tools, gateway=spare[0], bar=req.bar)
             _after_run(emit, messages, run, started, network=False)

@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import asyncio
 import os
+import sys
 import time
 from pathlib import Path
 
@@ -39,12 +40,27 @@ _down: dict[str, float] = {}   # gateway -> when it last failed
 def _client_() -> httpx.AsyncClient:
     global _client
     if _client is None:
-        _client = httpx.AsyncClient(timeout=300)
+        # Idle connections are dropped after 2 s, before the gateway's server closes them (uvicorn: 5 s);
+        # otherwise a request can go out on a connection the server has just closed.
+        _client = httpx.AsyncClient(timeout=300, limits=httpx.Limits(keepalive_expiry=2))
     return _client
 
 
-def mark_down(url: str) -> None:
+# A kept-alive connection the server closed: the request never reached it, so it is safe to send again.
+STALE = (httpx.RemoteProtocolError, httpx.ReadError, httpx.WriteError)
+
+
+async def _send(method: str, url: str, **kw) -> httpx.Response:
+    """One request, sent once more on a fresh connection if the pooled one turned out to be closed."""
+    try:
+        return await _client_().request(method, url, **kw)
+    except STALE:
+        return await _client_().request(method, url, **kw)
+
+
+def mark_down(url: str, why: str = "") -> None:
     _down[url] = time.monotonic()
+    print(f"GATEWAY-DOWN {url} skipped for {SKIP_SECONDS}s: {why or 'request failed'}", file=sys.stderr, flush=True)
 
 
 async def active_gateway() -> str:
@@ -54,13 +70,16 @@ async def active_gateway() -> str:
             continue
         if len(GATEWAYS) == 1:
             return url
+        started = time.monotonic()
         try:
             # 5 s: a gateway busy with a long reasoning call answers its liveness check late, not never
-            if (await _client_().get(f"{url}/health/liveliness", timeout=5)).status_code == 200:
+            r = await _send("GET", f"{url}/health/liveliness", timeout=5)
+            if r.status_code == 200:
                 return url
-        except httpx.HTTPError:
-            pass
-        mark_down(url)
+            why = f"liveness {r.status_code}"
+        except httpx.HTTPError as exc:
+            why = f"liveness {type(exc).__name__} after {time.monotonic() - started:.1f}s"
+        mark_down(url, why)
     return GATEWAYS[-1]
 
 
@@ -84,16 +103,16 @@ async def chat(model: str, prompt: str | list, *, max_tokens: int = 1500, json_m
         for attempt in range(retries + len(GATEWAYS)):
             url = await active_gateway()
             try:
-                r = await _client_().post(f"{url}/v1/chat/completions", json=body,
-                                          headers={"Authorization": f"Bearer {key()}"})
+                r = await _send("POST", f"{url}/v1/chat/completions", json=body,
+                                headers={"Authorization": f"Bearer {key()}"})
             except httpx.TransportError as exc:
                 r, error = None, f"{type(exc).__name__} from {url}"
-                mark_down(url)
+                mark_down(url, error)
                 continue
             if r.status_code == 200:
                 break
             if _gateway_fault(r):
-                mark_down(url)
+                mark_down(url, f"{r.status_code} from {url}")
                 continue
             if attempt >= retries:
                 break
