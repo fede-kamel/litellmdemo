@@ -68,7 +68,7 @@ grades the request) and `oci-auto-trained` (ours, `classifier_type: custom`).
    completeness and instruction-following (1-5); an answer passes at 4 or
    more on all three. Three runs per route (one for the reasoning route) give
    each prompt a pass rate per route: 3,590 judged answers, about $18 a labelling.
-3. **Why not one label**: labelled three times, only 72% of prompts got the
+3. **Why not one label**: labelled three times, only 66% of prompts got the
    same cheapest passing route every time (63% with the first portfolio), so accuracy against one label tops
    out in the 60s and 70s for any model (bigger encoders, up to 568M weights,
    did not move it). The router predicts pass probabilities instead.

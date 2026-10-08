@@ -220,11 +220,24 @@ f.save("figure2-classifier-path.svg")
 f = Fig(2000, 1120)
 f.header("FIGURE 3 · MINI-TRAINING", "Label by outcome, train in seconds, plug into LiteLLM",
          "the router learns each route's chance of a good answer from answers a judge actually graded", accent=RED)
+# the labels and the portfolio evidence, so the figure says what the files say
+import json as _json  # noqa: E402
+_root = os.path.join(OUT, "..", "..")
+_labels = [_json.loads(x) for x in open(os.path.join(_root, "classifier", "data", "labels.jsonl"))]
+_out = [r for r in _labels if r.get("label_source") == "outcome"]
+_answers = sum(len(r["tiers"]) + sum(len(v["tiers"]) for v in r.get("vote_runs", [])) + bool(r.get("reasoning")) for r in _out)
+_spend = sum(t["cost"] for r in _out for t in r["tiers"]) + sum(t["cost"] for r in _out for v in r.get("vote_runs", []) for t in v["tiers"]) \
+    + sum(r.get("judge_cost", 0) for r in _out) + sum(r["reasoning"]["cost"] for r in _out if r.get("reasoning"))
+_voted = [r for r in _out if r.get("votes")]
+_stable = round(100 * sum(len(set(r["votes"])) == 1 for r in _voted) / max(1, len(_voted)))
+_rp = _json.load(open(os.path.join(_root, "evidence", "model-portfolio.json")))["route_pass_rate"]
+_prompts = sum(1 for _ in open(os.path.join(_root, "classifier", "data", "prompts.jsonl")))
 cols = [
-    ("1", "Generate", NAVY, "classifier/generate.py", ["463 prompts", "18 task families", "+ support · billing · ops", "+ code · 7 languages"]),
-    ("2", "Answer", TEAL, "classifier/label.py", ["every route answers", "every prompt, 3 runs", "reasoning route: 1 run", "3,590 real OCI answers"]),
+    ("1", "Generate", NAVY, "classifier/generate.py", [f"{_prompts} prompts", "18 task families", "+ support · billing · ops", "+ code · 7 languages"]),
+    ("2", "Answer", TEAL, "classifier/label.py", ["every route answers", "every prompt, 3 runs", "reasoning route: 1 run", f"{_answers:,} real OCI answers"]),
     ("3", "Judge", OCHRE, "GPT-5.2 · anonymised", ["correctness 1–5", "completeness 1–5", "instruction-following 1–5", "pass = all ≥ 4"]),
-    ("4", "Pass rates", RED, "per prompt, per route", ["fast 70% · balanced 76%", "strong 86% · reasoning 87%", "72% label-stable", "about $18 a labelling"]),
+    ("4", "Pass rates", RED, "per prompt, per route", [f"fast {_rp['SIMPLE']:.0%} · balanced {_rp['MEDIUM']:.0%}", f"strong {_rp['COMPLEX']:.0%} · reasoning {_rp['REASONING']:.0%}",
+                                                        f"{_stable}% label-stable", f"about ${round(_spend)} a labelling"]),
     ("5", "Train", INDIGO, "classifier/train.py", ["e5-small embeddings", "+ difficulty signals", "4 logistic models", "+ precedent · seconds"]),
 ]
 x = 70
@@ -241,7 +254,7 @@ for n, title, c, sub, lines in cols:
     x += 375
 f.panel(70, 880, 1860, 190, RED)
 f.text(1000, 935, "WHAT THE LABELS SAID", 21, RED, weight="700", spacing="4")
-f.text(1000, 985, "Labelled three times, 72% of prompts got the same cheapest passing route every time.", 25, INK, weight="700")
+f.text(1000, 985, f"Labelled three times, {_stable}% of prompts got the same cheapest passing route every time.", 25, INK, weight="700")
 f.text(1000, 1030, "So the router predicts each route's chance of a good answer: the cheapest model is good enough for most requests, it escalates the rest.", 20, SUB)
 f.save("figure3-mini-training.svg")
 

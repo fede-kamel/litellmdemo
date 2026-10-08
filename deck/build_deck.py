@@ -289,9 +289,9 @@ def build(template: Path, out: Path) -> None:
     s = prs.slides.add_slide(blank)
     header(s, "One story, one live demo", "Agenda")
     agenda = [("The blog", "LiteLLM natively supports OCI Generative AI", "3–4"),
-              ("LiteLLM", "the architecture, what LiteLLM gives you, isolation and why this order, one request", "5–9"),
+              ("LiteLLM", "the architecture, what it gives you, isolation, one request", "5–9"),
               ("Why route", "the portfolio, the toolbox, the use cases, the criteria", "10–13"),
-              ("The router", "LiteLLM's plugin point, the classifier we plugged in, and where it is wrong", "14–19"),
+              ("The router", "the plugin point, our classifier, where it is wrong", "14–19"),
               ("Live demo", "the demo screen and the agent trace, then back to the slides", "20–26"),
               ("Codex and Kubernetes", "skills as the harness; Kubernetes; field notes; what we would upstream", "27–31"),
               ("Appendix", "the classifier in depth: fine-tuning, fresh prompts and a second judge", "33–35")]
@@ -610,7 +610,7 @@ def build(template: Path, out: Path) -> None:
             for k, label in names if k in fr["policies_by_judge"][js[0]]]
         table(s, 0.72, 1.75, 7.0, rows_r, col_w=[2.4, 1.75, 1.75, 1.1], size=11)
         text(s, 0.72, 5.75, 7.0, 0.9, [[("Plainly: ", {"bold": True, "color": INK}),
-             ("the ladder sits on the cost frontier, but the strong route, which training left out, gives the most good answers on fresh prompts. "
+             ("measured on 2026-10-06 with the router before the portfolio change, which left the strong route out: the ladder sits on the cost frontier, but the strong route gives the most good answers on fresh prompts. "
               "Perfect routing costs less than the ladder: the headroom is in the predictor, not the models. We did not retune on this test.", {})]], size=11.5)
         code = rb["code"]["pass_rate"]; vis = rb["vision"]["exact_answer_rate"]
         card(s, 8.0, 1.75, 4.6, 1.55, f"The judges agree on {fr['judge_agreement']:.0%} of answers",
@@ -685,7 +685,7 @@ def build(template: Path, out: Path) -> None:
     # 17a · the agent trace
     s = prs.slides.add_slide(blank)
     header(s, "Every model call, every tool and its result, in order", "The agent trace")
-    shot(s, "09-agent-trace.png", 0.6, 1.5, 6.6, max_h=5.45)
+    shot(s, "09-agent-trace.png", 0.6, 1.5, 6.6, max_h=5.25)
     bullets(s, 7.5, 1.65, 5.2, 5.1, [
         ("LiteLLM's decision, per call.", "The route and why, the model it picked, which check decided and in how many milliseconds, tokens in and out, cost, fallbacks."),
         ("What the model did.", "Asked the agent to run a tool, or answered. Long answers fold; a task's last answer is its result, passed to the next task."),
