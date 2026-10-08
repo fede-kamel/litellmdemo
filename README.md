@@ -1,5 +1,12 @@
 # The right model for every request: LiteLLM routing across OCI Generative AI
 
+> **In short.** LiteLLM's AI Gateway puts twenty OCI Generative AI models behind one endpoint,
+> and handles routing, keys, budgets and fallbacks in configuration alone. A classifier we
+> trained on judged outcomes picks the model for each request, on CPU in milliseconds. It
+> matches LiteLLM's LLM classifier for 9% less, and costs 19% less than always using reasoning
+> models. An agent in an OpenShell sandbox holds no key, and a live control room shows every
+> decision, tool call and result. Personal work; the company data is fictional.
+
 An application sends every request to one OpenAI-compatible endpoint, the
 [LiteLLM](https://github.com/BerriAI/litellm) AI Gateway, and asks for a
 model group. The gateway decides which of **twenty OCI Generative AI
