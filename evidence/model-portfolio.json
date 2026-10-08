@@ -1,10 +1,10 @@
 {
- "models": 21,
+ "models": 20,
  "route_pass_rate": {
-  "SIMPLE": 0.7,
-  "MEDIUM": 0.755,
-  "COMPLEX": 0.863,
-  "REASONING": 0.866
+  "SIMPLE": 0.734,
+  "MEDIUM": 0.763,
+  "COMPLEX": 0.85,
+  "REASONING": 0.861
  },
  "rows": [
   {
@@ -14,7 +14,7 @@
      "route": "SIMPLE",
      "role": "primary",
      "group": "oci-fast",
-     "route_pass_rate": 0.7000919220055711
+     "route_pass_rate": 0.7344401114206128
     },
     {
      "route": "VISION",
@@ -37,7 +37,7 @@
      "route": "SIMPLE",
      "role": "primary",
      "group": "oci-fast",
-     "route_pass_rate": 0.7000919220055711
+     "route_pass_rate": 0.7344401114206128
     }
    ],
    "price_per_1m": [
@@ -54,7 +54,7 @@
      "route": "SIMPLE",
      "role": "backup",
      "group": "oci-fast-backup",
-     "route_pass_rate": 0.7000919220055711
+     "route_pass_rate": 0.7344401114206128
     },
     {
      "route": "LLM classifier",
@@ -77,7 +77,7 @@
      "route": "SIMPLE",
      "role": "backup",
      "group": "oci-fast-backup",
-     "route_pass_rate": 0.7000919220055711
+     "route_pass_rate": 0.7344401114206128
     }
    ],
    "price_per_1m": [
@@ -94,7 +94,7 @@
      "route": "MEDIUM",
      "role": "primary",
      "group": "oci-balanced",
-     "route_pass_rate": 0.7548830083565461
+     "route_pass_rate": 0.7632367688022285
     }
    ],
    "price_per_1m": [
@@ -109,9 +109,9 @@
    "uses": [
     {
      "route": "MEDIUM",
-     "role": "primary",
-     "group": "oci-balanced",
-     "route_pass_rate": 0.7548830083565461
+     "role": "backup",
+     "group": "oci-balanced-backup",
+     "route_pass_rate": 0.7632367688022285
     }
    ],
    "price_per_1m": [
@@ -128,7 +128,7 @@
      "route": "MEDIUM",
      "role": "backup",
      "group": "oci-balanced-backup",
-     "route_pass_rate": 0.7548830083565461
+     "route_pass_rate": 0.7632367688022285
     },
     {
      "route": "VISION",
@@ -169,24 +169,7 @@
      "route": "COMPLEX",
      "role": "primary",
      "group": "oci-strong",
-     "route_pass_rate": 0.8626100278551531
-    }
-   ],
-   "price_per_1m": [
-    2.0,
-    10.0
-   ],
-   "price_source": "vendor list price (OCI publishes none)",
-   "trial_pass_rate": 0.825
-  },
-  {
-   "model": "openai.gpt-6.1-sol",
-   "uses": [
-    {
-     "route": "COMPLEX",
-     "role": "primary",
-     "group": "oci-strong",
-     "route_pass_rate": 0.8626100278551531
+     "route_pass_rate": 0.8495905292479108
     }
    ],
    "price_per_1m": [
@@ -203,7 +186,7 @@
      "route": "COMPLEX",
      "role": "backup",
      "group": "oci-strong-backup",
-     "route_pass_rate": 0.8626100278551531
+     "route_pass_rate": 0.8495905292479108
     }
    ],
    "price_per_1m": [
@@ -220,7 +203,7 @@
      "route": "REASONING",
      "role": "primary",
      "group": "oci-reasoning",
-     "route_pass_rate": 0.8662952646239555
+     "route_pass_rate": 0.8607242339832869
     }
    ],
    "price_per_1m": [
@@ -237,7 +220,7 @@
      "route": "REASONING",
      "role": "primary",
      "group": "oci-reasoning",
-     "route_pass_rate": 0.8662952646239555
+     "route_pass_rate": 0.8607242339832869
     }
    ],
    "price_per_1m": [
@@ -254,7 +237,7 @@
      "route": "REASONING",
      "role": "backup",
      "group": "oci-reasoning-backup",
-     "route_pass_rate": 0.8662952646239555
+     "route_pass_rate": 0.8607242339832869
     }
    ],
    "price_per_1m": [
@@ -271,7 +254,7 @@
      "route": "REASONING",
      "role": "backup",
      "group": "oci-reasoning-backup",
-     "route_pass_rate": 0.8662952646239555
+     "route_pass_rate": 0.8607242339832869
     }
    ],
    "price_per_1m": [

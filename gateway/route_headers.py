@@ -42,7 +42,10 @@ def _why(d: dict | None) -> str:
         return "-"
     if d.get("criterion") == "ladder":
         r = d.get("route")
-        return f"ladder: {NAMES.get(r, r)} {d.get('p', {}).get(r, 0):.0%} >= bar {d.get('bar', 0):.0%}"
+        pr, bar = d.get("p", {}).get(r, 0), d.get("bar", 0)
+        if pr >= bar:
+            return f"ladder: {NAMES.get(r, r)} {pr:.0%} >= bar {bar:.0%}"
+        return f"ladder: none clears bar {bar:.0%}; {NAMES.get(r, r)} most likely at {pr:.0%}"
     return str(d.get("criterion"))
 
 

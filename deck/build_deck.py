@@ -252,6 +252,8 @@ def build(template: Path, out: Path) -> None:
     blank = layout(prs, "Light - Blank")
     meta = load(ROOT / "classifier" / "model" / "meta.json")
     ev = load(EVIDENCE / "classifier-eval.json")
+    pay = {p["policy"]: p for p in ev["policies"]} if ev else None   # evidence/classifier-eval.json, by policy
+    appendix = []   # built in story order, moved behind the conclusion: the classifier in depth, for questions
 
     # 1 · cover
     s = prs.slides.add_slide(layout(prs, "Title/Cover_5"))
@@ -259,7 +261,7 @@ def build(template: Path, out: Path) -> None:
         if ph.placeholder_format.idx == 0:
             ph.text = "The Right Model for Every Request"
         elif ph.name.startswith("Text Placeholder 2"):
-            ph.text = "LiteLLM routing across 21 OCI models"
+            ph.text = "LiteLLM routing across 20 OCI models"
         elif ph.name.startswith("Text Placeholder 3"):
             ph.text = "Federico Kamelhar"
         elif ph.name.startswith("Text Placeholder 4"):
@@ -278,9 +280,10 @@ def build(template: Path, out: Path) -> None:
     agenda = [("The blog", "LiteLLM natively supports OCI Generative AI", "3–4"),
               ("LiteLLM", "the architecture, what LiteLLM gives you, isolation and why this order, one request", "5–9"),
               ("Why route", "the portfolio, the toolbox, the use cases, the criteria", "10–13"),
-              ("The router", "where it sits, how we trained it, whether it pays, whether it holds up", "14–20"),
-              ("Live demo", "the demo screen, then back to the slides", "21–26"),
-              ("Built with Codex, run on Kubernetes", "skills as the harness; Kubernetes; field notes; what we would upstream", "27–31")]
+              ("The router", "LiteLLM's plugin point, and the classifier we plugged in", "14–18"),
+              ("Live demo", "the demo screen, then back to the slides", "19–24"),
+              ("Codex and Kubernetes", "skills as the harness; Kubernetes; field notes; what we would upstream", "25–29"),
+              ("Appendix", "the classifier in depth: fine-tuning, fresh prompts and a second judge", "31–33")]
     for i, (t, sub, pages) in enumerate(agenda):
         y = 1.85 + i * 0.7
         rect(s, 0.72, y, 11.9, 0.6, SAND if i % 2 == 0 else WHITE, line=CARD_LINE)
@@ -330,15 +333,16 @@ def build(template: Path, out: Path) -> None:
         ("Signing", "keeps OCI credentials in the gateway; apps hold a gateway key."),
     ], size=13)
     repo(s, "gateway/config.yaml · gateway/oci_session_signer.py")
-    notes(s, "Left: anything that speaks the OpenAI API, including our langchain-oci agent and Codex. Middle: one process with one config file. Right: twenty-one OCI models across five vendors.")
+    notes(s, "Left: anything that speaks the OpenAI API, including our langchain-oci agent and Codex. Middle: one process with one config file. Right: twenty OCI models across five vendors.")
 
     # 5a · what LiteLLM gives you
     s = prs.slides.add_slide(blank)
     header(s, "Every capability here is LiteLLM's; the demo only configures and plugs in", "What LiteLLM gives you")
     table(s, 0.72, 1.75, 11.9, [
         ["Benefit", "How LiteLLM does it", "Proved in this demo"],
-        ["One API for every model", "an OpenAI-compatible endpoint; the oci/ provider covers every OCI vendor", "21 OCI models from 5 vendors; the agent names a model group, never a vendor model"],
-        ["Routing as configuration", "complexity router, tags, context-window checks, latency balancing", "8 routes; our classifier plugs in as classifier_type: custom: 86% good answers at 38% less than always-reasoning"],
+        ["One API for every model", "an OpenAI-compatible endpoint; the oci/ provider covers every OCI vendor", "20 OCI models from 5 vendors; the agent names a model group, never a vendor model"],
+        ["Routing as configuration", "complexity router, tags, context-window checks, latency balancing", "8 routes; our classifier plugs in as classifier_type: custom" + (
+            ": {:.0%} good answers at {:.0%} less than always-reasoning".format(pay["trained"]["quality"], 1 - pay["trained"]["cost_usd"] / pay["always REASONING"]["cost_usd"]) if pay else "")],
         ["Keys, budgets, limits", "virtual keys with allowed models, budget, rate limit and spend (Postgres)", "the OpenShell agent's key: 5 model groups, $5 per 30 days, 120 requests a minute; anything else is a 403"],
         ["Reliability", "fallbacks, retries, timeouts, cooldowns", "a failing deployment falls back; a classifier outage routes to fallback_tier; {0} of {1} use cases answered".format(*sandbox_run())],
         ["Observability", "cost and route on every response, spend per key, logging callbacks", "x-litellm-* headers on every call; one ROUTE line per request in the console"],
@@ -429,7 +433,7 @@ def build(template: Path, out: Path) -> None:
         ["who is calling", "tag routing, team routing", "oci-chat: premium tag → GPT-5.2, default → Gemini Flash"],
         ["the prompt does not fit", "context-window check and fallback", "oci-compact (2k window) → oci-long, before the call"],
         ["a deployment fails", "fallbacks, retries, cooldowns", "oci-flaky always fails → oci-balanced; every route has a backup"],
-        ["several can serve", "load balancing: latency, cost, usage, weights", "two vendors per route, latency-based"],
+        ["several can serve", "load balancing: latency, cost, usage, weights", "two models in most routes, latency-based; vision mixes OpenAI and Google"],
     ], col_w=[2.8, 4.0, 5.1], size=12.5)
     text(s, 0.72, 5.25, 11.9, 1.0, [[("Every decision comes back in the response: ", {"bold": True, "color": INK, "size": 13.5}),
         ("x-litellm-complexity-router-tier, -cause, x-litellm-model-name, x-litellm-attempted-fallbacks, x-litellm-response-cost. The control room shows them live.", {"color": BODY, "size": 13})]], line=1.15)
@@ -470,10 +474,12 @@ def build(template: Path, out: Path) -> None:
 
     # 10 · where the classifier sits
     s = prs.slides.add_slide(blank)
-    header(s, "Inside the gateway, before any model is called", "Where the classifier sits")
+    header(s, "LiteLLM's complexity router calls our plugin, before any model is called", "Where the classifier plugs in")
     figure(s, "figure2-classifier-path.png", 2.4, 1.65, 8.5)
     repo(s, "gateway/trained_classifier.py · classifier/router_model.py")
-    notes(s, "LiteLLM's complexity router calls our plugin's classify(context) and gets back a route name; the route names a group; the group picks a deployment with latency, context-window and fallback logic.")
+    notes(s, "LiteLLM's complexity router calls our plugin's classify(context) and gets back a route name; the route names a group; the group picks a deployment with latency, context-window and fallback logic. "
+             "Everything after the route name is LiteLLM's. The classifier is a small CPU service, no GPU: a frozen e5-small encoder and logistic models, "
+             "tens of milliseconds a decision on a laptop; if it is down or slow, LiteLLM routes to fallback_tier.")
 
     # 11 · classifier choices
     s = prs.slides.add_slide(blank)
@@ -540,6 +546,7 @@ def build(template: Path, out: Path) -> None:
     ], size=13)
     repo(s, "classifier/train.py (frozen) · classifier/finetune.py (fine-tuned) · evidence/finetune-comparison.json")
     notes(s, "Answer to 'did we really train it?': yes. Be precise: the shipped router trains a head on frozen embeddings; the fine-tuning run trains the encoder too.")
+    appendix.append(s)
 
     # 14 · results: does it pay
     s = prs.slides.add_slide(blank)
@@ -578,8 +585,9 @@ def build(template: Path, out: Path) -> None:
         card(s, 8.0, 5.05, 4.6, 1.25, "Vision: " + " · ".join(f"{k} {v:.0%}" for k, v in vis.items()),
              f"exact total and due date read from {rb['vision']['images']} generated invoices.", accent=OCHRE)
         repo(s, "classifier/robustness.py · evidence/robustness.json")
-        notes(s, "The held-out numbers on the previous slide came from the same judge and the same prompt writer as the training labels. "
+        notes(s, "The held-out numbers on 'Does routing pay?' came from the same judge and the same prompt writer as the training labels. "
                  "This slide changes both: new prompts by a model outside the portfolio, and a second judge from another vendor.")
+        appendix.append(s)
 
     # 15 · live demo divider
     s = prs.slides.add_slide(blank)
@@ -587,7 +595,7 @@ def build(template: Path, out: Path) -> None:
     text(s, 0.72, 2.2, 11.9, 0.4, "LIVE DEMO · SWITCH TO THE BROWSER", size=13, color=YELLOW, bold=True, spacing=220)
     text(s, 0.72, 2.7, 11.9, 1.0, "The routing control room", size=40, color=WHITE, bold=True)
     beats = ["Type a request: the agent runs in an OpenShell sandbox; LiteLLM checks its key, classifies, routes and signs",
-             "Drag the quality bar, or attach an image: the request moves between models, every step in the console",
+             "Business rules in config: a premium tag takes another lane; the agent's key carries its models, budget and spend",
              "Use cases: support, code (to Codex), a forecast, Japanese, an invoice photo; each call on the route map",
              "A multi-step agent: a planner splits one job into tasks, and LiteLLM routes each task to its own model",
              "Under the hood: LiteLLM's heuristic, its LLM classifier and our ladder on the same request",
@@ -604,6 +612,7 @@ def build(template: Path, out: Path) -> None:
         ["In the demo", "What it shows", "The LiteLLM part"],
         ["a request routed and explained", "each route's chance of a good answer against the bar", "the complexity router calling our classifier"],
         ["the agent in OpenShell", "no key in the sandbox; one allowed endpoint", "a virtual key with models, budget and rate limit"],
+        ["a premium tag on the same request", "another lane for another contract", "tag routing, in config"],
         ["the quality bar moving the route", "one dial between spend and answer quality", "a per-request setting the router passes through"],
         ["code going to Codex", "the right model for the task, on the API OCI serves it on", "a custom provider, plugged into the same routes"],
         ["one job split into tasks", "each task on the model it needs", "every step is its own request, routed on its own"],
@@ -647,7 +656,7 @@ def build(template: Path, out: Path) -> None:
         ("3 · Every call inside a task is classified too.", "The screen groups the calls by task, each with its decision."),
         ("Four jobs.", "Escalation, incident update, invoice photo, GPU budget pack. The invoice job's photo goes to the task that reads it, and from there to VISION; four runs each gave its facts right 13 times in 16; every miss was arithmetic on the balanced route."),
         ("What it found.", "A coding task in billing words went to balanced: no training example was worded that way. With 64 such requests and 64 counter-examples: 100% to Codex, 3% false alarms."),
-        ("What it costs.", "The misses are a route's weakest member: LiteLLM's latency routing usually picks Grok 4.20 non-reasoning in the balanced route, right 3 in 8 on the overrun task alone; GPT-5.4-mini, same route, 8 in 8. Raise the bar for jobs like these, or drop the weak deployment and relabel."),
+        ("What it costs.", "The misses are a route's weakest member: LiteLLM's latency routing usually picks Grok 4.20 non-reasoning in the balanced route, right 3 in 8 on the overrun task alone; GPT-5.4-mini, same route, 8 in 8. So it moved to the route's backup, and the router was relabelled."),
     ], size=11.5)
     notes(s, "Runs differ a little because the planner words tasks differently; "
              "every run in testing sent the coding task to Codex after the fix. Earlier results travel in the system prompt, which the router does not read, "
@@ -757,6 +766,20 @@ def build(template: Path, out: Path) -> None:
     text(s, 0.72, 6.6, 11.9, 0.5, "Every number on these slides comes from a file in the repository's evidence/ and classifier/ folders.", size=15, color=YELLOW, bold=True)
     text(s, 0.72, 7.08, 11.9, 0.3, FOOTER, size=8, color=RGBColor(0xC8, 0xD6, 0xDB))
     notes(s, "Close on the method: one gateway, routing in config, a classifier trained on outcomes.")
+
+    # appendix · the classifier in depth, behind the conclusion
+    s = prs.slides.add_slide(blank)
+    rect(s, 0, 0, 13.333, 7.5, TEAL)
+    text(s, 0.72, 2.6, 11.9, 0.4, "APPENDIX", size=13, color=YELLOW, bold=True, spacing=220)
+    text(s, 0.72, 3.1, 11.9, 1.0, "The classifier in depth", size=40, color=WHITE, bold=True)
+    text(s, 0.72, 4.2, 11.9, 0.6, "Did we really train it, and does it hold up on prompts nobody trained on?", size=16, color=WHITE)
+    text(s, 0.72, 7.08, 11.9, 0.3, FOOTER, size=8, color=RGBColor(0xC8, 0xD6, 0xDB))
+    notes(s, "For questions. The talk keeps the classifier to one use of LiteLLM's plugin point; these slides are the depth behind it.")
+    ids = prs.slides._sldIdLst
+    for moved in appendix:
+        el = next(e for e in ids if int(e.get("id")) == moved.slide_id)
+        ids.remove(el)
+        ids.append(el)
 
     out.parent.mkdir(parents=True, exist_ok=True)
     prs.save(str(out))

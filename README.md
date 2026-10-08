@@ -2,7 +2,7 @@
 
 An application sends every request to one OpenAI-compatible endpoint, the
 [LiteLLM](https://github.com/BerriAI/litellm) AI Gateway, and asks for a
-model group. The gateway decides which of **twenty-one OCI Generative AI
+model group. The gateway decides which of **twenty OCI Generative AI
 models** answers, across OpenAI, Google, Meta, xAI and Cohere: a
 **classifier we mini-trained** reads the request and picks one of eight
 routes, tags pick a customer lane, a context-window check and fallback chains
@@ -23,8 +23,8 @@ Built on the integration announced in
 | Route | Model group | OCI models (backup) |
 |---|---|---|
 | SIMPLE: short facts, formatting | `oci-fast` | GPT-6-luna, GPT-5.4-nano (Gemini 2.5 Flash-Lite, Llama 4 Scout) |
-| MEDIUM: explanations, summaries | `oci-balanced` | GPT-5.4-mini, Grok 4.20 non-reasoning (Gemini 2.5 Flash) |
-| COMPLEX: multi-part analysis | `oci-strong` | GPT-6-sol, GPT-6.1-sol (GPT-5.4) |
+| MEDIUM: explanations, summaries | `oci-balanced` | GPT-5.4-mini (Grok 4.20 non-reasoning, Gemini 2.5 Flash) |
+| COMPLEX: multi-part analysis | `oci-strong` | GPT-6-sol (GPT-5.4) |
 | REASONING: proofs, constrained planning | `oci-reasoning` | Grok 4.20 reasoning, Grok 4.7 (o3, o4-mini) |
 | CODE | `oci-code` | GPT-5.3-codex, on OCI's Responses API (GPT-5.1, Grok 4.3) |
 | VISION | `oci-vision` | GPT-6-luna, Gemini 2.5 Flash (Llama 4 Maverick) |
@@ -79,9 +79,8 @@ grades the request) and `oci-auto-trained` (ours, `classifier_type: custom`).
    on a laptop CPU; the shipped model is 210 KB.
 5. **Choose the route set and the quality bar** inside the training split by
    5-fold cross-validation: the cheapest combination at least as good as always
-   using the reasoning models. It chose simple, medium, reasoning with a bar of 75%: the
-   strong route costs as much as the reasoning one and passes less often, so the
-   ladder skips it. Each request may set its own bar (`metadata.route_quality_bar`).
+   using the reasoning models. It chose all four routes with a bar of 80%. Each
+   request may set its own bar (`metadata.route_quality_bar`).
 6. **Plug in**: `gateway/trained_classifier.py` implements LiteLLM's
    `ClassifierPlugin` (`async classify(context) -> route`).
 
@@ -93,25 +92,28 @@ same judge ([evidence/classifier-eval.json](evidence/classifier-eval.json)):
 
 | Policy | Answers good enough | Cost of the answers | Code and language routes |
 |---|---|---|---|
-| always the fast models | 76% | $0.070 | — |
-| always the balanced models | 77% | $0.218 | — |
-| always the strong models | 85% | $0.378 | — |
+| always the fast models | 77% | $0.043 | — |
+| always the balanced models | 79% | $0.239 | — |
+| always the strong models | 82% | $0.378 | — |
 | always the reasoning models | 89% | $0.376 | — |
-| LiteLLM heuristic (`oci-auto`) | 77% | $0.097 | 0% |
-| LiteLLM LLM classifier (`oci-auto-llm`) | 86% | $0.336 | 0% |
-| **our ladder (`oci-auto-trained`, bar 75%)** | **86%** | **$0.233** | **96%** (see below) |
+| LiteLLM heuristic (`oci-auto`) | 80% | $0.082 | 0% |
+| LiteLLM LLM classifier (`oci-auto-llm`) | 85% | $0.342 | 0% |
+| **our ladder (`oci-auto-trained`, bar 80%)** | **86%** | **$0.314** | **100%** (see below) |
+| the labelled route (perfect routing) | 89% | $0.215 | 100% |
 
 ![Quality against cost](docs/figures/figure4-quality-cost.png)
 
-With the newer models routing is a cost lever more than a quality lever: even
-the cheapest route gives a good answer 76% of the time. The ladder
-gives 9 points more good answers than LiteLLM's heuristic, matches its LLM
-classifier at 31% less, and stays 3 points under always using the
-reasoning models for 38% less. Cross-validated over all 359 prompts it ties
-always-reasoning at about 29% less ([evidence/ladder-lab.json](evidence/ladder-lab.json)).
-It is the only router that sends code and other languages to their own models:
-24 of 24 held-out code and language prompts when measured through the gateway,
-23 of 24 after the code-check retrain described under the multi-step agent.
+With the newer models even the cheapest route gives a good answer 77% of the
+time, and the strong and reasoning routes cost the same: routing pays most by
+sending each request to the kind of model it needs. The ladder gives 6 points
+more good answers than LiteLLM's heuristic, 1 point more than its LLM
+classifier at 8% less, and stays 3 points under always using the reasoning
+models for 17% less. Cross-validated over all 359 prompts it ties
+always-reasoning at about 27% less ([evidence/ladder-lab.json](evidence/ladder-lab.json)).
+Perfect routing gives always-reasoning's quality at 43% less: the headroom is
+in the predictor, not the models. The ladder is the only router that sends code
+and other languages to their own models: 24 of 24 held-out code and language
+prompts through the gateway, after the relabel for the current portfolio.
 Held-out is 73 prompts: one prompt moves a score by 1.4 points; see
 "Does it hold up?" below for fresh prompts and a second judge.
 
@@ -221,8 +223,9 @@ balanced route holds two deployments and LiteLLM's latency routing usually
 picks the faster one, Grok 4.20 non-reasoning: on the overrun task alone it is
 right 3 times in 8, GPT-5.4-mini in the same route 8 in 8. A route's members
 are not equal, and the router's quality labels average them. On its own, the credit task is right 6 times in 8 on each balanced
-model and 8 in 8 on reasoning: at a 75% bar that is the trade-off the router
-accepts. Raise the bar for jobs like these. The Japanese and Spanish tasks
+model and 8 in 8 on reasoning: at the 75% bar those runs used, that is the trade-off
+the router accepted. Since then Grok 4.20 non-reasoning is the balanced route's
+backup, not a primary, and the router was relabelled for that portfolio. The Japanese and Spanish tasks
 went to balanced, not the multilingual route: the planner writes their
 instructions in English, and the language rule reads the instruction. In the
 invoice job the planner hands the photo to the task that reads it, and the

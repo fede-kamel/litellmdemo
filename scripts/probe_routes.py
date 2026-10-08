@@ -68,9 +68,9 @@ PROBES = [
     ("fallback chain", "oci-flaky", "Say hello in French.", {},
      lambda h: h.get("x-litellm-model-group") == "oci-balanced" and int(h.get("x-litellm-attempted-fallbacks") or 0) >= 1,
      "a failing deployment falls back to the next group"),
-    ("load balancing", "oci-balanced", "Name one benefit of load balancing.", {},
-     lambda h: h.get("x-litellm-model-group") == "oci-balanced",
-     "two vendors behind one group; latency decides"),
+    ("load balancing", "oci-vision", "Name one benefit of load balancing.", {},
+     lambda h: h.get("x-litellm-model-group") == "oci-vision",
+     "two vendors behind one group (OpenAI and Google); latency decides"),
 ]
 
 SHOWN = ("x-litellm-model-group", "x-litellm-model-name", "x-litellm-complexity-router-tier",

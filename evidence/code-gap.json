@@ -35,5 +35,19 @@
    "non_CODE_to_CODE": 0.014
   }
  },
- "note": "'before' is the router before code_gap.py; the intermediate run with coding rows only (no counter-examples) scored coding_to_CODE 1.0, not_coding_to_CODE 0.312, held-out CODE recall 0.9 and was not shipped; 'after' is the shipped model (coding rows plus 64 not-code-business counter-examples). Held-out code and language prompts used by evaluate.py: 23 of 24 routed correctly after, 24 of 24 before. The ladder (outcome rows only) is unchanged: same bar, routes and held-out numbers."
+ "note": "'before' is the router before code_gap.py; the intermediate run with coding rows only (no counter-examples) scored coding_to_CODE 1.0, not_coding_to_CODE 0.312, held-out CODE recall 0.9 and was not shipped; 'after' is the shipped model (coding rows plus 64 not-code-business counter-examples). Held-out code and language prompts used by evaluate.py: 23 of 24 routed correctly after, 24 of 24 before. The ladder (outcome rows only) is unchanged: same bar, routes and held-out numbers.",
+ "after-relabel": {
+  "coding_to_CODE": 1.0,
+  "not_coding_to_CODE": 0.031,
+  "coding": 32,
+  "not_coding": 32,
+  "missed": [],
+  "false_alarms": [
+   "What is the specific formula used to calculate the 'First Response Time' SLA achievement for enterprise-tier accounts? I need to know the variables our system uses, like ticket creation time and first agent public comment, not a calculation for a specific ticket."
+  ],
+  "held_out_labels": {
+   "CODE_recall": 1.0,
+   "non_CODE_to_CODE": 0.027
+  }
+ }
 }

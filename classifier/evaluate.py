@@ -68,6 +68,10 @@ async def routed(router: str, prompt: str) -> dict:
 async def main() -> None:
     labels = {json.loads(line)["id"]: json.loads(line) for line in (DATA / "labels.jsonl").read_text().splitlines()}
     held = [labels[i] for i in json.loads((DATA / "split.json").read_text())["held_out"] if i in labels]
+    # The code-check rows (classifier/code_gap.py) have their own test set; keep this evaluation's set as it was:
+    # outcome-labelled difficulty prompts, and the original CODE and MULTILINGUAL task-type prompts.
+    held = [r for r in held if r.get("family") not in ("code-business", "not-code-business")
+            and (r.get("label_source") == "outcome" or r["route"] not in DIFFICULTY)]
     # MULTILINGUAL is decided by a rule, not learned: two requests per language test it.
     by_lang: dict[str, list[dict]] = {}
     for r in labels.values():

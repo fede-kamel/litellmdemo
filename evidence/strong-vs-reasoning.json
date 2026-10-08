@@ -1,0 +1,237 @@
+{
+ "n": 4,
+ "judge": "oci-judge",
+ "pass": "every criterion >= 4",
+ "rows": [
+  {
+   "prompt": "analyst-forecast",
+   "group": "oci-strong",
+   "run": 0,
+   "deployment": "oci/openai.gpt-6-sol",
+   "cost": 0.019430000000000003,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "passed": false
+  },
+  {
+   "prompt": "analyst-forecast",
+   "group": "oci-strong",
+   "run": 1,
+   "deployment": "oci/openai.gpt-6-sol",
+   "cost": 0.01422,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "passed": false
+  },
+  {
+   "prompt": "analyst-forecast",
+   "group": "oci-strong",
+   "run": 2,
+   "deployment": "oci/openai.gpt-6-sol",
+   "cost": 0.016630000000000002,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "passed": false
+  },
+  {
+   "prompt": "analyst-forecast",
+   "group": "oci-strong",
+   "run": 3,
+   "deployment": "oci/openai.gpt-6-sol",
+   "cost": 0.01635,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "passed": false
+  },
+  {
+   "prompt": "analyst-forecast",
+   "group": "oci-reasoning",
+   "run": 0,
+   "deployment": "oci/xai.grok-4.7",
+   "cost": 0.06494,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "passed": true
+  },
+  {
+   "prompt": "analyst-forecast",
+   "group": "oci-reasoning",
+   "run": 1,
+   "deployment": "oci/xai.grok-4.20-reasoning",
+   "cost": 0.016348750000000002,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "passed": false
+  },
+  {
+   "prompt": "analyst-forecast",
+   "group": "oci-reasoning",
+   "run": 2,
+   "deployment": "oci/xai.grok-4.20-reasoning",
+   "cost": 0.015783750000000003,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 4
+   },
+   "passed": false
+  },
+  {
+   "prompt": "analyst-forecast",
+   "group": "oci-reasoning",
+   "run": 3,
+   "deployment": "oci/xai.grok-4.7",
+   "cost": 0.05036,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "passed": true
+  },
+  {
+   "prompt": "support-escalation",
+   "group": "oci-strong",
+   "run": 0,
+   "deployment": "oci/openai.gpt-6-sol",
+   "cost": 0.007246,
+   "scores": {
+    "correctness": 2,
+    "completeness": 3,
+    "instruction_following": 5
+   },
+   "passed": false
+  },
+  {
+   "prompt": "support-escalation",
+   "group": "oci-strong",
+   "run": 1,
+   "deployment": "oci/openai.gpt-6-sol",
+   "cost": 0.007246000000000001,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "passed": false
+  },
+  {
+   "prompt": "support-escalation",
+   "group": "oci-strong",
+   "run": 2,
+   "deployment": "oci/openai.gpt-6-sol",
+   "cost": 0.007676,
+   "scores": {
+    "correctness": 4,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "passed": true
+  },
+  {
+   "prompt": "support-escalation",
+   "group": "oci-strong",
+   "run": 3,
+   "deployment": "oci/openai.gpt-6-sol",
+   "cost": 0.007226000000000001,
+   "scores": {
+    "correctness": 3,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "passed": false
+  },
+  {
+   "prompt": "support-escalation",
+   "group": "oci-reasoning",
+   "run": 0,
+   "deployment": "oci/xai.grok-4.20-reasoning",
+   "cost": 0.004168750000000001,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "passed": true
+  },
+  {
+   "prompt": "support-escalation",
+   "group": "oci-reasoning",
+   "run": 1,
+   "deployment": "oci/xai.grok-4.20-reasoning",
+   "cost": 0.00323625,
+   "scores": {
+    "correctness": 4,
+    "completeness": 4,
+    "instruction_following": 5
+   },
+   "passed": true
+  },
+  {
+   "prompt": "support-escalation",
+   "group": "oci-reasoning",
+   "run": 2,
+   "deployment": "oci/xai.grok-4.7",
+   "cost": 0.01102,
+   "scores": {
+    "correctness": 5,
+    "completeness": 4,
+    "instruction_following": 4
+   },
+   "passed": true
+  },
+  {
+   "prompt": "support-escalation",
+   "group": "oci-reasoning",
+   "run": 3,
+   "deployment": "oci/xai.grok-4.7",
+   "cost": 0.008878,
+   "scores": {
+    "correctness": 5,
+    "completeness": 5,
+    "instruction_following": 5
+   },
+   "passed": true
+  }
+ ],
+ "summary": {
+  "analyst-forecast oci-strong": {
+   "passed": 0,
+   "of": 4,
+   "cost": 0.01666
+  },
+  "analyst-forecast oci-reasoning": {
+   "passed": 2,
+   "of": 4,
+   "cost": 0.03686
+  },
+  "support-escalation oci-strong": {
+   "passed": 1,
+   "of": 4,
+   "cost": 0.00735
+  },
+  "support-escalation oci-reasoning": {
+   "passed": 4,
+   "of": 4,
+   "cost": 0.00683
+  }
+ }
+}

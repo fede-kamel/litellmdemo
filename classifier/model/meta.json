@@ -6,27 +6,27 @@
     "REASONING",
     "CODE"
   ],
-  "trained_at": "2026-10-06T21:56:57+00:00",
+  "trained_at": "2026-10-07T22:53:40+00:00",
   "examples": 535,
   "train": 426,
   "held_out": 109,
   "label_counts": {
     "CODE": 112,
-    "SIMPLE": 251,
-    "MEDIUM": 109,
-    "REASONING": 63
+    "MEDIUM": 108,
+    "SIMPLE": 261,
+    "REASONING": 54
   },
-  "C": 8,
-  "cv_balanced_accuracy": 0.784,
-  "held_out_accuracy": 0.826,
+  "C": 2,
+  "cv_balanced_accuracy": 0.773,
+  "held_out_accuracy": 0.817,
   "repeated_cv_accuracy": 0.787,
-  "repeated_cv_std": 0.03,
+  "repeated_cv_std": 0.049,
   "labels_from_votes": 359,
   "held_out_recall": {
-    "SIMPLE": 0.825,
-    "MEDIUM": 0.737,
-    "REASONING": 0.7,
-    "CODE": 0.957
+    "SIMPLE": 0.81,
+    "MEDIUM": 0.684,
+    "REASONING": 0.667,
+    "CODE": 1.0
   },
   "confusion_matrix": {
     "labels": [
@@ -40,35 +40,36 @@
         47,
         2,
         7,
-        1
+        2
       ],
       [
-        1,
-        14,
+        2,
+        13,
         4,
         0
       ],
       [
-        2,
         1,
-        7,
+        2,
+        6,
         0
       ],
       [
         0,
         0,
-        1,
-        22
+        0,
+        23
       ]
     ]
   },
-  "embed_seconds": 4.5,
+  "embed_seconds": 3.9,
   "train_seconds": 0.2,
   "ladder": {
-    "bar": 0.75,
+    "bar": 0.8,
     "routes": [
       "SIMPLE",
       "MEDIUM",
+      "COMPLEX",
       "REASONING"
     ],
     "train_prompts": 286,
@@ -82,192 +83,192 @@
           "REASONING"
         ],
         "bar": 0.6,
-        "quality": 0.807,
-        "cost_per_request": 0.003985
-      },
-      {
-        "routes": [
-          "SIMPLE",
-          "MEDIUM",
-          "COMPLEX",
-          "REASONING"
-        ],
-        "bar": 0.65,
-        "quality": 0.825,
-        "cost_per_request": 0.004179
-      },
-      {
-        "routes": [
-          "SIMPLE",
-          "MEDIUM",
-          "COMPLEX",
-          "REASONING"
-        ],
-        "bar": 0.7,
-        "quality": 0.84,
-        "cost_per_request": 0.004452
-      },
-      {
-        "routes": [
-          "SIMPLE",
-          "MEDIUM",
-          "COMPLEX",
-          "REASONING"
-        ],
-        "bar": 0.75,
-        "quality": 0.867,
-        "cost_per_request": 0.005003
-      },
-      {
-        "routes": [
-          "SIMPLE",
-          "MEDIUM",
-          "COMPLEX",
-          "REASONING"
-        ],
-        "bar": 0.8,
-        "quality": 0.875,
-        "cost_per_request": 0.005311
-      },
-      {
-        "routes": [
-          "SIMPLE",
-          "MEDIUM",
-          "COMPLEX",
-          "REASONING"
-        ],
-        "bar": 0.85,
-        "quality": 0.858,
-        "cost_per_request": 0.005377
-      },
-      {
-        "routes": [
-          "SIMPLE",
-          "MEDIUM",
-          "COMPLEX",
-          "REASONING"
-        ],
-        "bar": 0.9,
-        "quality": 0.836,
-        "cost_per_request": 0.005358
-      },
-      {
-        "routes": [
-          "SIMPLE",
-          "MEDIUM",
-          "COMPLEX",
-          "REASONING"
-        ],
-        "bar": 0.95,
-        "quality": 0.842,
-        "cost_per_request": 0.005202
-      },
-      {
-        "routes": [
-          "SIMPLE",
-          "MEDIUM",
-          "REASONING"
-        ],
-        "bar": 0.6,
-        "quality": 0.803,
-        "cost_per_request": 0.002739
-      },
-      {
-        "routes": [
-          "SIMPLE",
-          "MEDIUM",
-          "REASONING"
-        ],
-        "bar": 0.65,
         "quality": 0.821,
-        "cost_per_request": 0.002939
+        "cost_per_request": 0.00337
       },
       {
         "routes": [
           "SIMPLE",
           "MEDIUM",
-          "REASONING"
-        ],
-        "bar": 0.7,
-        "quality": 0.833,
-        "cost_per_request": 0.003114
-      },
-      {
-        "routes": [
-          "SIMPLE",
-          "MEDIUM",
-          "REASONING"
-        ],
-        "bar": 0.75,
-        "quality": 0.866,
-        "cost_per_request": 0.00381
-      },
-      {
-        "routes": [
-          "SIMPLE",
-          "MEDIUM",
-          "REASONING"
-        ],
-        "bar": 0.8,
-        "quality": 0.867,
-        "cost_per_request": 0.004248
-      },
-      {
-        "routes": [
-          "SIMPLE",
-          "MEDIUM",
-          "REASONING"
-        ],
-        "bar": 0.85,
-        "quality": 0.862,
-        "cost_per_request": 0.004811
-      },
-      {
-        "routes": [
-          "SIMPLE",
-          "MEDIUM",
-          "REASONING"
-        ],
-        "bar": 0.9,
-        "quality": 0.861,
-        "cost_per_request": 0.004972
-      },
-      {
-        "routes": [
-          "SIMPLE",
-          "MEDIUM",
-          "REASONING"
-        ],
-        "bar": 0.95,
-        "quality": 0.862,
-        "cost_per_request": 0.005099
-      },
-      {
-        "routes": [
-          "SIMPLE",
-          "REASONING"
-        ],
-        "bar": 0.6,
-        "quality": 0.839,
-        "cost_per_request": 0.002952
-      },
-      {
-        "routes": [
-          "SIMPLE",
+          "COMPLEX",
           "REASONING"
         ],
         "bar": 0.65,
-        "quality": 0.848,
-        "cost_per_request": 0.003454
+        "quality": 0.837,
+        "cost_per_request": 0.003716
       },
       {
         "routes": [
           "SIMPLE",
+          "MEDIUM",
+          "COMPLEX",
           "REASONING"
         ],
         "bar": 0.7,
+        "quality": 0.836,
+        "cost_per_request": 0.004082
+      },
+      {
+        "routes": [
+          "SIMPLE",
+          "MEDIUM",
+          "COMPLEX",
+          "REASONING"
+        ],
+        "bar": 0.75,
+        "quality": 0.846,
+        "cost_per_request": 0.00432
+      },
+      {
+        "routes": [
+          "SIMPLE",
+          "MEDIUM",
+          "COMPLEX",
+          "REASONING"
+        ],
+        "bar": 0.8,
+        "quality": 0.855,
+        "cost_per_request": 0.004512
+      },
+      {
+        "routes": [
+          "SIMPLE",
+          "MEDIUM",
+          "COMPLEX",
+          "REASONING"
+        ],
+        "bar": 0.85,
+        "quality": 0.854,
+        "cost_per_request": 0.004652
+      },
+      {
+        "routes": [
+          "SIMPLE",
+          "MEDIUM",
+          "COMPLEX",
+          "REASONING"
+        ],
+        "bar": 0.9,
         "quality": 0.853,
-        "cost_per_request": 0.003774
+        "cost_per_request": 0.005151
+      },
+      {
+        "routes": [
+          "SIMPLE",
+          "MEDIUM",
+          "COMPLEX",
+          "REASONING"
+        ],
+        "bar": 0.95,
+        "quality": 0.858,
+        "cost_per_request": 0.005314
+      },
+      {
+        "routes": [
+          "SIMPLE",
+          "MEDIUM",
+          "REASONING"
+        ],
+        "bar": 0.6,
+        "quality": 0.819,
+        "cost_per_request": 0.00286
+      },
+      {
+        "routes": [
+          "SIMPLE",
+          "MEDIUM",
+          "REASONING"
+        ],
+        "bar": 0.65,
+        "quality": 0.828,
+        "cost_per_request": 0.003153
+      },
+      {
+        "routes": [
+          "SIMPLE",
+          "MEDIUM",
+          "REASONING"
+        ],
+        "bar": 0.7,
+        "quality": 0.83,
+        "cost_per_request": 0.003602
+      },
+      {
+        "routes": [
+          "SIMPLE",
+          "MEDIUM",
+          "REASONING"
+        ],
+        "bar": 0.75,
+        "quality": 0.839,
+        "cost_per_request": 0.003904
+      },
+      {
+        "routes": [
+          "SIMPLE",
+          "MEDIUM",
+          "REASONING"
+        ],
+        "bar": 0.8,
+        "quality": 0.843,
+        "cost_per_request": 0.004417
+      },
+      {
+        "routes": [
+          "SIMPLE",
+          "MEDIUM",
+          "REASONING"
+        ],
+        "bar": 0.85,
+        "quality": 0.847,
+        "cost_per_request": 0.004902
+      },
+      {
+        "routes": [
+          "SIMPLE",
+          "MEDIUM",
+          "REASONING"
+        ],
+        "bar": 0.9,
+        "quality": 0.843,
+        "cost_per_request": 0.005276
+      },
+      {
+        "routes": [
+          "SIMPLE",
+          "MEDIUM",
+          "REASONING"
+        ],
+        "bar": 0.95,
+        "quality": 0.843,
+        "cost_per_request": 0.005505
+      },
+      {
+        "routes": [
+          "SIMPLE",
+          "REASONING"
+        ],
+        "bar": 0.6,
+        "quality": 0.825,
+        "cost_per_request": 0.003378
+      },
+      {
+        "routes": [
+          "SIMPLE",
+          "REASONING"
+        ],
+        "bar": 0.65,
+        "quality": 0.831,
+        "cost_per_request": 0.003747
+      },
+      {
+        "routes": [
+          "SIMPLE",
+          "REASONING"
+        ],
+        "bar": 0.7,
+        "quality": 0.839,
+        "cost_per_request": 0.004274
       },
       {
         "routes": [
@@ -275,8 +276,8 @@
           "REASONING"
         ],
         "bar": 0.75,
-        "quality": 0.855,
-        "cost_per_request": 0.004326
+        "quality": 0.851,
+        "cost_per_request": 0.004818
       },
       {
         "routes": [
@@ -284,8 +285,8 @@
           "REASONING"
         ],
         "bar": 0.8,
-        "quality": 0.864,
-        "cost_per_request": 0.005029
+        "quality": 0.848,
+        "cost_per_request": 0.005254
       },
       {
         "routes": [
@@ -293,8 +294,8 @@
           "REASONING"
         ],
         "bar": 0.85,
-        "quality": 0.874,
-        "cost_per_request": 0.005389
+        "quality": 0.839,
+        "cost_per_request": 0.00568
       },
       {
         "routes": [
@@ -302,8 +303,8 @@
           "REASONING"
         ],
         "bar": 0.9,
-        "quality": 0.875,
-        "cost_per_request": 0.005481
+        "quality": 0.839,
+        "cost_per_request": 0.00599
       },
       {
         "routes": [
@@ -311,8 +312,8 @@
           "REASONING"
         ],
         "bar": 0.95,
-        "quality": 0.876,
-        "cost_per_request": 0.005541
+        "quality": 0.839,
+        "cost_per_request": 0.006079
       },
       {
         "routes": [
@@ -321,8 +322,8 @@
           "REASONING"
         ],
         "bar": 0.6,
-        "quality": 0.838,
-        "cost_per_request": 0.00435
+        "quality": 0.832,
+        "cost_per_request": 0.003679
       },
       {
         "routes": [
@@ -331,8 +332,8 @@
           "REASONING"
         ],
         "bar": 0.65,
-        "quality": 0.851,
-        "cost_per_request": 0.004599
+        "quality": 0.842,
+        "cost_per_request": 0.003972
       },
       {
         "routes": [
@@ -341,8 +342,8 @@
           "REASONING"
         ],
         "bar": 0.7,
-        "quality": 0.855,
-        "cost_per_request": 0.004939
+        "quality": 0.85,
+        "cost_per_request": 0.004281
       },
       {
         "routes": [
@@ -351,8 +352,8 @@
           "REASONING"
         ],
         "bar": 0.75,
-        "quality": 0.864,
-        "cost_per_request": 0.005225
+        "quality": 0.855,
+        "cost_per_request": 0.004638
       },
       {
         "routes": [
@@ -361,8 +362,8 @@
           "REASONING"
         ],
         "bar": 0.8,
-        "quality": 0.866,
-        "cost_per_request": 0.005539
+        "quality": 0.854,
+        "cost_per_request": 0.004926
       },
       {
         "routes": [
@@ -371,8 +372,8 @@
           "REASONING"
         ],
         "bar": 0.85,
-        "quality": 0.855,
-        "cost_per_request": 0.005611
+        "quality": 0.841,
+        "cost_per_request": 0.004955
       },
       {
         "routes": [
@@ -381,8 +382,8 @@
           "REASONING"
         ],
         "bar": 0.9,
-        "quality": 0.842,
-        "cost_per_request": 0.005541
+        "quality": 0.852,
+        "cost_per_request": 0.005446
       },
       {
         "routes": [
@@ -391,125 +392,125 @@
           "REASONING"
         ],
         "bar": 0.95,
-        "quality": 0.848,
-        "cost_per_request": 0.005354
+        "quality": 0.853,
+        "cost_per_request": 0.005557
       }
     ],
     "cv_curve_on_train": [
       {
         "bar": 0.6,
-        "quality": 0.803,
-        "cost_per_request": 0.002739
+        "quality": 0.821,
+        "cost_per_request": 0.00337
       },
       {
         "bar": 0.65,
-        "quality": 0.821,
-        "cost_per_request": 0.002939
+        "quality": 0.837,
+        "cost_per_request": 0.003716
       },
       {
         "bar": 0.7,
-        "quality": 0.833,
-        "cost_per_request": 0.003114
+        "quality": 0.836,
+        "cost_per_request": 0.004082
       },
       {
         "bar": 0.75,
-        "quality": 0.866,
-        "cost_per_request": 0.00381
+        "quality": 0.846,
+        "cost_per_request": 0.00432
       },
       {
         "bar": 0.8,
-        "quality": 0.867,
-        "cost_per_request": 0.004248
+        "quality": 0.855,
+        "cost_per_request": 0.004512
       },
       {
         "bar": 0.85,
-        "quality": 0.862,
-        "cost_per_request": 0.004811
+        "quality": 0.854,
+        "cost_per_request": 0.004652
       },
       {
         "bar": 0.9,
-        "quality": 0.861,
-        "cost_per_request": 0.004972
+        "quality": 0.853,
+        "cost_per_request": 0.005151
       },
       {
         "bar": 0.95,
-        "quality": 0.862,
-        "cost_per_request": 0.005099
+        "quality": 0.858,
+        "cost_per_request": 0.005314
       }
     ],
     "held_out": {
       "ladder": {
         "quality": 0.858,
-        "cost_per_request": 0.003196
+        "cost_per_request": 0.004309
       },
       "always SIMPLE": {
-        "quality": 0.758,
-        "cost_per_request": 0.000957
+        "quality": 0.772,
+        "cost_per_request": 0.000592
       },
       "always MEDIUM": {
-        "quality": 0.767,
-        "cost_per_request": 0.002984
+        "quality": 0.79,
+        "cost_per_request": 0.00328
       },
       "always COMPLEX": {
-        "quality": 0.854,
-        "cost_per_request": 0.00518
+        "quality": 0.822,
+        "cost_per_request": 0.005176
       },
       "always REASONING": {
         "quality": 0.89,
         "cost_per_request": 0.005152
       },
       "oracle": {
-        "quality": 0.945,
-        "cost_per_request": 0.0021
+        "quality": 0.959,
+        "cost_per_request": 0.0019
       }
     },
     "held_out_curve": [
       {
         "bar": 0.6,
-        "quality": 0.83563,
-        "cost_per_request": 0.00203
+        "quality": 0.844781,
+        "cost_per_request": 0.003155
       },
       {
         "bar": 0.65,
-        "quality": 0.844767,
-        "cost_per_request": 0.002525
+        "quality": 0.835644,
+        "cost_per_request": 0.00339
       },
       {
         "bar": 0.7,
-        "quality": 0.840192,
-        "cost_per_request": 0.002776
+        "quality": 0.831068,
+        "cost_per_request": 0.003791
       },
       {
         "bar": 0.75,
-        "quality": 0.858466,
-        "cost_per_request": 0.003196
+        "quality": 0.826493,
+        "cost_per_request": 0.004296
       },
       {
         "bar": 0.8,
-        "quality": 0.858466,
-        "cost_per_request": 0.003505
+        "quality": 0.858452,
+        "cost_per_request": 0.004309
       },
       {
         "bar": 0.85,
-        "quality": 0.867603,
-        "cost_per_request": 0.003771
+        "quality": 0.849315,
+        "cost_per_request": 0.004197
       },
       {
         "bar": 0.9,
-        "quality": 0.876726,
-        "cost_per_request": 0.003922
+        "quality": 0.835616,
+        "cost_per_request": 0.004338
       },
       {
         "bar": 0.95,
-        "quality": 0.872151,
-        "cost_per_request": 0.004053
+        "quality": 0.849315,
+        "cost_per_request": 0.00449
       }
     ],
     "held_out_mix": {
-      "SIMPLE": 0.452,
-      "MEDIUM": 0.164,
-      "COMPLEX": 0.0,
-      "REASONING": 0.384
+      "SIMPLE": 0.384,
+      "MEDIUM": 0.151,
+      "COMPLEX": 0.411,
+      "REASONING": 0.055
     }
   }
 }

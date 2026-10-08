@@ -12,10 +12,12 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CONF_DIR="$HOME/.config/litellmdemo"; RUN="$CONF_DIR/run"; mkdir -p "$RUN" "$ROOT/out"
 export PATH="$HOME/.rd/bin:$PATH"
 step() { printf '\033[1;32m==>\033[0m %s\n' "$*"; }
-running() { [[ -f "$RUN/$1.pid" ]] && kill -0 "$(cat "$RUN/$1.pid")" 2>/dev/null; }
+# running NAME [COMMAND]: its pid is alive and, when given, is that command (a stale pid file can name a reused pid)
+running() { [[ -f "$RUN/$1.pid" ]] && kill -0 "$(cat "$RUN/$1.pid")" 2>/dev/null \
+  && { [[ -z "${2:-}" ]] || ps -p "$(cat "$RUN/$1.pid")" -o command= | grep -q -- "$2"; }; }
 start() {  # name, command...
   local name="$1"; shift
-  if running "$name"; then echo "    $name already running"; return; fi
+  if running "$name" "$(basename "$1")"; then echo "    $name already running"; return; fi
   nohup "$@" > "$ROOT/out/$name.log" 2>&1 &
   echo $! > "$RUN/$name.pid"; echo "    $name started (log: out/$name.log)"
 }

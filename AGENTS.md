@@ -1,7 +1,7 @@
 # Agent instructions
 
 This repository is a runnable demo: a LiteLLM AI Gateway routes every request
-an application sends across twenty-one OCI Generative AI models, deciding the
+an application sends across twenty OCI Generative AI models, deciding the
 route with a router we trained; a langchain-oci agent runs inside an NVIDIA
 OpenShell sandbox that holds no key, and a web control room shows every
 decision with LiteLLM's and OpenShell's own logs. The skills in
