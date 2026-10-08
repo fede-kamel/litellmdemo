@@ -14,9 +14,11 @@ export function GatewayView({ usage }: { usage: Record<string, number> }) {
   useEffect(() => { getJSON<Gateway>("/api/gateway").then(setG); }, []);
   if (!g) return null;
   const fb = Object.fromEntries(g.fallbacks.flatMap((f) => Object.entries(f)));
+  const routeGroups = ROUTES.flatMap((r) => [ROUTE_STYLE[r].group, ...(fb[ROUTE_STYLE[r].group] ?? [])]);
+  const models = new Set(routeGroups.flatMap((grp) => (g.groups[grp] ?? []).map((d) => d.model))).size;
   return (
     <div className="grid grid-cols-[minmax(0,1fr)_340px] gap-4">
-      <Panel kicker="gateway/config.yaml" title="Eight routes, fifteen OCI models, one endpoint" right={<span className="font-mono text-[11px] text-ink-3">routing_strategy: {g.strategy}</span>}>
+      <Panel kicker="gateway/config.yaml" title={`Eight routes, ${models} OCI models, one endpoint`} right={<span className="font-mono text-[11px] text-ink-3">routing_strategy: {g.strategy}</span>}>
         <div className="space-y-2">
           {ROUTES.map((r) => {
             const group = ROUTE_STYLE[r].group;

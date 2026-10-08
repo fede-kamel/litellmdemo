@@ -89,10 +89,17 @@ class RouteRecorder(BaseCallbackHandler):
         decision = decision_of(meta.get("headers"))
         if decision:
             self.emit({"type": "classify", "call": self.calls, **decision})
+        route = route_of(meta.get("headers"))
+        if decision and not route.get("route"):
+            # LiteLLM fell back to another group: the answer's headers name that group, not the
+            # route the router chose. Keep the router's route; the group and fallbacks say the rest.
+            route["route"] = decision["route"]
         self.emit({"type": "llm", "call": self.calls, "asked": self.router, "gateway": self.gateway,
-                   **route_of(meta.get("headers")),
+                   **route,
                    "seconds": round(time.time() - self.started.pop(run_id, time.time()), 2),
-                   "tokens": {"in": usage.get("prompt_tokens"), "out": usage.get("completion_tokens")},
+                   "tokens": {"in": usage.get("prompt_tokens"), "out": usage.get("completion_tokens"),
+                              # a reasoning model's hidden thinking: OCI returns the count, not the text
+                              "reasoning": (usage.get("completion_tokens_details") or {}).get("reasoning_tokens")},
                    "tool_calls": tool_calls, "text": (msg.content if isinstance(getattr(msg, "content", None), str) else "")[:2000]})
 
     def on_tool_start(self, serialized, input_str, **kw):

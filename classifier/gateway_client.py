@@ -55,7 +55,8 @@ async def active_gateway() -> str:
         if len(GATEWAYS) == 1:
             return url
         try:
-            if (await _client_().get(f"{url}/health/liveliness", timeout=2)).status_code == 200:
+            # 5 s: a gateway busy with a long reasoning call answers its liveness check late, not never
+            if (await _client_().get(f"{url}/health/liveliness", timeout=5)).status_code == 200:
                 return url
         except httpx.HTTPError:
             pass

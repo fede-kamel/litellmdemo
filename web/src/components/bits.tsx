@@ -13,8 +13,8 @@ export function RouteChip({ route, size = "sm" }: { route?: string; size?: "sm" 
 }
 
 const VENDOR_TONE: Record<string, string> = {
-  OpenAI: "bg-[#10a37f]/10 text-[#0d7a5f]", Google: "bg-[#4285f4]/10 text-[#2a64c4]", Meta: "bg-[#0866ff]/10 text-[#0650c7]",
-  xAI: "bg-ink/10 text-ink", Cohere: "bg-[#ff7759]/12 text-[#c4472a]",
+  OpenAI: "bg-[#10a37f]/20 text-[#4fd6a8]", Google: "bg-[#4285f4]/20 text-[#8db4ff]", Meta: "bg-[#0866ff]/20 text-[#7aa7ff]",
+  xAI: "bg-ink/10 text-ink", Cohere: "bg-[#ff7759]/20 text-[#ff9f88]",
 };
 
 export function ModelChip({ deployment, lit }: { deployment?: string; lit?: boolean }) {

@@ -51,24 +51,24 @@ function PathStrip({ sb, net, vkey: key, events, running, probe, escape }: {
     <section className="rounded-2xl border border-line bg-panel p-3">
       <div className="grid grid-cols-[1fr_auto_1.15fr_auto_1fr] items-stretch gap-2">
         <div className={clsx(card, "border-[#76b900]/50")}>
-          <div className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-[#5f8f00]"><Box className="size-3.5" />OpenShell sandbox</div>
+          <div className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-[#9be15d]"><Box className="size-3.5" />OpenShell sandbox</div>
           <div className="mt-0.5 text-[12.5px] font-semibold">The agent runs here, with no key</div>
           <div className="text-[11.5px] text-ink-3">{host ? <span className="text-ochre">this run: on the host (sandbox unavailable)</span>
             : net ? `${allowed} allowed${denied ? ` · ${denied} refused` : ""} · only the gateway is reachable`
             : running ? "running in the sandbox…" : `sandbox ${sb?.name ?? "litellmdemo-agent"}${sb ? (sb.ready ? " · ready" : " · not running") : ""}`}</div>
         </div>
         <div className="grid place-items-center text-ink-3"><ArrowRight className="size-5" /></div>
-        <div className={clsx(card, "border-indigo/40 bg-[#f6f5fc]")}>
+        <div className={clsx(card, "border-indigo/40 bg-indigo-soft/40")}>
           <div className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-indigo"><RouteIcon className="size-3.5" />LiteLLM AI Gateway</div>
           <div className="mt-0.5 text-[12.5px] font-semibold">Checks the key, classifies, routes, signs, accounts</div>
           <div className="text-[11.5px] text-ink-3">{calls.length ? `${calls.length} call${calls.length > 1 ? "s" : ""} classified · ${usd(calls.reduce((a, c) => a + (c.cost ?? 0), 0))} charged to ` : "agent key "}
             <span className="font-mono">{key?.key_alias ?? "openshell-agent"}</span></div>
         </div>
         <div className="grid place-items-center text-ink-3"><ArrowRight className="size-5" /></div>
-        <div className={clsx(card, "border-oracle/40 bg-[#fdf6f4]")}>
+        <div className={clsx(card, "border-oracle/40 bg-oracle-soft/40")}>
           <div className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-oracle"><Sparkles className="size-3.5" />OCI Generative AI</div>
           <div className="mt-1 flex flex-wrap gap-1">{models.length ? models.map((d) => <ModelChip key={d} deployment={d} lit />)
-            : <span className="text-[11.5px] text-ink-3">{running ? "waiting for the route…" : "21 models, 5 vendors"}</span>}</div>
+            : <span className="text-[11.5px] text-ink-3">{running ? "waiting for the route…" : "20 models, 5 vendors"}</span>}</div>
         </div>
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-2 px-1">
@@ -226,7 +226,7 @@ export function Ask() {
             {image && (
               <div className="relative shrink-0">
                 <img src={image} alt="attached" className="h-[92px] w-auto rounded-xl border border-line object-cover" />
-                <button onClick={() => setImage(null)} className="absolute -right-2 -top-2 grid size-5 place-items-center rounded-full bg-ink text-white" title="remove the image"><X className="size-3" /></button>
+                <button onClick={() => setImage(null)} className="absolute -right-2 -top-2 grid size-5 place-items-center rounded-full bg-ink text-paper" title="remove the image"><X className="size-3" /></button>
               </div>
             )}
           </div>
@@ -252,7 +252,7 @@ export function Ask() {
             {cfg && bar !== null && (
               <div className="ml-auto flex items-center gap-2 text-[12px]" title={point ? `on ${cfg.held_out_prompts} unseen prompts at this bar: ${Math.round(point.quality * 100)}% good answers at ${usd(point.cost_per_request)} a request` : ""}>
                 <span className="font-semibold">Quality bar</span>
-                <input type="range" min={0.5} max={0.95} step={0.05} value={bar} onChange={(e) => setBar(Number(e.target.value))} className="w-[150px] accent-[#c74634]" aria-label="quality bar" />
+                <input type="range" min={0.5} max={0.95} step={0.05} value={bar} onChange={(e) => setBar(Number(e.target.value))} className="w-[150px] accent-[#e5604d]" aria-label="quality bar" />
                 <span className="w-9 font-mono font-semibold">{Math.round(bar * 100)}%</span>
                 <span className="text-[11.5px] text-ink-3">{bar === cfg.default_bar ? "trained" : bar > cfg.default_bar ? "better, costlier" : "cheaper"}</span>
               </div>
