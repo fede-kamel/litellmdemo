@@ -238,6 +238,15 @@ def load(path: Path):
     return json.loads(path.read_text()) if path.exists() else None
 
 
+def label_stability() -> tuple[int, int]:
+    """Outcome-labelled prompts whose three label runs chose the same cheapest passing route, and how many were labelled."""
+    path = ROOT / "classifier" / "data" / "labels.jsonl"
+    if not path.exists():
+        return 0, 0
+    voted = [r for r in (json.loads(line) for line in path.read_text().splitlines()) if r.get("votes")]
+    return sum(1 for r in voted if len(set(r["votes"])) == 1), len(voted)
+
+
 def shot(slide, name, x, y, w, caption=None, max_h=None):
     """A screenshot; by default never lower than the footer, whatever its length."""
     if (SHOTS / name).exists():
@@ -253,6 +262,8 @@ def build(template: Path, out: Path) -> None:
     meta = load(ROOT / "classifier" / "model" / "meta.json")
     ev = load(EVIDENCE / "classifier-eval.json")
     pay = {p["policy"]: p for p in ev["policies"]} if ev else None   # evidence/classifier-eval.json, by policy
+    stable, labelled = label_stability()
+    stable_pct = round(100 * stable / labelled) if labelled else 0
     appendix = []   # built in story order, moved behind the conclusion: the classifier in depth, for questions
 
     # 1 · cover
@@ -280,10 +291,10 @@ def build(template: Path, out: Path) -> None:
     agenda = [("The blog", "LiteLLM natively supports OCI Generative AI", "3–4"),
               ("LiteLLM", "the architecture, what LiteLLM gives you, isolation and why this order, one request", "5–9"),
               ("Why route", "the portfolio, the toolbox, the use cases, the criteria", "10–13"),
-              ("The router", "LiteLLM's plugin point, and the classifier we plugged in", "14–18"),
-              ("Live demo", "the demo screen, then back to the slides", "19–24"),
-              ("Codex and Kubernetes", "skills as the harness; Kubernetes; field notes; what we would upstream", "25–29"),
-              ("Appendix", "the classifier in depth: fine-tuning, fresh prompts and a second judge", "31–33")]
+              ("The router", "LiteLLM's plugin point, the classifier we plugged in, and where it is wrong", "14–19"),
+              ("Live demo", "the demo screen and the agent trace, then back to the slides", "20–26"),
+              ("Codex and Kubernetes", "skills as the harness; Kubernetes; field notes; what we would upstream", "27–31"),
+              ("Appendix", "the classifier in depth: fine-tuning, fresh prompts and a second judge", "33–35")]
     for i, (t, sub, pages) in enumerate(agenda):
         y = 1.85 + i * 0.7
         rect(s, 0.72, y, 11.9, 0.6, SAND if i % 2 == 0 else WHITE, line=CARD_LINE)
@@ -345,7 +356,7 @@ def build(template: Path, out: Path) -> None:
             ": {:.0%} good answers at {:.0%} less than always-reasoning".format(pay["trained"]["quality"], 1 - pay["trained"]["cost_usd"] / pay["always REASONING"]["cost_usd"]) if pay else "")],
         ["Keys, budgets, limits", "virtual keys with allowed models, budget, rate limit and spend (Postgres)", "the OpenShell agent's key: 5 model groups, $5 per 30 days, 120 requests a minute; anything else is a 403"],
         ["Reliability", "fallbacks, retries, timeouts, cooldowns", "a failing deployment falls back; a classifier outage routes to fallback_tier; {0} of {1} use cases answered".format(*sandbox_run())],
-        ["Observability", "cost and route on every response, spend per key, logging callbacks", "x-litellm-* headers on every call; one ROUTE line per request in the console"],
+        ["Observability", "cost and route on every response, spend per key, logging callbacks", "x-litellm-* headers on every call; one ROUTE line per request in the console; the agent trace reads them call by call"],
         ["Extensibility", "CustomLogger hooks, CustomLLM providers, classifier plugins", "OCI signing hook, the decision header, Codex through OCI's Responses API"],
         ["Credentials in one place", "provider auth lives in the gateway; applications hold a virtual key", "the sandbox holds a placeholder; only LiteLLM signs to OCI"],
     ], col_w=[2.5, 4.3, 5.1], size=11)
@@ -454,6 +465,8 @@ def build(template: Path, out: Path) -> None:
         ["Premium customer", "the same request, a premium contract", "tag: premium", "GPT-5.2"],
         ["Resilience", "a model is down", "fallback", "the next group, no app change"],
     ], col_w=[2.3, 3.8, 2.7, 3.1], size=11.5)
+    text(s, 0.72, 6.05, 11.9, 0.4, "The route each request needs, measured. Today's router sends the SLA escalation and the forecast to the strong route instead: see \u201cWhere the router is wrong\u201d.",
+         size=10.5, color=MUTED)
     repo(s, "app/scenarios.py (each use case, with the route it should take)")
     notes(s, "Every row is a button in the control room. Northwind Cloud is a fictional company; no real customer data.")
 
@@ -505,7 +518,7 @@ def build(template: Path, out: Path) -> None:
 
     # 13 · from labels to a ladder
     s = prs.slides.add_slide(blank)
-    pct = 72
+    pct = stable_pct   # from classifier/data/labels.jsonl: the three label runs agree
     header(s, "Predict each route's chance of a good answer, not one label", "Why a ladder")
     lad = (meta or {}).get("ladder")
     card(s, 0.72, 1.85, 5.6, 2.15, "One label is a coin flip",
@@ -560,6 +573,28 @@ def build(template: Path, out: Path) -> None:
               f"{round((pol['trained']['quality'] - pol['llm']['quality']) * 100)} more than the LLM classifier at {round((1 - pol['trained']['cost_usd'] / pol['llm']['cost_usd']) * 100)}% less, "
               f"and stays {round((pol['always REASONING']['quality'] - pol['trained']['quality']) * 100)} points under always-reasoning at {round((1 - pol['trained']['cost_usd'] / pol['always REASONING']['cost_usd']) * 100)}% less.")
 
+    # 14a · where the router is wrong: one request at a time, measured
+    sv, rl = load(EVIDENCE / "strong-vs-reasoning.json"), load(EVIDENCE / "relabel-gpt-6.1-sol.json")
+    if sv:
+        s = prs.slides.add_slide(blank)
+        header(s, "Routing is a prediction: measure it, one request at a time", "Where the router is wrong")
+        sm = sv["summary"]
+        what = {"support-escalation": "SLA escalation: three outages, the credit, a remediation plan",
+                "analyst-forecast": "GPU budget: three growth scenarios under a quarterly cap"}
+        frac = lambda k: f"{sm[k]['passed']} of {sm[k]['of']}"  # noqa: E731
+        table(s, 0.72, 1.75, 11.9, [["Request (a demo use case)", "The router sends it to", "Strong passed", "Reasoning passed"]] + [
+            [what[p], "strong · GPT-6-sol", frac(f"{p} oci-strong"), frac(f"{p} oci-reasoning")] for p in what], col_w=[5.6, 2.5, 1.9, 1.9], size=12.5)
+        bullets(s, 0.72, 3.3, 11.9, 3.3, [
+            ("What failed.", "Correctness: the strong model got the credit or the scenario arithmetic wrong. Same judge and pass rule as the labels, each answer graded on its own."),
+            ("What we checked.", "GPT-6.1-sol had answered part of the strong route's labels and then left the route. {0} label runs were done again; {1} of {2} labels changed, and these two decisions did not. "
+             "The ladder's estimate comes from similar labelled requests, and they say strong.".format(rl["runs_labelled_again"], rl["label_changed"], rl["prompts"]) if rl else ""),
+            ("What LiteLLM gives you meanwhile.", "An app that knows a request is hard asks for a model group by name; the decision comes back in every response header, so each miss is visible and can be counted."),
+            ("What fixes it.", "More labelled requests of this kind, constrained arithmetic, and the outcomes of live traffic fed back into the labels."),
+        ], size=12.5)
+        repo(s, "classifier/strong_vs_reasoning.py · evidence/strong-vs-reasoning.json · classifier/label.py --redo · evidence/relabel-gpt-6.1-sol.json")
+        notes(s, f"{sv['n']} answers per route per prompt, graded by {sv['judge']}, pass = {sv['pass']}. The measurement puts the policy text in the prompt and gives no tools; "
+                 "the live agent has a calculate tool and can do better. In the demo this is an optional step: the router's known miss.")
+
     # 14b · does it hold up: fresh prompts, a second judge
     rb = load(EVIDENCE / "robustness.json")
     if rb:
@@ -594,7 +629,7 @@ def build(template: Path, out: Path) -> None:
     rect(s, 0, 0, 13.333, 7.5, TEAL)
     text(s, 0.72, 2.2, 11.9, 0.4, "LIVE DEMO · SWITCH TO THE BROWSER", size=13, color=YELLOW, bold=True, spacing=220)
     text(s, 0.72, 2.7, 11.9, 1.0, "The routing control room", size=40, color=WHITE, bold=True)
-    beats = ["Type a request: the agent runs in an OpenShell sandbox; LiteLLM checks its key, classifies, routes and signs",
+    beats = ["Route a request: the agent runs in OpenShell; the trace shows each LiteLLM decision, each tool and its result",
              "Business rules in config: a premium tag takes another lane; the agent's key carries its models, budget and spend",
              "Use cases: support, code (to Codex), a forecast, Japanese, an invoice photo; each call on the route map",
              "A multi-step agent: a planner splits one job into tasks, and LiteLLM routes each task to its own model",
@@ -611,6 +646,7 @@ def build(template: Path, out: Path) -> None:
     table(s, 0.72, 1.85, 11.9, [
         ["In the demo", "What it shows", "The LiteLLM part"],
         ["a request routed and explained", "each route's chance of a good answer against the bar", "the complexity router calling our classifier"],
+        ["the agent trace", "every call's decision, every tool's arguments and result", "LiteLLM's response headers, call by call"],
         ["the agent in OpenShell", "no key in the sandbox; one allowed endpoint", "a virtual key with models, budget and rate limit"],
         ["a premium tag on the same request", "another lane for another contract", "tag routing, in config"],
         ["the quality bar moving the route", "one dial between spend and answer quality", "a per-request setting the router passes through"],
@@ -629,7 +665,7 @@ def build(template: Path, out: Path) -> None:
         ("Use cases, in the order of the talk.", "Each says the one thing it shows: a cheap model, reasoning, Codex, a rule, a fallback."),
         ("The request.", "One pass or multi-step, an image, and the quality bar."),
         ("Sandbox → LiteLLM → OCI.", "Where the request went: no key in the sandbox; key check, classify, route, sign and account in LiteLLM; the models that answered. 'Try to escape' shows the refusals."),
-        ("What happened.", "Every model call with the decision LiteLLM made for it; click a call for its ladder. Then the answer, and why the first call got its route."),
+        ("What happened.", "The agent trace: every model call with LiteLLM's decision, every tool with its arguments and result, each task's result; click a call for its ladder. Then the answer, and why the first call got its route."),
     ], size=12.5)
     repo(s, "ui/sandbox.py · gateway/route_headers.py · classifier/explain.py · web/src/components/Ask.tsx")
     notes(s, "Nothing on this screen is written by a model after the fact: every sentence is built from the router's own numbers and the labels on file.")
@@ -646,6 +682,21 @@ def build(template: Path, out: Path) -> None:
     repo(s, "app/agent.py · ui/server.py · web/src/components/Ask.tsx · web/src/components/RouteMap.tsx")
     notes(s, "The UI is a thin client over the gateway's own headers.")
 
+    # 17a · the agent trace
+    s = prs.slides.add_slide(blank)
+    header(s, "Every model call, every tool and its result, in order", "The agent trace")
+    shot(s, "09-agent-trace.png", 0.6, 1.5, 6.6, max_h=5.45)
+    bullets(s, 7.5, 1.65, 5.2, 5.1, [
+        ("LiteLLM's decision, per call.", "The route and why, the model it picked, which check decided and in how many milliseconds, tokens in and out, cost, fallbacks."),
+        ("What the model did.", "Asked the agent to run a tool, or answered. Long answers fold; a task's last answer is its result, passed to the next task."),
+        ("Every tool.", "Its arguments and what it returned: the policy text, the account, the arithmetic."),
+        ("Reasoning models.", "A call shows how many reasoning tokens it spent. OCI returns the count, not the text, so the screen shows no more than that."),
+        ("Live.", "While the agent works, one line says what is happening: classifying, running a tool, reading its result."),
+    ], size=12)
+    repo(s, "web/src/components/Timeline.tsx · app/agent.py (RouteRecorder) · gateway/route_headers.py")
+    notes(s, "Everything on this screen comes from LiteLLM's response headers and the agent's own callbacks; no model writes any of it after the fact. "
+             "Point at a tool's result, then at the next call: the model read it, and LiteLLM classified that call again.")
+
     # 17b · multi-step agent
     s = prs.slides.add_slide(blank)
     header(s, "One job, split into tasks; each task routed on its own", "A multi-step agent: a model per task")
@@ -656,7 +707,7 @@ def build(template: Path, out: Path) -> None:
         ("3 · Every call inside a task is classified too.", "The screen groups the calls by task, each with its decision."),
         ("Four jobs.", "Escalation, incident update, invoice photo, GPU budget pack. The invoice job's photo goes to the task that reads it, and from there to VISION; four runs each gave its facts right 13 times in 16; every miss was arithmetic on the balanced route."),
         ("What it found.", "A coding task in billing words went to balanced: no training example was worded that way. With 64 such requests and 64 counter-examples: 100% to Codex, 3% false alarms."),
-        ("What it costs.", "The misses are a route's weakest member: LiteLLM's latency routing usually picks Grok 4.20 non-reasoning in the balanced route, right 3 in 8 on the overrun task alone; GPT-5.4-mini, same route, 8 in 8. So it moved to the route's backup, and the router was relabelled."),
+        ("What it costs.", "The misses were a route's weakest member: LiteLLM's latency routing usually picked Grok 4.20 non-reasoning in the balanced route, right 3 in 8 on the overrun task alone; GPT-5.4-mini, same route, 8 in 8. Grok moved to the route's backup and the router was relabelled. An arithmetic task can still land on strong where reasoning does better."),
     ], size=11.5)
     notes(s, "Runs differ a little because the planner words tasks differently; "
              "every run in testing sent the coding task to Codex after the fix. Earlier results travel in the system prompt, which the router does not read, "
@@ -703,19 +754,19 @@ def build(template: Path, out: Path) -> None:
     header(s, "What cost real time", "Field notes")
     table(s, 0.72, 1.85, 11.9, [
         ["Where", "What we found"],
-        ["Complexity router · Gemini", "It sets max_tokens from the model map (65,536); OCI's Gemini accepts < 65,536. Every SIMPLE request fell back silently. Declare max_output_tokens."],
-        ["Complexity router · Llama 4", "The map says 8,192 output tokens; OCI allows 4,096. Same failure, same fix."],
+        ["Complexity router · Gemini, Llama 4", "It sets max_tokens from the model map: 65,536 for Gemini (OCI accepts less), 8,192 for Llama 4 (OCI allows 4,096). Every request fell back silently. Declare max_output_tokens."],
         ["Cohere vision", "LiteLLM sends cohere.* in Cohere format; OCI rejects it for command-a-vision. Route images to Gemini or Llama 4."],
-        ["Model catalog", "Listed is not served everywhere: Grok 4 and Grok Code returned 404 on demand; Codex answers only on the Responses API. Smoke-test first."],
+        ["Model catalog", "Listed is not served everywhere: Grok 4 and Grok Code returned 404 on demand. Codex answers only on OCI's Responses API: a small LiteLLM custom provider translates chat requests to it."],
         ["LLM classifier", "Its default timeout is 3 s; GPT-5 nano took longer, so it silently fell back to the heuristic. Use the fastest model (Flash-Lite) and a longer timeout."],
-        ["GPT-6 and tools", "OCI serves GPT-6 with reasoning on and refuses function tools; reasoning_effort none, sent only with tools, fixes it."],
-        ["Codex", "OCI serves GPT-5.3-codex only on its Responses API. A small LiteLLM custom provider translates chat requests to it."],
+        ["GPT-6 and tools", "OCI serves GPT-6 with reasoning on and refuses function tools; reasoning_effort none, sent only with tools, fixes it. GPT-6.1-sol refuses tools on chat completions at any effort, so it left the strong route."],
         ["Agent requests", "The agent's system prompt and tool turns drowned the request: every prompt looked alike, and Spanish read as English. Classify the user turns only."],
-        ["Labels", "Only 63% of prompts were label-stable across three runs (72% with the newer models). Predict each route's pass probability, not one label."],
+        ["Labels", f"Only 63% of prompts were label-stable across three runs ({stable_pct}% with today's models). Predict each route's pass probability, not one label."],
+        ["A model leaves a route", "Its answers stay in the labels: 22% of the strong route's label runs were GPT-6.1-sol's. label.py --redo runs every one of them again with the current models."],
         ["OKE signing", "Instance-principal signing failed after ~20 minutes: LiteLLM's do_request_sign() skips the SDK's token refresh. Refresh in the pre-call hook."],
         ["OKE on a corporate network", "NAT sent port 6443 out of a different address than web traffic; the API allowlist must use the address seen on 6443."],
-    ], col_w=[3.0, 8.9], size=10)
-    notes(s, "The first two are worth an upstream fix: OCI-specific max_output_tokens in the model map.")
+        ["Keep-alive", "The control room's client and LiteLLM's server both keep idle connections 5 s; a request on a just-closed one failed at once and marked a healthy gateway down. Expire idle connections at 2 s; retry a stale one once."],
+    ], col_w=[3.0, 8.9], size=9.5)
+    notes(s, "The first is worth an upstream fix: OCI-specific max_output_tokens in the model map.")
 
     # 22 · upstream
     s = prs.slides.add_slide(blank)
@@ -740,7 +791,7 @@ def build(template: Path, out: Path) -> None:
     s = prs.slides.add_slide(blank)
     header(s, "From a laptop to an OCI GPU", "What is next")
     steps(s, 0.72, 1.95, 11.9, 2.8, [
-        ("More data", "Thousands of prompts from real traffic logs (redacted), labelled by the same outcome contract.", TEAL),
+        ("More data", "Thousands of prompts from real traffic logs (redacted), labelled by the same outcome contract; first where the router is wrong: constrained arithmetic.", TEAL),
         ("Bigger model", "Fine-tune the encoder (+8 points in an earlier test, in 47 s) or a small LLM on an OCI GPU, with the same scripts.", INDIGO),
         ("Serve it", "As an OCI Data Science model deployment or a vLLM endpoint; plugged in with custom or oss_classifier.", RED),
         ("Close the loop", "Log every decision and its outcome; retrain on what the gateway learns.", GREEN),

@@ -96,7 +96,7 @@ function Legend() {
   return (
     <div className="mb-3 grid grid-cols-3 gap-3 rounded-xl border border-line bg-deep/60 px-4 py-2.5 text-[11.5px] leading-snug">
       {item("bg-indigo", "LiteLLM", "reads each model call, decides its route and picks the model. Click a call for its ladder.")}
-      {item("bg-oracle", "The model", "answers, or asks the agent to run a tool. Reasoning models think first; OCI reports how long, not what.")}
+      {item("bg-oracle", "The model", "answers, or asks the agent to run a tool. Reasoning models think first; OCI reports how many tokens, not what they said.")}
       {item("bg-moss", "A tool", "the agent runs it and hands the result back to the model, in a new call that LiteLLM classifies again.")}
     </div>
   );

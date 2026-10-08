@@ -67,6 +67,10 @@ try {
   await runUseCase("Escalation with SLA credits");
   check("a hard support request answers, with every model call", await visible("What happened") && await page.locator("text=/model calls?, each classified by LiteLLM/").count() > 0);
   check("a one-pass run explains why its calls share a route", await page.locator("text=/same route|Multi-step:/").count() > 0);
+  // for the deck: the agent trace of this run (the sticky header would cover its top)
+  await page.evaluate(() => { document.querySelector("header").style.position = "static"; });
+  await page.locator('[data-testid="timeline"]').locator("xpath=..").screenshot({ path: `${out}/09-agent-trace.png` });   // with its legend
+  await page.evaluate(() => { document.querySelector("header").style.position = ""; });
   await page.locator("button:has-text('Route map')").click();
   check("the route map shows the route", await page.locator("svg text").filter({ hasText: /SIMPLE|MEDIUM|REASONING/ }).first().waitFor({ timeout: 15000 }).then(() => true, () => false));
   {

@@ -1,0 +1,9 @@
+{
+ "deployment": "openai.gpt-6.1-sol",
+ "runs_labelled_again": 237,
+ "prompts": 124,
+ "label_changed": 16,
+ "command": "uv run python classifier/label.py --redo openai.gpt-6.1-sol",
+ "why": "GPT-6.1-sol left the strong route on 2026-10-07 (OCI refuses function tools for it on chat completions); 22% of the strong route's label runs were its answers. Every such run was done again, all three routes and one judging.",
+ "strong_route_after": "every strong-route label run answered by openai.gpt-6-sol"
+}

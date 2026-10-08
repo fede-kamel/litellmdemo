@@ -381,7 +381,7 @@ def classifier() -> dict:
     if labels.exists():
         rows = [json.loads(line) for line in labels.read_text().splitlines()]
         voted = [r for r in rows if r.get("votes")]
-        same = sum(1 for r in voted if len({{"COMPLEX": "REASONING"}.get(v, v) for v in r["votes"]}) == 1)
+        same = sum(1 for r in voted if len(set(r["votes"])) == 1)   # the three runs chose the same cheapest passing route
         out["labels"] = {"outcome_prompts": len(voted), "runs": 3, "unanimous": same,
                          "with_reasoning": sum(1 for r in rows if r.get("reasoning")),
                          "families": len({r["family"] for r in rows})}

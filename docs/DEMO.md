@@ -16,7 +16,7 @@ uv run python scripts/record_runs.py      # a recorded run of every use case, fo
    `oci session authenticate --profile-name <profile> --region us-ashburn-1`, then `scripts/local/push-session.sh`.
 2. On the venue's network: `scripts/demo-up.sh` → `PREFLIGHT OK`.
 3. Open http://127.0.0.1:8780 in Chrome, full screen. Run "FAQ: reset a password" once to warm everything up.
-4. Have the deck open on slide 19 (the demo divider).
+4. Have the deck open on slide 20 (the demo divider).
 
 ## The click path (about 8 minutes)
 
