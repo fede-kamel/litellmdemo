@@ -293,8 +293,8 @@ def build(template: Path, out: Path) -> None:
               ("Why route", "the portfolio, the toolbox, the use cases, the criteria", "10–13"),
               ("The router", "the plugin point, our classifier, where it is wrong", "14–19"),
               ("Live demo", "the demo screen and the agent trace, then back to the slides", "20–26"),
-              ("Codex and Kubernetes", "skills as the harness; Kubernetes; field notes; what we would upstream", "27–31"),
-              ("Appendix", "the classifier in depth: fine-tuning, fresh prompts and a second judge", "33–35")]
+              ("Codex and the cloud", "skills as the harness; everything in Oracle Cloud; field notes; upstream", "27–32"),
+              ("Appendix", "the classifier in depth: fine-tuning, fresh prompts and a second judge", "34–36")]
     for i, (t, sub, pages) in enumerate(agenda):
         y = 1.85 + i * 0.7
         rect(s, 0.72, y, 11.9, 0.6, SAND if i % 2 == 0 else WHITE, line=CARD_LINE)
@@ -328,7 +328,7 @@ def build(template: Path, out: Path) -> None:
         ["Vision", "GPT-6, GPT-5.4, Gemini 2.5, Grok, Llama 4", "the VISION route (GPT-6-luna, Gemini 2.5 Flash; Llama 4 Maverick backup)"],
         ["Reasoning controls", "GPT-5/6, Grok, o-series", "the REASONING route (Grok 4.20 reasoning, Grok 4.7)"],
         ["Embeddings", "Cohere Embed, batches up to 96", "available as a group; the classifier embeds locally"],
-        ["Auth", "API key, env vars, SDK signer, Instance Principal, OKE Workload Identity", "SDK signer with the operator's OCI session"],
+        ["Auth", "API key, env vars, SDK signer, Instance Principal, OKE Workload Identity", "Instance Principal: the OKE node signs; no key or session anywhere in the cloud"],
     ], col_w=[2.6, 4.6, 4.7], size=12)
     text(s, 0.72, 5.55, 11.9, 0.9, [[("Every OCI model is ", {"size": 13.5, "color": INK}), ("oci/<vendor.model>", {"font": MONO, "size": 13, "color": TEAL}),
         (". Applications never branch on the vendor: the gateway picks the adapter, transforms the request, signs it and normalises the response.", {"size": 13.5, "color": INK})]], line=1.15)
@@ -634,11 +634,11 @@ def build(template: Path, out: Path) -> None:
              "Use cases: support, code (to Codex), a forecast, Japanese, an invoice photo; each call on the route map",
              "A multi-step agent: a planner splits one job into tasks, and LiteLLM routes each task to its own model",
              "Under the hood: LiteLLM's heuristic, its LLM classifier and our ladder on the same request",
-             "Try to escape: OCI, OpenAI and the admin API refused; a failing gateway fails over to the laptop"]
+             "Try to escape: OCI, OpenAI and the admin API refused; a failing deployment falls back to the next group"]
     text(s, 0.72, 3.85, 11.9, 3.0, [[(f"{i + 1}   ", {"bold": True, "color": YELLOW, "size": 15}), (b, {"color": WHITE, "size": 15})] for i, b in enumerate(beats)], line=1.5)
     text(s, 0.72, 7.08, 11.9, 0.3, FOOTER, size=8, color=RGBColor(0xC8, 0xD6, 0xDB))
-    notes(s, "Before the talk: scripts/demo-up.sh, which ends with PREFLIGHT OK, and an OCI session with more than 30 minutes left. "
-             "If the network fails, the control room replays recorded runs, labelled as replays; the screenshots on the next slides are the last resort.")
+    notes(s, "Before the talk: scripts/oci/preflight.sh, which ends with CLOUD PREFLIGHT OK and the public URL. Nothing to log in to: the demo runs in OCI, "
+             "the browser is the only thing on the laptop. If a model is slow, the control room replays recorded runs, labelled as replays; the screenshots on the next slides are the last resort.")
 
     # 16 · what you saw
     s = prs.slides.add_slide(blank)
@@ -652,31 +652,31 @@ def build(template: Path, out: Path) -> None:
         ["the quality bar moving the route", "one dial between spend and answer quality", "a per-request setting the router passes through"],
         ["code going to Codex", "the right model for the task, on the API OCI serves it on", "a custom provider, plugged into the same routes"],
         ["one job split into tasks", "each task on the model it needs", "every step is its own request, routed on its own"],
-        ["a failing model, then a failing gateway", "the answer still arrives", "fallbacks and retries in the router"],
-        ["the console", "every request's key, route, model and cost", "LiteLLM's own callbacks and response headers"],
+        ["a failing model", "the answer still arrives, from the next group", "fallbacks and retries in the router"],
+        ["the live logs", "every request's key, route, model and cost", "LiteLLM's own callbacks and response headers"],
     ], col_w=[3.5, 4.4, 4.0], size=12)
     notes(s, "Land the demo, then show the screens in detail.")
 
     # 16b · ask and explain
     s = prs.slides.add_slide(blank)
-    header(s, "Pick a use case, route it, and see every decision LiteLLM made", "The demo screen")
-    shot(s, "00-ask-escape.png", 0.72, 1.7, 7.2)
+    header(s, "Pick a use case, route it: the request, the decision, the answer", "The demo screen")
+    shot(s, "00-ask.png", 0.72, 1.7, 7.2)
     bullets(s, 8.15, 1.85, 4.5, 4.9, [
-        ("Use cases, in the order of the talk.", "Each says the one thing it shows: a cheap model, reasoning, Codex, a rule, a fallback."),
-        ("The request.", "One pass or multi-step, an image, and the quality bar."),
-        ("Sandbox → LiteLLM → OCI.", "Where the request went: no key in the sandbox; key check, classify, route, sign and account in LiteLLM; the models that answered. 'Try to escape' shows the refusals."),
-        ("What happened.", "The agent trace: every model call with LiteLLM's decision, every tool with its arguments and result, each task's result; click a call for its ladder. Then the answer, and why the first call got its route."),
+        ("1 · The request.", "A use case from the rail, in the order of the talk, or your own; one pass or multi-step, an image, the quality bar. One line says where it goes: the sandbox, LiteLLM, OCI."),
+        ("2 · The decision.", "The route, the model, the time and the cost, and why in one sentence; beside it, each route's chance of a good answer against the bar. A multi-step run shows a row per task."),
+        ("3 · The answer.", "From the model the gateway chose, with the run's time and spend."),
+        ("Details, one at a time.", "Every call (the agent trace), the route map, why in detail, the sandbox (what it allowed and refused; 'Try to escape'), the live logs."),
     ], size=12.5)
     repo(s, "ui/sandbox.py · gateway/route_headers.py · classifier/explain.py · web/src/components/Ask.tsx")
     notes(s, "Nothing on this screen is written by a model after the fact: every sentence is built from the router's own numbers and the labels on file.")
 
     # 17 · the control room
     s = prs.slides.add_slide(blank)
-    header(s, "LiteLLM classifies every call, not just the first", "What happened")
+    header(s, "LiteLLM classifies every call, not just the first", "Every call")
     shot(s, "02-this-run.png", 0.72, 1.7, 7.6)
     bullets(s, 8.5, 1.85, 4.1, 4.9, [
         ("Every call is classified.", "The agent calls the model, runs a tool, calls again: each call reaches LiteLLM, and each gets a decision."),
-        ("One pass, one route.", "Every call carries the same request, so every call gets the same route. The screen says so, and points to multi-step."),
+        ("One pass, one route.", "Every call carries the same request, so every call gets the same route. The line above the trace says so, and points to multi-step."),
         ("The route map.", "Request, classifier, eight routes, every model: the path lights up live. Zoom, pan and full screen for the room."),
     ], size=12.5)
     repo(s, "app/agent.py · ui/server.py · web/src/components/Ask.tsx · web/src/components/RouteMap.tsx")
@@ -700,11 +700,11 @@ def build(template: Path, out: Path) -> None:
     # 17b · multi-step agent
     s = prs.slides.add_slide(blank)
     header(s, "One job, split into tasks; each task routed on its own", "A multi-step agent: a model per task")
-    shot(s, "06-plan-panel.png", 0.6, 1.55, 6.4)
+    shot(s, "06-plan.png", 0.6, 1.55, 6.4)
     bullets(s, 7.3, 1.7, 5.4, 5.2, [
         ("1 · Plan.", "A planner call splits the request into tasks. LiteLLM routes the planner like any other call."),
         ("2 · Route each task.", "Each task reaches LiteLLM as its own request, so each is classified on its own words: a lookup, a calculation, a reply and a function can each get a different model."),
-        ("3 · Every call inside a task is classified too.", "The screen groups the calls by task, each with its decision."),
+        ("3 · Every call inside a task is classified too.", "The decision card shows a row per task: its route, its model, its cost; Every call groups the trace by task."),
         ("Four jobs.", "Escalation, incident update, invoice photo, GPU budget pack. The invoice job's photo goes to the task that reads it, and from there to VISION; four runs each gave its facts right 13 times in 16; every miss was arithmetic on the balanced route."),
         ("What it found.", "A coding task in billing words went to balanced: no training example was worded that way. With 64 such requests and 64 counter-examples: 100% to Codex, 3% false alarms."),
         ("What it costs.", "The misses were a route's weakest member: LiteLLM's latency routing usually picked Grok 4.20 non-reasoning in the balanced route, right 3 in 8 on the overrun task alone; GPT-5.4-mini, same route, 8 in 8. Grok moved to the route's backup and the router was relabelled. An arithmetic task can still land on strong where reasoning does better."),
@@ -732,7 +732,7 @@ def build(template: Path, out: Path) -> None:
     ], col_w=[3.0, 4.6], size=12)
     bullets(s, 8.6, 1.85, 4.05, 4.8, [
         ("Five skills.", "One per part: running the demo, the gateway, routing, the router, the checks. Codex loads the one the task needs."),
-        ("House rules.", "No secrets, no clusters but the local one, no paid runs without asking, never change code to make a check pass."),
+        ("House rules.", "No secrets; the cloud changes only through the scripts, and only when asked; no paid runs without asking; never change code to make a check pass."),
         ("You keep one step.", "The OCI login, in your own terminal; Codex says when it is needed."),
     ], size=12.5)
     repo(s, "AGENTS.md · .agents/skills/ · codex/README.md · codex/PROMPT-ops.md · evidence/codex/")
@@ -741,10 +741,14 @@ def build(template: Path, out: Path) -> None:
 
     # 20 · on Kubernetes
     s = prs.slides.add_slide(blank)
-    header(s, "The gateway and the classifier as two services on OKE", "On Kubernetes")
+    header(s, "Everything in one tenancy, nothing on a laptop", "In Oracle Cloud")
     figure(s, "figure5-kubernetes.png", 2.4, 1.6, 8.5)
-    repo(s, "scripts/oci/up.sh · scripts/oci/deploy.sh · deploy/k8s/litellmdemo.yaml · scripts/oci/down.sh")
-    notes(s, "Instance principal: the node signs, no key or token in the cluster; Workload Identity would scope it to the pod and needs an Enhanced cluster. "
+    repo(s, "scripts/oci/up.sh · deploy.sh · control.sh · control-deploy.sh · edge.sh · preflight.sh · down.sh · deploy/k8s/ · evidence/cloud-run.md")
+    notes(s, "The gateway, the classifier and Postgres on an OKE Basic cluster; the control room, the OpenShell gateway and the agent's sandbox on one Ampere VM in the same VCN "
+             "(rootless Podman; Landlock had to be switched on in the UEK kernel); an OCI API Gateway in front with Oracle's hostname and certificate, 50 requests a second per client. "
+             "Checked from the outside on 2026-10-12: CLOUD PREFLIGHT OK 10/10, every use case through the public URL 15/17 (the two misses are the planner's known variance), "
+             "the browser test 28/28 (evidence/cloud-run.md). Cost: within the Always Free A1 allowance when the tenancy has it to spare, otherwise by the hour. "
+             "Instance principal: the node signs, no key or token in the cluster; Workload Identity would scope it to the pod and needs an Enhanced cluster. "
              "Kill the classifier pod during a request: the plugin declines within 3 s, LiteLLM routes to fallback_tier MEDIUM, the request still answers. "
              "No registry: stock python image, pinned packages via an init container, code and the 7 KB head as ConfigMaps. "
              "Measured on the cluster (evidence/oke-run.json): route probes 11/11, use cases 13/13, browser test 20/20, 70-minute token-rotation soak 24/24; a classifier outage answered on MEDIUM; a killed pod is replaced in about 20 s; classification 79 ms median on one Ampere core.")
@@ -762,11 +766,23 @@ def build(template: Path, out: Path) -> None:
         ["Agent requests", "The agent's system prompt and tool turns drowned the request: every prompt looked alike, and Spanish read as English. Classify the user turns only."],
         ["Labels", f"Only 63% of prompts were label-stable across three runs ({stable_pct}% with today's models). Predict each route's pass probability, not one label."],
         ["A model leaves a route", "Its answers stay in the labels: 22% of the strong route's label runs were GPT-6.1-sol's. label.py --redo runs every one of them again with the current models."],
-        ["OKE signing", "Instance-principal signing failed after ~20 minutes: LiteLLM's do_request_sign() skips the SDK's token refresh. Refresh in the pre-call hook."],
-        ["OKE on a corporate network", "NAT sent port 6443 out of a different address than web traffic; the API allowlist must use the address seen on 6443."],
-        ["Keep-alive", "The control room's client and LiteLLM's server both keep idle connections 5 s; a request on a just-closed one failed at once and marked a healthy gateway down. Expire idle connections at 2 s; retry a stale one once."],
-    ], col_w=[3.0, 8.9], size=9.5)
+    ], col_w=[3.0, 8.9], size=10.5)
     notes(s, "The first is worth an upstream fix: OCI-specific max_output_tokens in the model map.")
+
+    # 21b · field notes, in the cloud
+    s = prs.slides.add_slide(blank)
+    header(s, "What cost real time, running it in Oracle Cloud", "Field notes · in the cloud")
+    table(s, 0.72, 1.85, 11.9, [
+        ["Where", "What we found"],
+        ["OKE signing", "Instance-principal signing failed after ~20 minutes: LiteLLM's do_request_sign() skips the SDK's token refresh. Refresh in the pre-call hook."],
+        ["OKE on a corporate network", "NAT sent port 6443 out of a different address than web traffic; the API allowlist must use the address seen on 6443, and a NAT pool shifts: allow the /24."],
+        ["OpenShell on Oracle Linux", "UEK builds Landlock in but leaves it off: the sandbox fails its probe until lsm=landlock,... is on the kernel command line. Rootless Podman also needs the cpu controller delegated to the user."],
+        ["Linux argument limit", "One argument is capped at 128 KiB on Linux (macOS allows 1 MiB): the 300-page contract failed with 'Argument list too long' until requests reached the sandbox through a file."],
+        ["API Gateway and streams", "OCI API Gateway closes a response that is silent for 15 s; a comment every 5 s keeps a run's event stream alive. The CLI's --wait-for-state fails silently for api-gateway resources: poll."],
+        ["Keep-alive", "The control room's client and LiteLLM's server both keep idle connections 5 s; a request on a just-closed one failed at once and marked a healthy gateway down. Expire idle connections at 2 s; retry a stale one once."],
+        ["Stale ConfigMaps", "The cluster ran a six-day-old gateway (no Codex provider, an older head) while the laptop ran the repo: CODE answered from GPT-5.1. Pods restart on the hash of what they mount; deploy after every change."],
+    ], col_w=[3.0, 8.9], size=10.5)
+    notes(s, "Each row cost at least an hour; the Landlock one cost the afternoon. All of it is in README's field notes and evidence/cloud-run.md.")
 
     # 22 · upstream
     s = prs.slides.add_slide(blank)
@@ -789,7 +805,7 @@ def build(template: Path, out: Path) -> None:
 
     # 23 · next
     s = prs.slides.add_slide(blank)
-    header(s, "From a laptop to an OCI GPU", "What is next")
+    header(s, "From one small node to an OCI GPU", "What is next")
     steps(s, 0.72, 1.95, 11.9, 2.8, [
         ("More data", "Thousands of prompts from real traffic logs (redacted), labelled by the same outcome contract; first where the router is wrong: constrained arithmetic.", TEAL),
         ("Bigger model", "Fine-tune the encoder (+8 points in an earlier test, in 47 s) or a small LLM on an OCI GPU, with the same scripts.", INDIGO),
@@ -798,7 +814,7 @@ def build(template: Path, out: Path) -> None:
     ])
     text(s, 0.72, 5.05, 11.9, 1.2, [[("Nothing in the gateway changes: ", {"bold": True, "color": INK, "size": 14}),
         ("the classifier plugs in behind the same classify() contract, and the routes, tags and fallbacks stay as they are.", {"color": BODY, "size": 13.5})]], line=1.15)
-    notes(s, "Any GPU work needs an explicit go-ahead; the demo runs on a laptop or on the one-node OKE cluster, plus OCI GenAI.")
+    notes(s, "Any GPU work needs an explicit go-ahead; the demo runs in OCI on one A1 node and one A1 VM, plus OCI Generative AI.")
 
     # 22 · conclusion
     s = prs.slides.add_slide(blank)
