@@ -79,9 +79,9 @@ export default function App() {
         </div>
       </header>
       <main className="mx-auto w-full max-w-[1500px] flex-1 px-6 py-5">
-        {tab === "demo" && <Ask />}
-        {tab === "hood" && (
-          <div className="space-y-4">
+        {/* both screens stay mounted: a run survives a look at the router and back */}
+        <div className={clsx(tab !== "demo" && "hidden")}><Ask /></div>
+        <div className={clsx("space-y-4", tab !== "hood" && "hidden")}>
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex rounded-xl bg-sand p-1">
                 {HOOD.map((h) => (
@@ -97,8 +97,7 @@ export default function App() {
             {hood === "classifier" && <ClassifierView />}
             {hood === "gateway" && <GatewayView usage={stats?.by_deployment ?? {}} cluster={gw?.cluster ?? "local"} />}
             <Console />
-          </div>
-        )}
+        </div>
       </main>
     </div>
   );
