@@ -297,8 +297,68 @@ gateway's configuration.
 
 ## Run it
 
-On one laptop, for a talk: Rancher Desktop (Kubernetes), NVIDIA OpenShell and
-an OCI session. Everything runs locally; the only outside services are OCI
+### In Oracle Cloud
+
+Everything runs in one OCI tenancy and nothing on a laptop: the gateway, the
+classifier and Postgres on an OKE Basic cluster with one Ampere A1 node; the
+control room, the OpenShell gateway and the agent's sandbox on one Ampere A1 VM
+beside it; an OCI API Gateway in front, with a hostname and a certificate that
+Oracle issues. The gateway signs OCI calls as its node, so there is no session
+to renew and no key anywhere in the cloud.
+
+![On Kubernetes](docs/figures/figure5-kubernetes.png)
+
+```shell
+cp deploy/deploy.example.json ~/.config/litellmdemo/deploy.json   # your OCI profile and regions
+scripts/oci/up.sh              # compartment, VCN, cluster, node, IAM; about 15 minutes
+scripts/oci/deploy.sh          # the gateway, the classifier, Postgres; the agent's virtual key
+scripts/oci/control.sh         # the VM: rootless Podman, OpenShell, Landlock on; the gateway's VCN node port
+scripts/oci/control-deploy.sh  # the control room and the sandbox on the VM, as services; rerun after a change
+scripts/oci/edge.sh            # the API gateway; prints the public URL: EDGE OK https://...
+scripts/oci/preflight.sh       # every piece, from the outside; ends with CLOUD PREFLIGHT OK
+LITELLMDEMO_APP=https://<host> uv run python scripts/e2e.py        # every use case, through the public URL
+LITELLMDEMO_APP=https://<host> node web/scripts/ui-e2e.mjs          # the screens, clicked in a browser
+scripts/oci/down.sh            # delete everything the scripts created
+```
+
+- **No OCI key in the cloud.** The gateway sets `OCI_AUTH=instance_principal`
+  and signs as the node: a dynamic group of the demo's instances and one
+  policy (`use generative-ai-family in compartment litellmdemo`) allow it.
+  OKE Workload Identity scopes this to the pod's service account instead of
+  the node; it needs an Enhanced cluster.
+- **The classifier is its own service.** `oci-auto-trained` calls
+  `route-classifier` over HTTP with a 3 s budget. If the classifier is down
+  or slow, the plugin declines and LiteLLM routes to `fallback_tier`: routing
+  degrades, requests keep answering.
+- **No registry.** The pods run stock images; an init container installs
+  pinned packages (`deploy/requirements/`), and the code, the gateway config
+  and the 7 KB head come from ConfigMaps. A pod restarts exactly when the hash
+  of what it mounts changes. The VM builds the sandbox image with Podman.
+- **One public face.** The API gateway forwards every path to the control
+  room's VCN address, 50 requests a second per client; the control room, the
+  LiteLLM gateway and the VM are not reachable from the internet (SSH admits
+  the operator's address only). The agent's virtual key keeps its own budget
+  and rate in LiteLLM, so a visitor cannot spend more than it allows.
+- **Streams through the gateway.** API Gateway closes a response that stays
+  silent for 15 s; the control room's event streams send a comment every 5 s,
+  so a run that thinks for a minute still arrives live.
+- **Measured on the cluster** ([evidence/oke-run.json](evidence/oke-run.json)):
+  route probes 11/11, use cases 13/13, browser test 20/20. Signing held for
+  70 minutes of token rotation (24/24). With the classifier scaled to zero,
+  requests still answered on MEDIUM and routing came back with it; a killed
+  classifier or gateway pod is replaced in about 20 s (packages are cached on
+  the node). Classification takes 79 ms (median) on the one Ampere core.
+- **The API endpoint admits one address** (or a NAT pool you name in
+  `deploy.json`). `up.sh` detects it on port 6443, because NAT can send 6443
+  out of a different address than web traffic.
+- **Cost.** All of it fits the Always Free A1 allowance (4 OCPU, 24 GB) when
+  the tenancy has it to spare; otherwise the node and the VM are billed by the
+  hour, and the API gateway per million calls.
+
+### On one laptop
+
+For a talk without the cloud: Rancher Desktop (Kubernetes), NVIDIA OpenShell
+and an OCI session. Everything runs locally; the only outside services are OCI
 Generative AI and the session's identity provider, so any network with a
 route to OCI works.
 
@@ -314,7 +374,10 @@ The control room is at http://127.0.0.1:8780. Before going on stage: run the
 preflight on the venue's network, and keep the OCI session countdown (top
 right) above 15 minutes; `scripts/local/refresh.sh` renews it on its own. If
 the network fails mid-talk, a request that was recorded earlier
-(`scripts/record_runs.py`) replays, labelled REPLAY on screen.
+(`scripts/record_runs.py`) replays, labelled REPLAY on screen. The control
+room sends requests to `LITELLM_GATEWAY` and falls back to
+`LITELLM_GATEWAY_FALLBACK` when it is unreachable or its OCI signing fails:
+`uv run python scripts/failover.py` ends with `FAILOVER OK`.
 
 Or hand it to Codex: `codex "$(cat codex/PROMPT.md)"` with the flags in
 [codex/README.md](codex/README.md). Codex follows [codex/SPEC.md](codex/SPEC.md),
@@ -323,54 +386,11 @@ the rules in [AGENTS.md](AGENTS.md), and the skills in
 
 | Skill | What it teaches Codex |
 |---|---|
+| `litellm-demo-ops` | bring the demo up, in the cloud or on a laptop; the checks; what to do when one fails |
 | `litellm-oci-gateway` | start and change the gateway; OCI session signing; OCI quirks |
 | `litellm-oci-routing` | which routing feature fits which need; reading the route headers |
 | `litellm-route-classifier` | generate, label by outcome, train, evaluate, plug in |
 | `litellm-route-verify` | probes, end-to-end, browser test, evidence without secrets |
-
-## The same stack on OKE
-
-The same gateway and classifier run as two services on an OKE Basic cluster
-with one Ampere A1 node.
-
-![On Kubernetes](docs/figures/figure5-kubernetes.png)
-
-```shell
-cp deploy/deploy.example.json ~/.config/litellmdemo/deploy.json   # your OCI profile and regions
-scripts/oci/up.sh                     # compartment, VCN, cluster, node, IAM; about 15 minutes
-scripts/oci/deploy.sh                 # ConfigMaps, Secret, both Deployments
-scripts/oci/forward.sh &              # the OKE gateway on 127.0.0.1:4100, reconnecting on its own
-LITELLM_GATEWAY=http://127.0.0.1:4100 uv run python scripts/probe_routes.py
-scripts/oci/down.sh                   # delete everything up.sh created
-```
-
-- **No OCI key in the cluster.** The gateway sets `OCI_AUTH=instance_principal`
-  and signs as the node: a dynamic group of the demo's instances and one
-  policy (`use generative-ai-family in compartment litellmdemo`) allow it.
-  OKE Workload Identity scopes this to the pod's service account instead of
-  the node; it needs an Enhanced cluster.
-- **The classifier is its own service.** `oci-auto-trained` calls
-  `route-classifier` over HTTP with a 3 s budget. If the classifier is down
-  or slow, the plugin declines and LiteLLM routes to `fallback_tier`: routing
-  degrades, requests keep answering.
-- **No registry.** Both pods run stock `python:3.12-slim`; an init container
-  installs pinned packages (`deploy/requirements/`), and the code, the gateway
-  config and the 7 KB head come from ConfigMaps. A pod restarts exactly when
-  the hash of what it mounts changes.
-- **Measured on the cluster** ([evidence/oke-run.json](evidence/oke-run.json)):
-  route probes 11/11, use cases 13/13, browser test 20/20. Signing held for
-  70 minutes of token rotation (24/24). With the classifier scaled to zero,
-  requests still answered on MEDIUM and routing came back with it; a killed
-  classifier or gateway pod is replaced in about 20 s (packages are cached on
-  the node). Classification takes 79 ms (median) on the one Ampere core.
-- **Failover off the cluster.** The control room sends requests to
-  `LITELLM_GATEWAY` (the OKE gateway, through `scripts/oci/forward.sh`, which
-  restarts the port-forward whenever its pod goes away) and falls back to
-  `LITELLM_GATEWAY_FALLBACK` (the laptop gateway) when it is unreachable or its
-  OCI signing fails: `uv run python scripts/failover.py` ends with `FAILOVER OK`.
-- **The API endpoint admits one address** (or a NAT pool you name in
-  `deploy.json`). `up.sh` detects it on port 6443, because NAT can send 6443
-  out of a different address than web traffic.
 
 ## Check every claim
 
@@ -380,6 +400,9 @@ scripts/oci/down.sh                   # delete everything up.sh created
 | the classifier and its comparison | `uv run python classifier/evaluate.py` | the policy table |
 | every use case through agent, gateway and OCI | `uv run python scripts/e2e.py` | `E2E OK` |
 | the screens, clicked in a browser | `cd web && node scripts/ui-e2e.mjs` | `UI E2E OK` |
+| the whole demo in the cloud, from the outside | `scripts/oci/preflight.sh` | `CLOUD PREFLIGHT OK` |
+| every use case through the public URL | `LITELLMDEMO_APP=https://<host> uv run python scripts/e2e.py` | `E2E OK` |
+| the screens, through the public URL | `LITELLMDEMO_APP=https://<host> node web/scripts/ui-e2e.mjs` | `UI E2E OK` |
 | the same routes through the OKE gateway | `LITELLM_GATEWAY=http://127.0.0.1:4100 uv run python scripts/probe_routes.py` | `ROUTES OK` |
 | requests survive a classifier outage | `scripts/oci/chaos.sh` | `CHAOS OK` |
 | signing survives token rotation | `scripts/oci/soak.sh` (70 min) | `SOAK OK` |
@@ -411,6 +434,9 @@ scripts/oci/down.sh                   # delete everything up.sh created
 | Tools and Llama 4 Scout | Through LiteLLM on OCI it sometimes writes a tool call as text. LiteLLM's pre-call checks do not skip deployments without function calling yet (a TODO in `router.py`), so Scout is a backup. |
 | OpenShell and the host | OpenShell refuses `host.docker.internal` unless the Docker driver's callback is an IP literal; a declared IP works: the local Kubernetes node (`192.168.5.15:30400` on Rancher Desktop), rendered into the profile by `scripts/openshell.sh`. `profile import` never overwrites a profile. |
 | Session signing | The provider signs with API-key fields or an `oci_signer`; a `CustomLogger.async_pre_call_deployment_hook` attaches a session signer per call. |
+| OpenShell on Oracle Linux | UEK builds Landlock in but leaves it off; the sandbox fails its probe until `lsm=landlock,...` is on the kernel command line (`scripts/oci/control.sh` sets it and reboots once). Rootless Podman also needs the `cpu` controller delegated to the user (`Delegate=cpu cpuset io memory pids` for `user@.service`). |
+| Linux argument limit | One argument is capped at 128 KiB on Linux (macOS allows 1 MiB): the 300-page contract failed with "Argument list too long" until the control room handed requests to the sandbox through a file. |
+| API Gateway and streams | OCI API Gateway closes a response that is silent for 15 s and buffers nothing else; a comment every 5 s keeps a run's event stream alive. The CLI's `--wait-for-state` fails silently for `api-gateway` resources: poll `get` instead. |
 
 ## Layout
 
@@ -420,7 +446,8 @@ scripts/oci/down.sh                   # delete everything up.sh created
 | `classifier/` | generate, label, train, evaluate; `router_model.py`; data and the 7 KB trained head |
 | `app/` | the langchain-oci agent, its tools, the use cases |
 | `ui/`, `web/` | the control room: FastAPI, React; live routing map |
-| `scripts/` | `gateway.sh`, `probe_routes.py`, `e2e.py` |
+| `scripts/` | `gateway.sh`, `probe_routes.py`, `e2e.py`; `oci/` (the cluster, the VM, the API gateway, the cloud preflight), `local/` (Rancher Desktop) |
+| `deploy/k8s/` | the manifests, the same for OKE and the local cluster |
 | `.agents/skills/`, `codex/`, `AGENTS.md` | the Codex harness |
 | `docs/figures/`, `docs/screenshots/` | figures and screenshots |
 | `evidence/` | transcripts behind every claim |
