@@ -1,6 +1,7 @@
 """Record a real run of every Ask example and every use case, for replay if the network fails on stage.
 
     uv run python scripts/record_runs.py      # the control room on 127.0.0.1:8780
+    LITELLMDEMO_APP=https://<host> uv run python scripts/record_runs.py   # the public control room (records on its VM)
 
 Each request goes through the live path (the OpenShell sandbox and LiteLLM);
 the control room saves every run that answers in out/recordings/. If later
@@ -11,10 +12,11 @@ both live paths fail for the same request, it replays the recording, labelled
 from __future__ import annotations
 
 import json
+import os
 import sys
 import urllib.request
 
-APP = "http://127.0.0.1:8780"
+APP = os.environ.get("LITELLMDEMO_APP", "http://127.0.0.1:8780")
 
 
 def run(body: dict) -> bool:

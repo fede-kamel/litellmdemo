@@ -5,6 +5,8 @@
 #   scripts/openshell.sh up              create the sandbox, upload the agent, wait until it is ready
 #   scripts/openshell.sh sync            upload the agent code again (after a change)
 #   scripts/openshell.sh ask '<json>'    run one request, print one JSON event per line
+#   scripts/openshell.sh ask @<file>     the same, the request read from a file (and the file removed):
+#                                        Linux caps one argument at 128 KiB, a long document is more
 #   scripts/openshell.sh probe           try to reach OCI and a model vendor directly: both must be refused
 #   scripts/openshell.sh status | down
 #
@@ -85,7 +87,9 @@ sync() {
 
 ask() {
   exists || die "no sandbox $SB: run scripts/openshell.sh up"
-  local b64 arg; b64="$(printf '%s' "$1" | base64 | tr -d '\n')"
+  local req="$1"
+  if [[ "$req" == @* ]]; then req="$(cat "${1#@}")"; rm -f "${1#@}"; fi
+  local b64 arg; b64="$(printf '%s' "$req" | base64 | tr -d '\n')"
   arg="$b64"
   if (( ${#b64} > 100000 )); then
     # One argument may not exceed 128 KiB on Linux: hand large requests over as a file.

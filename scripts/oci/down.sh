@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
-# Delete everything scripts/oci/up.sh created, and nothing else.
+# Delete everything scripts/oci/up.sh, control.sh and edge.sh created, and
+# nothing else.
 #
 #   scripts/oci/down.sh          # asks before deleting
 #   scripts/oci/down.sh --yes
 #
 # Reads the OCIDs from ~/.config/litellmdemo/oci-state.json and deletes them in
-# dependency order: node pool, cluster, network, IAM policy and dynamic group,
-# compartment. Resources not in the state file are never touched.
+# dependency order: API gateway, the control room's VM, node pool, cluster,
+# network, IAM policy and dynamic group, compartment. Resources not in the
+# state file are never touched.
 set -euo pipefail
 CONF_DIR="$HOME/.config/litellmdemo"
 DEPLOY="$CONF_DIR/deploy.json"
@@ -38,6 +40,14 @@ wait_gone() {  # resource kind: poll until the get fails or reports DELETED
     [[ "$s" == DELETED ]] && return 0; sleep 20
   done
 }
+WAIT_STATE=DELETED del api_deployment api-gateway deployment delete --deployment-id
+WAIT_STATE=DELETED del api_gateway api-gateway gateway delete --gateway-id
+drop api_hostname
+del control_instance compute instance terminate --instance-id
+drop control_private_ip; drop control_gateway_host
+del control_nsg network nsg delete --nsg-id
+del edge_subnet network subnet delete --subnet-id
+del edge_security_list network security-list delete --security-list-id
 POOL="$(get node_pool)"; CLUSTER="$(get cluster)"
 if [[ -n "$POOL" ]]; then say "delete node pool"; o ce node-pool delete --node-pool-id "$POOL" --force >/dev/null; wait_gone node-pool "$POOL"; drop node_pool; fi
 if [[ -n "$CLUSTER" ]]; then say "delete cluster"; o ce cluster delete --cluster-id "$CLUSTER" --force >/dev/null; wait_gone cluster "$CLUSTER"; drop cluster; fi

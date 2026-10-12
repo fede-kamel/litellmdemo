@@ -16,6 +16,7 @@ import json
 import os
 import re
 import subprocess
+import tempfile
 import time
 from collections.abc import Callable
 from pathlib import Path
@@ -50,7 +51,12 @@ def available() -> bool:
 
 def run(request: dict, emit: Callable[[dict], None], timeout: int = 600) -> bool:
     """Run one request in the sandbox. True when the agent answered."""
-    proc = subprocess.Popen([str(SCRIPT), "ask", json.dumps(request)], stdin=subprocess.DEVNULL,
+    # The request goes through a private file, not the command line: Linux caps one
+    # argument at 128 KiB, and a long document (or an image) is more. The script removes it.
+    fd, path = tempfile.mkstemp(prefix="litellmdemo-req-", suffix=".json")
+    with os.fdopen(fd, "w") as fh:
+        json.dump(request, fh)
+    proc = subprocess.Popen([str(SCRIPT), "ask", f"@{path}"], stdin=subprocess.DEVNULL,
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     answered = False
     started = time.time()
@@ -72,6 +78,8 @@ def run(request: dict, emit: Callable[[dict], None], timeout: int = 600) -> bool
             proc.kill()
             break
     proc.wait(timeout=30)
+    if os.path.exists(path):      # the script removes it; make sure
+        os.remove(path)
     if not answered and proc.stderr is not None:
         tail = proc.stderr.read()[-300:]
         if tail.strip():

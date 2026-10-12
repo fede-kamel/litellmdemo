@@ -3,6 +3,7 @@
     uv run uvicorn ui.server:app --port 8780 &        # web app (gateway on 4000)
     uv run python scripts/e2e.py                      # ends with E2E OK (n/n)
     uv run python scripts/e2e.py --evidence evidence  # also write evidence/e2e.jsonl
+    LITELLMDEMO_APP=https://<host> uv run python scripts/e2e.py   # the public control room
 
 For each scenario in app/scenarios.py the langchain-oci agent runs once,
 asking the gateway for `oci-auto-trained` (or the scenario's own group).
@@ -16,12 +17,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
 import httpx
 
-BASE = "http://127.0.0.1:8780"
+BASE = os.environ.get("LITELLMDEMO_APP", "http://127.0.0.1:8780")
 
 
 def run(client: httpx.Client, scenario: str) -> list[dict]:

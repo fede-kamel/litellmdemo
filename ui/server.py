@@ -233,9 +233,14 @@ async def stream(rid: str):
         sent = 0
         while True:
             async with run["cond"]:
-                while sent >= len(run["events"]) and not run["done"]:
-                    await run["cond"].wait()
+                try:   # a comment every 5 s while the model thinks: API Gateway closes a response silent for 15 s
+                    await asyncio.wait_for(run["cond"].wait_for(lambda: sent < len(run["events"]) or run["done"]), timeout=5)
+                except asyncio.TimeoutError:
+                    pass
                 batch, done = run["events"][sent:], run["done"]
+            if not batch and not done:
+                yield ": keep-alive\n\n"
+                continue
             for e in batch:
                 yield f"data: {json.dumps(e, ensure_ascii=False)}\n\n"
             sent += len(batch)
@@ -412,7 +417,7 @@ async def console_stream():
                 yield f"data: {json.dumps(line, ensure_ascii=False)}\n\n"
             while True:
                 try:
-                    line = await asyncio.wait_for(q.get(), timeout=15)
+                    line = await asyncio.wait_for(q.get(), timeout=5)
                     yield f"data: {json.dumps(line, ensure_ascii=False)}\n\n"
                 except asyncio.TimeoutError:
                     yield ": keep-alive\n\n"
@@ -445,6 +450,8 @@ def oci_session() -> dict:
     import configparser
 
     cfg = json.loads((Path.home() / ".config/litellmdemo/config.json").read_text())
+    if cfg.get("oci_auth") == "instance_principal":   # in the cloud the gateway signs as its node: nothing expires
+        return {"mode": "instance_principal", "minutes_left": None, "refresher": "not needed"}
     c = configparser.ConfigParser()
     c.read(Path.home() / ".oci/config")
     try:
@@ -455,7 +462,7 @@ def oci_session() -> dict:
         left = -1
     status = Path.home() / ".config/litellmdemo/run/session.json"
     refresher = json.loads(status.read_text()) if status.exists() else {}
-    return {"minutes_left": left, "refresher": refresher.get("state", "not running")}
+    return {"mode": "session", "minutes_left": left, "refresher": refresher.get("state", "not running")}
 
 
 @app.get("/api/sandbox")
@@ -480,8 +487,11 @@ async def sandbox_probe() -> dict:
 @app.get("/api/gateways")
 async def gateways() -> dict:
     """Which gateway new requests go to, and the others in failover order."""
+    import os
+
     active = await active_gateway()
-    return {"active": active, "role": _role(active), "gateways": GATEWAYS}
+    return {"active": active, "role": _role(active), "gateways": GATEWAYS,
+            "cluster": os.environ.get("LITELLMDEMO_CLUSTER", "local")}
 
 
 DIST = ROOT / "web" / "dist"
