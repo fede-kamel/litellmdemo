@@ -4,11 +4,12 @@ import { useEffect, useRef, useState } from "react";
 
 type Line = { t: number; source: string; text: string; tone: "allow" | "deny" | "route" | "info" };
 
+// one colour per source, the roles the rest of the screen uses: moss = the sandbox, indigo = LiteLLM, violet = the classifier
 const SOURCES: { id: string; label: string; tag: string }[] = [
-  { id: "openshell", label: "OpenShell sandbox", tag: "text-[#9be15d]" },
-  { id: "litellm", label: "LiteLLM gateway", tag: "text-[#a5a1ff]" },
-  { id: "classifier", label: "classifier", tag: "text-[#d6a8ff]" },
-  { id: "laptop", label: "laptop gateway", tag: "text-[#9aa1ac]" },
+  { id: "openshell", label: "OpenShell sandbox", tag: "text-moss" },
+  { id: "litellm", label: "LiteLLM gateway", tag: "text-indigo" },
+  { id: "classifier", label: "classifier", tag: "text-violet" },
+  { id: "laptop", label: "laptop gateway", tag: "text-ink-3" },
 ];
 const TAG: Record<string, string> = Object.fromEntries(SOURCES.map((s) => [s.id, s.tag]));
 const SHORT: Record<string, string> = { openshell: "openshell", litellm: "litellm  ", classifier: "classifier", laptop: "laptop   " };
@@ -51,36 +52,36 @@ export function Console() {
   const time = (t: number) => new Date(t * 1000).toLocaleTimeString([], { hour12: false });
 
   return (
-    <section className="rounded-2xl border border-[#2a2f3a] bg-[#0f1218] text-[#d7dbe2] shadow-sm">
-      <div className="flex flex-wrap items-center gap-3 border-b border-[#2a2f3a] px-4 py-2">
-        <TerminalSquare className="size-4 text-[#9be15d]" />
-        <span className="text-[12.5px] font-semibold">Console</span>
-        <span className={clsx("flex items-center gap-1 text-[11px]", live ? "text-[#9be15d]" : "text-[#e07a6b]")}>
-          <span className={clsx("size-1.5 rounded-full", live ? "animate-pulse bg-[#9be15d]" : "bg-[#e07a6b]")} />{live ? "live" : "reconnecting"}
+    <section className="rounded-2xl border border-line bg-well text-ink-2">
+      <div className="flex flex-wrap items-center gap-3 border-b border-line px-4 py-2">
+        <TerminalSquare className="size-4 text-moss" />
+        <span className="text-[12.5px] font-semibold text-ink">Console</span>
+        <span className={clsx("flex items-center gap-1 text-[11px]", live ? "text-moss" : "text-oracle")}>
+          <span className={clsx("size-1.5 rounded-full", live ? "animate-pulse bg-moss" : "bg-oracle")} />{live ? "live" : "reconnecting"}
         </span>
         <div className="flex flex-wrap gap-1.5">
           {SOURCES.map((s) => (
             <button key={s.id} onClick={() => setOn((v) => ({ ...v, [s.id]: !v[s.id] }))}
-              className={clsx("rounded-md border px-2 py-0.5 font-mono text-[10.5px]", on[s.id] ? `border-[#3a4150] ${s.tag}` : "border-transparent text-[#5b6170] line-through")}>
+              className={clsx("rounded-md border px-2 py-0.5 font-mono text-[10.5px]", on[s.id] ? `border-line bg-panel ${s.tag}` : "border-transparent text-ink-3 line-through")}>
               {s.label}
             </button>
           ))}
         </div>
         <div className="ml-auto flex items-center gap-1">
-          <button onClick={() => setPaused(!paused)} className="rounded p-1 hover:bg-[#1c212b]" title={paused ? "resume" : "pause"}>{paused ? <Play className="size-3.5" /> : <Pause className="size-3.5" />}</button>
-          <button onClick={() => setLines([])} className="rounded p-1 hover:bg-[#1c212b]" title="clear"><Trash2 className="size-3.5" /></button>
-          <button onClick={() => setOpen(!open)} className="rounded p-1 hover:bg-[#1c212b]" title={open ? "collapse" : "expand"}><ChevronDown className={clsx("size-4 transition", !open && "rotate-180")} /></button>
+          <button onClick={() => setPaused(!paused)} className="rounded p-1 hover:bg-sand" title={paused ? "resume" : "pause"}>{paused ? <Play className="size-3.5" /> : <Pause className="size-3.5" />}</button>
+          <button onClick={() => setLines([])} className="rounded p-1 hover:bg-sand" title="clear"><Trash2 className="size-3.5" /></button>
+          <button onClick={() => setOpen(!open)} className="rounded p-1 hover:bg-sand" title={open ? "collapse" : "expand"}><ChevronDown className={clsx("size-4 transition", !open && "rotate-180")} /></button>
         </div>
       </div>
       {open && (
         <div ref={box} onScroll={(e) => { const el = e.currentTarget; stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 30; }}
           className="scroll-thin h-[240px] overflow-y-auto px-4 py-2 font-mono text-[11.5px] leading-[1.55]">
-          {!shown.length && <div className="text-[#5b6170]">waiting for activity: route a request above, or press "Try to escape"</div>}
+          {!shown.length && <div className="text-ink-3">waiting for activity: route a request, or try to escape the sandbox</div>}
           {shown.map((l, i) => (
             <div key={i} className="whitespace-pre-wrap break-all">
-              <span className="text-[#5b6170]">{time(l.t)} </span>
-              <span className={TAG[l.source] ?? "text-[#9aa1ac]"}>{SHORT[l.source] ?? l.source}</span>{"  "}
-              <span className={clsx(l.tone === "deny" && "text-[#ff8a7a]", l.tone === "allow" && "text-[#9be15d]", l.tone === "route" && "text-[#f2f4f8]")}>{l.text}</span>
+              <span className="text-ink-3">{time(l.t)} </span>
+              <span className={TAG[l.source] ?? "text-ink-3"}>{SHORT[l.source] ?? l.source}</span>{"  "}
+              <span className={clsx(l.tone === "deny" && "text-oracle", l.tone === "allow" && "text-moss", l.tone === "route" && "text-ink")}>{l.text}</span>
             </div>
           ))}
         </div>

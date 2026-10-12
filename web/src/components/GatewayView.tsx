@@ -9,7 +9,7 @@ type Gateway = {
   strategy: string; fallbacks: Record<string, string[]>[]; context_window_fallbacks: Record<string, string[]>[];
 };
 
-export function GatewayView({ usage }: { usage: Record<string, number> }) {
+export function GatewayView({ usage, cluster }: { usage: Record<string, number>; cluster: string }) {
   const [g, setG] = useState<Gateway | null>(null);
   useEffect(() => { getJSON<Gateway>("/api/gateway").then(setG); }, []);
   if (!g) return null;
@@ -50,7 +50,7 @@ export function GatewayView({ usage }: { usage: Record<string, number> }) {
             <li className="flex gap-2"><GitBranch className="mt-0.5 size-3.5 shrink-0 text-oracle" /><span><b>Tags</b>: <span className="font-mono">oci-chat</span> sends <span className="font-mono">premium</span> to GPT-5.2, the rest to Gemini Flash.</span></li>
             <li className="flex gap-2"><GitBranch className="mt-0.5 size-3.5 shrink-0 text-oracle" /><span><b>Context window</b>: a prompt too long for <span className="font-mono">oci-compact</span> moves to <span className="font-mono">oci-long</span> before the call.</span></li>
             <li className="flex gap-2"><GitBranch className="mt-0.5 size-3.5 shrink-0 text-oracle" /><span><b>Fallbacks</b>: {g.fallbacks.length} chains; <span className="font-mono">oci-flaky</span> always fails, to show one live.</span></li>
-            <li className="flex gap-2"><ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-oracle" /><span><b>Signing</b>: the gateway signs each OCI call with the operator's session; apps hold only a gateway key.</span></li>
+            <li className="flex gap-2"><ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-oracle" /><span><b>Signing</b>: the gateway signs each OCI call {cluster === "oke" ? "as its OKE node (instance principal): no key or session anywhere" : "with the operator's session"}; apps hold only a gateway key.</span></li>
           </ul>
         </Panel>
       </div>

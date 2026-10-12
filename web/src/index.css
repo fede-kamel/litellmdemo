@@ -3,39 +3,55 @@
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/600.css";
 
-/* Dark control room: deep neutrals, Oracle red as the accent, one bright tint per route. */
+/* Light control room: warm paper, white panels, one accent (Oracle red) for
+   actions and section labels, and one hue per route. The eight route hues are
+   the dataviz reference palette in its validated order (adjacent pairs pass the
+   CVD and normal-vision floors on white); `-ink` is a darker step of the same
+   hue for text on its tint (>= 4.6:1), `-soft` the tint. */
 @theme {
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  --color-ink: #e8eaef;
-  --color-ink-2: #b9bfca;
-  --color-ink-3: #8a919e;
-  --color-paper: #0b0e14;
-  --color-panel: #12161e;
-  --color-line: #262c38;
-  --color-sand: #1a1f29;
-  --color-deep: #07090d;
-  --color-oracle: #e5604d;
-  --color-oracle-soft: #3a1c18;
-  --color-teal: #5fb3c7;
-  --color-teal-soft: #12303a;
-  --color-moss: #8cc26b;
-  --color-moss-soft: #1b2b16;
-  --color-ochre: #e0a940;
-  --color-ochre-soft: #33270f;
-  --color-violet: #a98be0;
-  --color-violet-soft: #251c38;
-  --color-indigo: #8f8cf0;
-  --color-indigo-soft: #1e1d3d;
+  --color-ink: #1b1d22;
+  --color-ink-2: #4a4d55;
+  --color-ink-3: #6b6f78;
+  --color-paper: #f6f5f1;
+  --color-panel: #ffffff;
+  --color-line: #e4e2dc;
+  --color-sand: #f0eee9;
+  --color-well: #f4f3ef;
+  --color-oracle: #c74634;
+  --color-oracle-soft: #fdeeeb;
+  /* roles, by name: moss = good / a tool, indigo = LiteLLM, ochre = a warning or a fallback, teal = spend */
+  --color-moss: #1f7a3a;
+  --color-moss-soft: #e3f3e6;
+  --color-teal: #0b6f79;
+  --color-teal-soft: #e0f2f4;
+  --color-ochre: #8a5f00;
+  --color-ochre-soft: #fbf1d9;
+  --color-indigo: #4a44b8;
+  --color-indigo-soft: #ebe9fa;
+  --color-violet: #7a3fb0;
+  --color-violet-soft: #f1e8fa;
+  /* magnitude (bars of counts and probabilities): one hue */
+  --color-seq: #2a78d6;
+  /* the routes */
+  --color-rt-simple: #2a78d6;       --color-rt-simple-ink: #2467b9;       --color-rt-simple-soft: #e1ecf9;
+  --color-rt-medium: #eb6834;       --color-rt-medium-ink: #bb4212;       --color-rt-medium-soft: #fceae3;
+  --color-rt-complex: #1baf7a;      --color-rt-complex-ink: #137a55;      --color-rt-complex-soft: #dff4ec;
+  --color-rt-reasoning: #eda100;    --color-rt-reasoning-ink: #916300;    --color-rt-reasoning-soft: #fcf2db;
+  --color-rt-code: #e87ba4;         --color-rt-code-ink: #ca2362;         --color-rt-code-soft: #fcedf2;
+  --color-rt-vision: #008300;       --color-rt-vision-ink: #007900;       --color-rt-vision-soft: #dbeedb;
+  --color-rt-long: #6250d6;         --color-rt-long-ink: #6250d6;         --color-rt-long-soft: #e9e6f9;
+  --color-rt-multi: #e34948;        --color-rt-multi-ink: #ca201f;        --color-rt-multi-soft: #fbe6e5;
 }
 
 html, body, #root { height: 100%; }
-html { color-scheme: dark; }
+html { color-scheme: light; }
 body { @apply bg-paper text-ink font-sans antialiased; font-feature-settings: "cv11", "ss01"; }
-::selection { background: color-mix(in srgb, var(--color-oracle) 22%, transparent); }
-.scroll-thin { scrollbar-width: thin; scrollbar-color: #2f3644 transparent; }
+::selection { background: color-mix(in srgb, var(--color-oracle) 18%, transparent); }
+.scroll-thin { scrollbar-width: thin; scrollbar-color: #cfcdc6 transparent; }
 
-@keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgb(229 96 77 / .45); } 70% { box-shadow: 0 0 0 7px rgb(229 96 77 / 0); } 100% { box-shadow: 0 0 0 0 rgb(229 96 77 / 0); } }
+@keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgb(199 70 52 / .40); } 70% { box-shadow: 0 0 0 7px rgb(199 70 52 / 0); } 100% { box-shadow: 0 0 0 0 rgb(199 70 52 / 0); } }
 .live-dot { animation: pulse-ring 1.6s infinite; }
 @keyframes lit { from { background-color: var(--color-oracle-soft); } to { background-color: transparent; } }
 .lit { animation: lit 2.4s ease-out; }
@@ -53,8 +69,8 @@ body { @apply bg-paper text-ink font-sans antialiased; font-feature-settings: "c
 .answer strong { font-weight: 600; color: var(--color-ink); }
 .answer ul { list-style: disc; padding-left: 1.3em; } .answer ol { list-style: decimal; padding-left: 1.3em; }
 .answer li + li { margin-top: 0.2em; }
-.answer code { font-family: "JetBrains Mono", monospace; font-size: 11.5px; background: rgb(255 255 255 / 0.07); padding: 0 0.25em; border-radius: 3px; }
-.answer pre { background: var(--color-deep); color: #e6edf3; border: 1px solid var(--color-line); padding: 0.7em 0.9em; border-radius: 8px; overflow-x: auto; }
+.answer code { font-family: "JetBrains Mono", monospace; font-size: 11.5px; background: rgb(0 0 0 / 0.05); padding: 0 0.25em; border-radius: 3px; }
+.answer pre { background: var(--color-well); color: var(--color-ink); border: 1px solid var(--color-line); padding: 0.7em 0.9em; border-radius: 8px; overflow-x: auto; }
 .answer pre code { background: none; padding: 0; color: inherit; }
 .answer table { border-collapse: collapse; font-size: 12px; }
 .answer th, .answer td { border: 1px solid var(--color-line); padding: 0.2em 0.5em; text-align: left; }

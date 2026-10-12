@@ -22,7 +22,7 @@ export function Ladder({ steps, bar }: { steps: Step[]; bar: number }) {
             <div className="absolute -top-1 h-[18px] w-0.5 bg-ink" style={{ left: `${bar * 100}%` }} />
           </div>
           <span className="w-9 text-right font-mono text-ink-2">{Math.round(s.pass * 100)}%</span>
-          <span className={clsx("w-[58px] text-[10.5px] font-semibold", s.chosen ? "text-oracle" : "text-ink-3")}>{s.chosen ? "chosen" : s.clears ? "clears" : "below bar"}</span>
+          <span className={clsx("w-[82px] text-[10.5px] font-semibold", s.chosen ? "text-oracle" : "text-ink-3")}>{s.chosen ? "chosen" : s.clears ? "good enough" : "not enough"}</span>
         </div>
       ))}
     </div>
@@ -56,7 +56,7 @@ type Group = { key: number | "all"; title: string; instruction?: string; image?:
 type Entry = { kind: "call"; e: Ev } | { kind: "tool"; e: Ev; result?: string };
 
 const CRITERION: Record<string, string> = { ladder: "the quality ladder", fallback: "the fallback tier" };
-const criterionOf = (d?: Ev) => !d ? "" : CRITERION[d.criterion] ?? String(d.criterion).replace(/^rule: /, "the ").replace(/^model: code$/, "the code check").replace(/ \(\w+\)$/, " rule");
+export const criterionOf = (d?: Ev) => !d ? "" : CRITERION[d.criterion] ?? String(d.criterion).replace(/^rule: /, "the ").replace(/^model: code$/, "the code check").replace(/ \(\w+\)$/, " rule");
 const n = (x?: number) => (x ?? 0).toLocaleString("en-US");
 
 /** The calls and tools of one task, in order; each tool result joins the tool that produced it. */
@@ -94,7 +94,7 @@ function Legend() {
       <span><b className="text-ink">{title}</b> <span className="text-ink-3">{text}</span></span></div>
   );
   return (
-    <div className="mb-3 grid grid-cols-3 gap-3 rounded-xl border border-line bg-deep/60 px-4 py-2.5 text-[11.5px] leading-snug">
+    <div className="mb-3 grid grid-cols-3 gap-3 rounded-xl border border-line bg-well px-4 py-2.5 text-[11.5px] leading-snug">
       {item("bg-indigo", "LiteLLM", "reads each model call, decides its route and picks the model. Click a call for its ladder.")}
       {item("bg-oracle", "The model", "answers, or asks the agent to run a tool. Reasoning models think first; OCI reports how many tokens, not what they said.")}
       {item("bg-moss", "A tool", "the agent runs it and hands the result back to the model, in a new call that LiteLLM classifies again.")}
@@ -129,8 +129,8 @@ function Call({ e, d, open, toggle, planned, planSteps, isResult }: { e: Ev; d?:
           {e.retries > 0 && <span className="text-ochre">retried ×{e.retries}</span>}
         </div>
         {open && lad && (
-          <div className="mx-3 mb-2 ml-[44px] rounded-lg border border-line bg-deep/70 p-3">
-            <div className="mb-2 text-[11.5px] text-ink-2">Call {e.call}: each route's chance of a good answer, cheapest first, against the {Math.round(lad.bar * 100)}% bar. The cheapest route that clears the bar wins. LiteLLM read this call's user turn{planned ? ": this task's instruction" : ""}.</div>
+          <div className="mx-3 mb-2 ml-[44px] rounded-lg border border-line bg-well p-3">
+            <div className="mb-2 text-[11.5px] text-ink-2">Call {e.call}: each route's chance of a good answer, cheapest first, against the {Math.round(lad.bar * 100)}% bar. The cheapest route that is likely enough wins. LiteLLM read this call's user turn{planned ? ": this task's instruction" : ""}.</div>
             <Ladder steps={lad.steps} bar={lad.bar} />
           </div>
         )}
@@ -165,7 +165,7 @@ function Tool({ e, result, running }: { e: Ev; result?: string; running: boolean
           <span className="text-ink-3">with</span><code className="whitespace-pre-wrap break-words text-ink-2">{args(e.input)}</code>
           <span className="text-ink-3">returned</span>
           {result !== undefined
-            ? <code className="scroll-thin max-h-[120px] overflow-y-auto whitespace-pre-wrap break-words rounded-md bg-deep/70 px-2 py-1 text-moss">{result || "(nothing)"}</code>
+            ? <code className="scroll-thin max-h-[120px] overflow-y-auto whitespace-pre-wrap break-words rounded-md bg-well px-2 py-1 text-moss">{result || "(nothing)"}</code>
             : <span className="text-ink-3">{running ? "running…" : "no result recorded"}</span>}
         </div>
       </div>
@@ -238,7 +238,7 @@ export function Timeline({ events, running, planned }: { events: Ev[]; running: 
                     {calls.length > 0 && <span className="ml-auto font-mono text-[11px] text-ink-3">{calls.length} call{calls.length > 1 ? "s" : ""} · {n(tokens)} tokens · {calls.reduce((a, c) => a + (c.seconds ?? 0), 0).toFixed(1)}s · {usd(calls.reduce((a, c) => a + (c.cost ?? 0), 0))}</span>}
                   </div>
                   {g.instruction && (
-                    <div className="mt-1.5 rounded-lg border-l-2 border-oracle/60 bg-deep/50 px-3 py-1.5 text-[12px] leading-snug text-ink-2">
+                    <div className="mt-1.5 rounded-lg border-l-2 border-oracle/60 bg-well px-3 py-1.5 text-[12px] leading-snug text-ink-2">
                       <span className="mr-1.5 text-[10px] font-semibold uppercase tracking-wide text-ink-3">{planned && gi > 0 ? "the agent was told" : "how it works"}</span>{g.instruction}
                     </div>
                   )}

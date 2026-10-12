@@ -13,8 +13,8 @@ export function RouteChip({ route, size = "sm" }: { route?: string; size?: "sm" 
 }
 
 const VENDOR_TONE: Record<string, string> = {
-  OpenAI: "bg-[#10a37f]/20 text-[#4fd6a8]", Google: "bg-[#4285f4]/20 text-[#8db4ff]", Meta: "bg-[#0866ff]/20 text-[#7aa7ff]",
-  xAI: "bg-ink/10 text-ink", Cohere: "bg-[#ff7759]/20 text-[#ff9f88]",
+  OpenAI: "bg-[#10a37f]/15 text-[#0b6b53]", Google: "bg-[#4285f4]/15 text-[#2a5db0]", Meta: "bg-[#0866ff]/15 text-[#0a4fc2]",
+  xAI: "bg-ink/10 text-ink", Cohere: "bg-[#ff7759]/20 text-[#b8432a]",
 };
 
 export function ModelChip({ deployment, lit }: { deployment?: string; lit?: boolean }) {
@@ -51,7 +51,7 @@ export function Bars({ values, max }: { values: Record<string, number>; max?: nu
       {Object.entries(values).map(([k, v]) => (
         <div key={k} className="flex items-center gap-2 text-[11px]">
           <span className="w-[96px] shrink-0 font-mono text-ink-3">{k}</span>
-          <div className="h-2 flex-1 rounded-full bg-sand"><div className="h-2 rounded-full bg-oracle/80" style={{ width: `${(v / top) * 100}%` }} /></div>
+          <div className="h-2 flex-1 rounded-full bg-sand"><div className="h-2 rounded-full bg-seq" style={{ width: `${(v / top) * 100}%` }} /></div>
           <span className="w-10 text-right font-mono text-ink-2">{v < 1 ? `${Math.round(v * 100)}%` : v}</span>
         </div>
       ))}
