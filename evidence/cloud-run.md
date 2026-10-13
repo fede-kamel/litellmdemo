@@ -35,6 +35,16 @@ First pass, with the cluster still on the 6 October code: `E2E FAILED (14/17)`.
 the decision, the answer; details in tabs), through the API gateway. The
 screenshots in `docs/screenshots/` are from this run.
 
+Redeployed the same evening with the sandbox console (dark, open by default,
+every `ALLOWED`/`DENIED` connection with its policy) and the Safety drawer:
+`CLOUD PREFLIGHT OK (10/10)`, then `UI E2E OK (28/28)` through the public URL.
+The first rerun was 27/28: the test's "find text" helper took the first match in
+the DOM, which since the tab fix can be the hidden copy on the other screen
+("unseen prompts" is also in the demo screen's hint), and waited for it to
+become visible. The helper now waits for a visible match; the screen itself
+was right (the classifier view had loaded, `/api/classifier` answered in
+138 ms).
+
 ## Streams through the API gateway
 
 API Gateway closes a response that is silent for 15 s. `/api/console` read for

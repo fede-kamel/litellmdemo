@@ -14,7 +14,8 @@ const check = (name, ok, detail = "") => { results.push(ok); console.log(`${ok ?
 const browser = await chromium.launch({ executablePath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", headless: true });
 const page = await browser.newPage({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 2 });
 const shot = (name) => page.screenshot({ path: `${out}/${name}.png` });
-const visible = (text, timeout = 15000) => page.getByText(text, { exact: false }).first().waitFor({ timeout }).then(() => true, () => false);
+// both screens stay mounted (a run survives a tab switch), so a text can exist on the hidden one: wait for a visible match
+const visible = (text, timeout = 15000) => page.getByText(text, { exact: false }).filter({ visible: true }).first().waitFor({ timeout }).then(() => true, () => false);
 const tab = (label) => page.locator(`nav button:has-text("${label}")`).click();
 const scenario = (title) => page.locator(`aside button:has-text("${title}")`).click();
 const sub = (label) => page.locator(`main button:has-text("${label}")`).first().click();
