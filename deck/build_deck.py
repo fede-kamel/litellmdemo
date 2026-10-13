@@ -825,8 +825,9 @@ def build(template: Path, out: Path) -> None:
     repo(s, "scripts/oci/up.sh · deploy.sh · control.sh · control-deploy.sh · edge.sh · preflight.sh · down.sh · deploy/k8s/ · evidence/cloud-run.md")
     notes(s, "The gateway, the classifier and Postgres on an OKE Basic cluster; the control room, the OpenShell gateway and the agent's sandbox on one Ampere VM in the same VCN "
              "(rootless Podman; Landlock had to be switched on in the UEK kernel); an OCI API Gateway in front with Oracle's hostname and certificate, 50 requests a second per client. "
-             "Checked from the outside on 2026-10-12: CLOUD PREFLIGHT OK 10/10, every use case through the public URL 15/17 (the two misses are the planner's known variance), "
-             "the browser test 28/28 (evidence/cloud-run.md). Cost: within the Always Free A1 allowance when the tenancy has it to spare, otherwise by the hour. "
+             "Checked from the outside on 2026-10-12: CLOUD PREFLIGHT OK 10/10; every use case through the public URL 14/17 with today's router: the SLA escalation and the forecast "
+             "go to the strong route (the known miss, Appendix B) and one planner run missed a number; no other call fell back. The browser test 28/28 (evidence/cloud-run.md). "
+             "Cost: within the Always Free A1 allowance when the tenancy has it to spare, otherwise by the hour. "
              "Instance principal: the node signs, no key or token in the cluster; Workload Identity would scope it to the pod and needs an Enhanced cluster. "
              "Kill the classifier pod during a request: the plugin declines within 3 s, LiteLLM routes to fallback_tier MEDIUM, the request still answers. "
              "No registry: stock python image, pinned packages via an init container, code and the 7 KB head as ConfigMaps. "
