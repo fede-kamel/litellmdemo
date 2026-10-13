@@ -408,18 +408,6 @@ def build(template: Path, out: Path) -> None:
     notes(s, "Lead with this slide for a LiteLLM audience: each row is a LiteLLM feature, and the third column is the evidence in this repository.")
     put(appA)
 
-    # 5b · isolation
-    s = prs.slides.add_slide(blank)
-    header(s, "OpenShell holds the agent; LiteLLM holds the decisions and the keys", "The agent holds nothing")
-    figure(s, "figure6-isolation.png", 2.95, 1.5, 7.4)
-    repo(s, "sandbox/ (image, profile, policy) · scripts/openshell.sh · gateway/route_headers.py · scripts/oci/deploy.sh")
-    notes(s, "The agent runs in an OpenShell sandbox with a placeholder key and one allowed endpoint: POST /v1/chat/completions on LiteLLM. "
-             "OpenShell's gateway holds the agent's LiteLLM virtual key and swaps it in on the way out. LiteLLM checks that key (5 model groups, "
-             "$5 per 30 days, 120 rpm), classifies with our plugin, routes, signs to OCI as the node, and accounts. Measured: {0} of {1} use cases ran "
-             "entirely in the sandbox; its only connections were {2} chat-completion POSTs to the gateway;".format(*sandbox_run()) + " OCI directly, api.openai.com and the "
-             "gateway's /key admin API were refused.")
-    put(main)
-
     # 5b2 · why this order
     s = prs.slides.add_slide(blank)
     header(s, "Sandbox the code you do not trust; make the gateway its only way out", "Why this order?")
@@ -690,6 +678,18 @@ def build(template: Path, out: Path) -> None:
         notes(s, "The held-out numbers on 'Does routing pay?' came from the same judge and the same prompt writer as the training labels. "
                  "This slide changes both: new prompts by a model outside the portfolio, and a second judge from another vendor.")
         put(appB)
+
+    # 14c · isolation, right before the demo: it sets up the sandbox console and the "try to escape" beat
+    s = prs.slides.add_slide(blank)
+    header(s, "OpenShell holds the agent; LiteLLM holds the decisions and the keys", "The agent holds nothing")
+    figure(s, "figure6-isolation.png", 2.95, 1.5, 7.4)
+    repo(s, "sandbox/ (image, profile, policy) · scripts/openshell.sh · gateway/route_headers.py · scripts/oci/deploy.sh")
+    notes(s, "The agent runs in an OpenShell sandbox with a placeholder key and one allowed endpoint: POST /v1/chat/completions on LiteLLM. "
+             "OpenShell's gateway holds the agent's LiteLLM virtual key and swaps it in on the way out. LiteLLM checks that key (5 model groups, "
+             "$5 per 30 days, 120 rpm), classifies with our plugin, routes, signs to OCI as the node, and accounts. Measured: {0} of {1} use cases ran "
+             "entirely in the sandbox; its only connections were {2} chat-completion POSTs to the gateway;".format(*sandbox_run()) + " OCI directly, api.openai.com and the "
+             "gateway's /key admin API were refused. The demo shows this live: the sandbox console on every run, and 'Try to escape' in beat 4.")
+    put(main)
 
     # 15 · live demo divider
     s = prs.slides.add_slide(blank)
