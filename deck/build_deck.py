@@ -247,6 +247,16 @@ def label_stability() -> tuple[int, int]:
     return sum(1 for r in voted if len(set(r["votes"])) == 1), len(voted)
 
 
+def label_summary() -> tuple[int, int, int, int]:
+    """(prompts, task families, prompts labelled by outcome, prompts labelled by task type) in classifier/data/labels.jsonl."""
+    path = ROOT / "classifier" / "data" / "labels.jsonl"
+    if not path.exists():
+        return 0, 0, 0, 0
+    rows = [json.loads(line) for line in path.read_text().splitlines()]
+    voted = sum(1 for r in rows if r.get("votes"))
+    return len(rows), len({r.get("family") for r in rows}), voted, len(rows) - voted
+
+
 def shot(slide, name, x, y, w, caption=None, max_h=None):
     """A screenshot; by default never lower than the footer, whatever its length."""
     if (SHOTS / name).exists():
@@ -285,7 +295,7 @@ def build(template: Path, out: Path) -> None:
             ph._element.getparent().remove(ph._element)
     rect(s, 2.62, 1.1, 0.02, 0.4, RGBColor(0x8F, 0xA6, 0xAD))
     text(s, 2.82, 1.06, 2.4, 0.45, "LiteLLM", size=22, color=WHITE, bold=True)
-    notes(s, "Fifteen minutes: ten slides, a six-minute demo in the middle; everything behind the conclusion is appendix, in four sections, for questions. "
+    notes(s, "Fifteen minutes: eleven slides, a six-minute demo in the middle; everything behind the conclusion is appendix, in four sections, for questions. "
              "The next two slides introduce LiteLLM and its router for those who have not used them. Everything here runs on LiteLLM 1.104.0 from PyPI, unmodified: the complexity router with "
              "classifier_type custom, tags, fallbacks, context-window checks. What we found and what we would upstream is Appendix D.")
     put(main)
@@ -594,24 +604,56 @@ def build(template: Path, out: Path) -> None:
 
     # 13c · how the router decides, in one slide: the talk's version; Appendix B has the depth
     s = prs.slides.add_slide(blank)
-    header(s, "Label by outcome, predict each route's chance, take the cheapest over the bar", "How the router decides")
+    header(s, "Rules for what is certain; a prediction per route for the rest; the cheapest over the bar wins", "How the router decides")
     bar_pct = round((meta or {}).get("ladder", {}).get("bar", 0.75) * 100)
     steps(s, 0.72, 1.85, 11.9, 2.8, [
         ("Rules first", "What is certain goes first: an image to VISION, a very long prompt to LONG_CONTEXT, another language to MULTILINGUAL, code to CODE.", OCHRE),
-        ("Label by outcome", "Every training request was answered by every route and graded by one judge for correctness, completeness and instruction-following. "
-                             "Its label is the cheapest route whose answer passed.", TEAL),
-        ("Predict each route's chance", "A frozen e5-small encoder and one logistic model per route, averaged with the 12 most similar labelled requests: "
+        ("Predict each route's chance", "A frozen multilingual e5-small encoder and one logistic model per route, averaged with the 12 most similar labelled requests: "
                                         "each route's probability of a good answer, under 100 ms on one CPU core.", RED),
-        ("Take the cheapest over the bar", f"The quality bar is one dial per request, trained at {bar_pct}%: higher buys quality, lower buys savings. "
-                                           "The response carries the whole decision in x-litellm-* headers.", INDIGO),
+        ("Take the cheapest over the bar", f"Fast, balanced, strong, reasoning: the first route whose chance clears the quality bar wins. The bar is one dial per request, "
+                                           f"trained at {bar_pct}%: higher buys quality, lower buys savings.", INDIGO),
+        ("Explain it in the response", "x-litellm-* headers carry the route, which check decided, each route's chance against the bar, the model, fallbacks and cost. "
+                                       "The control room reads them live; so can any client.", TEAL),
     ], body_size=11)
     rect(s, 0.72, 4.95, 11.9, 1.3, SAND, line=CARD_LINE)
     rect(s, 0.72, 4.95, 0.07, 1.3, INDIGO)
     how_decides = s   # the box's text names the router slide, once the order is known
     repo(s, "gateway/trained_classifier.py · classifier/label.py · classifier/train.py · classifier/router_model.py · gateway/config.yaml")
-    notes(s, "The answer to 'what are the criteria' and to 'did you really train it', in one slide: rules first because they are certain; the ladder for judgement; "
-             "LiteLLM's own features for what a business decides (tags, keys, fallbacks). Appendix B has the depth: the criteria, the classifier options, "
+    notes(s, "The answer to 'what are the criteria', in one slide: rules first because they are certain; the ladder for judgement; "
+             "LiteLLM's own features for what a business decides (tags, keys, fallbacks). The next slide is how the ladder was trained. Appendix B has the depth: the criteria, the classifier options, "
              "mini-training, why a ladder, frozen versus fine-tuned, quality against cost on the held-out prompts, where the router is wrong, fresh prompts and a second judge.")
+    put(main)
+
+    # 13d · how the classifier was trained: the prompts, the answers, the judge, the fit, the held-out prompts
+    s = prs.slides.add_slide(blank)
+    header(s, "A label is not a guess about difficulty: it is the cheapest route that actually answered well", "How the classifier was trained")
+    n_prompts, n_families, by_outcome, by_rule = label_summary()
+    lad = (meta or {}).get("ladder") or {}
+    answers = by_outcome * 3 * 3 + by_outcome   # three routes, three runs each, plus the reasoning route once
+    steps(s, 0.72, 1.85, 11.9, 3.1, [
+        ("Write the prompts", f"{n_prompts} requests in {n_families} task families, written by the judge model through the gateway: support, billing, IT operations, "
+                              f"analysis, planning, code, seven other languages. {by_rule} are decided by a rule (code, language) and keep that label.", TEAL),
+        ("Answer each on every route", f"The fast, balanced and strong routes answer the other {by_outcome}, three runs each, and the reasoning route once: "
+                                       f"{answers:,} real OCI answers, each kept with its model and cost.", INDIGO),
+        ("Grade with one judge", "GPT-5.2 grades each answer, anonymised and shuffled, 1 to 5 on correctness, completeness and instruction-following; "
+                                 "a pass is 4 or more on all three. The label is the cheapest passing route, or reasoning if none passes. About $18 a run.", OCHRE),
+        ("Fit in seconds", f"A frozen multilingual e5-small encoder embeds each prompt; with difficulty signals, one logistic model per route, its regularisation "
+                           f"picked by 5-fold cross-validation inside the training split: {(meta or {}).get('train_seconds', 0.18):.2f} s on a laptop CPU.", RED),
+        ("Hold out, then set the bar", f"{lad.get('held_out_prompts', 73)} outcome-labelled prompts never seen in training score the router once. The bar ({bar_pct}%) is the "
+                                       f"cheapest one at least as good as always-reasoning, chosen by cross-validation on the {lad.get('train_prompts', 286)} training prompts alone.", GREEN),
+    ], body_size=10.5)
+    card(s, 0.72, 5.2, 5.85, 1.4, "What the labels said",
+         f"Labelled three times, {stable_pct}% of prompts got the same cheapest passing route every time. So the router predicts each route's chance of a good answer "
+         "instead of one label, and escalates only what needs it.", accent=RED, title_size=13, body_size=11)
+    card(s, 6.77, 5.2, 5.85, 1.4, "What ships",
+         "A 220 KB head and ladder, rebuilt in seconds and served on one CPU core as classifier_type: custom. When a model leaves a route, label.py --redo answers its runs "
+         "again with the current models; the same scripts run on an OCI GPU with a larger encoder.", accent=INDIGO, title_size=13, body_size=11)
+    trained = s
+    repo(s, "classifier/generate.py · classifier/label.py · classifier/train.py · classifier/ladder.py · classifier/data/labels.jsonl · classifier/model/meta.json")
+    notes(s, "The answer to 'did you really train it': yes, on outcomes. Every number is in classifier/model/meta.json and classifier/data/labels.jsonl. "
+             "The judge never sees which route wrote an answer. The held-out prompts were never used to train the head or to choose the bar. "
+             "Appendix B has the depth: the training figure, why a ladder, frozen versus fine-tuned (fine-tuning the encoder added about 8 points in an earlier test), "
+             "where the router is wrong and the fresh-prompt test with a second judge.")
     put(main)
 
     # 14 · results: does it pay
@@ -957,7 +999,7 @@ def build(template: Path, out: Path) -> None:
     text(point, 0.72, 6.2, 11.9, 0.6, [[("The plan. ", {"bold": True, "color": INK, "size": 13}),
         (f"{words.get(len(main), len(main))} slides around a six-minute demo; slides {len(main) + 1}–{len(order)} are the appendix, "
          "in four sections, for questions.", {"color": BODY, "size": 13})]], line=1.15)
-    text(router_intro, 0.72, 6.3, 7.4, 0.4, f"How the model was trained and how it picks a route: slide {number(how_decides)}.", size=11, color=INK, bold=True)
+    text(router_intro, 0.72, 6.3, 7.4, 0.4, f"How it picks a route: slide {number(how_decides)}; how it was trained: slide {number(trained)}.", size=11, color=INK, bold=True)
     text(how_decides, 1.0, 5.1, 11.4, 1.05, [[("Where it plugs in. ", {"bold": True, "color": INK, "size": 13}),
         (f"classifier_type: custom in LiteLLM's complexity router (slide {number(router_intro)}): the route names a model group, and everything after that is LiteLLM's: "
          "latency balancing, the context-window check, fallbacks, the key's budget and the bill. "
