@@ -35,7 +35,7 @@ Cloud behind an OCI API Gateway; nothing runs on a laptop. The skills in
 
 | Path | Purpose |
 |---|---|
-| `gateway/` | LiteLLM config (routes, prices, tags, fallbacks, auto-routers); hooks: OCI signing, the decision header, the console line; the trained-classifier plugin; the OCI Responses provider (Codex) |
+| `gateway/` | LiteLLM config (routes, prices, tags, fallbacks, auto-routers); hooks: OCI signing, the decision header, the console line; the trained-classifier plugin; the OCI Responses provider (Codex); the Cohere tool-result fix |
 | `classifier/` | generate, label by outcome, the ladder, train, evaluate, the model trial, the robustness test, the classifier service |
 | `app/` | the langchain-oci agent (single run, or plan mode: a planner, then each task routed on its own), its tools, the use cases; `sandbox_run.py` runs it inside OpenShell |
 | `sandbox/` | the OpenShell image, provider profile and policy |

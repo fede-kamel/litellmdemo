@@ -45,6 +45,36 @@ become visible. The helper now waits for a visible match; the screen itself
 was right (the classifier view had loaded, `/api/classifier` answered in
 138 ms).
 
+## Two primaries that failed quietly (2026-10-12, late evening)
+
+The console history of the evening's runs showed two `ROUTE-FAIL` lines on
+every run of their kind, each answered by a fallback, so every check above had
+passed:
+
+- Every CODE call: `openai.gpt-5.3-codex` 404 "Authorization failed or
+  requested resource not found" in about 0.1 s, then GPT-5.1 (`fallbacks=1`).
+  From inside the gateway pod, signed as the node, `/openai/v1/responses`
+  returned that 404 for every model, a made-up name included; from the laptop
+  with the operator's key and the same compartment, Codex and GPT-5.1 returned
+  200. The node's policy granted `generative-ai-family` in the compartment,
+  which Oracle's policy page lists without a Responses resource type. Fix: a
+  `generative-ai-response` statement for the node's dynamic group
+  (`scripts/oci/up.sh`, which now reconciles the statements).
+- The Japanese request's second call: `cohere.command-a-03-2025` 400
+  "cannot specify message if the last entry in chat history contains tool
+  results", then Gemini 2.5 Flash. Reproduced from the laptop through LiteLLM
+  1.104.0 with the operator's identity: LiteLLM keeps `message` and appends the
+  tool result to `chatHistory`. Of three shapes tried, OCI accepted a top-level
+  `toolResults` with an empty `message`; the answer then failed LiteLLM's
+  validation (citations carry `documentIds`, the type wants `document_ids`).
+  Fix: `gateway/oci_cohere_fix.py`, both sides; reported upstream as
+  BerriAI/litellm#46157.
+
+Checks changed with the fixes: `scripts/probe_routes.py` requires Codex and no
+fallback on the code probe, keeps the Spanish probe on Cohere with no fallback,
+and adds a probe whose last turn is a tool result; `scripts/e2e.py` fails a
+code or multilingual run whose calls fell back or left the route's own models.
+
 ## Streams through the API gateway
 
 API Gateway closes a response that is silent for 15 s. `/api/console` read for

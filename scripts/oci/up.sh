@@ -184,15 +184,25 @@ if [[ -z "$DG" ]]; then
         --wait-for-state ACTIVE --query data.id --raw-output)"
   put dynamic_group "$DG"
 fi
+# generative-ai-family covers the chat API; the Responses API (Codex) checks generative-ai-response, which the
+# family does not include: without its own statement the node gets 404 "Authorization failed or requested
+# resource not found" on every Responses call, and the CODE route falls back.
+STATEMENTS="[\"Allow dynamic-group litellmdemo-nodes to use generative-ai-family in compartment $NAME\",
+             \"Allow dynamic-group litellmdemo-nodes to manage generative-ai-response in compartment $NAME\",
+             \"Allow dynamic-group litellmdemo-nodes to read repos in compartment $NAME\"]"
 POLICY="$(get policy)"
 if [[ -z "$POLICY" ]]; then
-  say "create policy: the nodes may use Generative AI and read the demo's images, in the litellmdemo compartment only"
+  say "create policy: the nodes may use Generative AI (chat and Responses API) and read the demo's images, in the litellmdemo compartment only"
   POLICY="$(o iam policy create --compartment-id "$TENANCY" --name litellmdemo-genai \
         --description "LiteLLM routing demo: OKE nodes call OCI Generative AI and pull images" \
-        --statements "[\"Allow dynamic-group litellmdemo-nodes to use generative-ai-family in compartment $NAME\",
-                       \"Allow dynamic-group litellmdemo-nodes to read repos in compartment $NAME\"]" \
+        --statements "$STATEMENTS" \
         --freeform-tags "$TAGS" --wait-for-state ACTIVE --query data.id --raw-output)"
   put policy "$POLICY"
+elif [[ "$(o iam policy get --policy-id "$POLICY" | python3 -c 'import json,sys; print(sorted(json.load(sys.stdin)["data"]["statements"]))')" \
+        != "$(python3 -c 'import json,sys; print(sorted(json.loads(sys.argv[1])))' "$STATEMENTS")" ]]; then
+  say "update policy: the nodes' statements changed (the Responses API, for Codex)"
+  # the CLI wants the version date whenever the statements change; empty keeps the policy on the current language version
+  o iam policy update --policy-id "$POLICY" --statements "$STATEMENTS" --version-date "" --force --query 'data."lifecycle-state"' --raw-output
 fi
 
 # 6. kubeconfig -----------------------------------------------------------------

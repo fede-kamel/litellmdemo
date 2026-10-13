@@ -47,12 +47,18 @@ PROBES = [
      "a multi-constraint plan goes to REASONING (planning prompts were mostly REASONING by outcome)"),
     ("trained: code", "oci-auto-trained",
      "My Go program increments a shared counter from goroutines and the total is wrong. Explain and fix it with sync/atomic.", {},
-     lambda h: h.get("x-litellm-complexity-router-tier") == "CODE",
-     "a code task goes to the code route"),
+     lambda h: h.get("x-litellm-complexity-router-tier") == "CODE" and "codex" in h.get("x-litellm-model-name", "")
+              and int(h.get("x-litellm-attempted-fallbacks") or 0) == 0,
+     "a code task goes to the code route, and Codex answers it on OCI's Responses API, with no fallback"),
     ("trained: language rule", "oci-auto-trained",
      "Hola, ¿cómo puedo fijar un límite de gasto mensual en mi cuenta?", {},
-     lambda h: h.get("x-litellm-complexity-router-tier") == "MULTILINGUAL" and "cohere" in h.get("x-litellm-model-name", ""),
+     lambda h: h.get("x-litellm-complexity-router-tier") == "MULTILINGUAL" and "cohere" in h.get("x-litellm-model-name", "")
+              and int(h.get("x-litellm-attempted-fallbacks") or 0) == 0,
      "a Spanish request goes to the multilingual route by rule"),
+    ("trained: language rule, after a tool", "oci-auto-trained", "TOOL_TURN", {},
+     lambda h: h.get("x-litellm-complexity-router-tier") == "MULTILINGUAL" and "cohere" in h.get("x-litellm-model-name", "")
+              and int(h.get("x-litellm-attempted-fallbacks") or 0) == 0,
+     "an agent's second call, with a tool result as the last turn, stays on Cohere (gateway/oci_cohere_fix.py)"),
     ("trained: image rule", "oci-auto-trained", "IMAGE", {},
      lambda h: h.get("x-litellm-complexity-router-tier") == "VISION",
      "an image in the request goes to a vision model by rule"),
@@ -87,6 +93,15 @@ def call(client: httpx.Client, key: str, model: str, prompt: str, extra: dict) -
         content = [{"type": "text", "text": "What is the total due on this invoice?"},
                    {"type": "image_url", "image_url": {"url": invoice_image()}}]
     body = {"model": model, "messages": [{"role": "user", "content": content}], "max_tokens": 600, **extra}
+    if prompt == "TOOL_TURN":   # an agent's second call: the tool it asked for has answered, and the model must now reply
+        body["messages"] = [
+            {"role": "user", "content": "Northwind Cloud のサポートチケットの優先度はどのように決まりますか？簡単に教えてください。"},
+            {"role": "assistant", "content": "", "tool_calls": [{"id": "call_1", "type": "function",
+                                                                 "function": {"name": "lookup_policy", "arguments": "{\"topic\": \"ticket priority\"}"}}]},
+            {"role": "tool", "tool_call_id": "call_1",
+             "content": "Ticket priority: P1 for a production outage, P2 for degraded service, P3 for questions; Enterprise accounts are answered first."}]
+        body["tools"] = [{"type": "function", "function": {"name": "lookup_policy", "description": "Look up a Northwind Cloud policy by topic.",
+                                                           "parameters": {"type": "object", "properties": {"topic": {"type": "string"}}, "required": ["topic"]}}}]
     r = client.post(f"{GATEWAY}/v1/chat/completions", headers={"Authorization": f"Bearer {key}"}, json=body, timeout=180)
     text = ""
     if r.status_code == 200:

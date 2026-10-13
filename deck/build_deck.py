@@ -846,6 +846,7 @@ def build(template: Path, out: Path) -> None:
         ["Agent requests", "The agent's system prompt and tool turns drowned the request: every prompt looked alike, and Spanish read as English. Classify the user turns only."],
         ["Labels", f"Only 63% of prompts were label-stable across three runs ({stable_pct}% with today's models). Predict each route's pass probability, not one label."],
         ["A model leaves a route", "Its answers stay in the labels: 22% of the strong route's label runs were GPT-6.1-sol's. label.py --redo runs every one of them again with the current models."],
+        ["Cohere after a tool call", "LiteLLM keeps message and appends the tool result to chatHistory; OCI's Cohere API wants a top-level toolResults and an empty message, then cites with documentIds where LiteLLM expects document_ids. Fixed in the gateway; until then every Cohere answer after a tool fell back to Gemini, unseen."],
     ], col_w=[3.0, 8.9], size=10.5)
     notes(s, "The first is worth an upstream fix: OCI-specific max_output_tokens in the model map.")
     put(appD)
@@ -862,6 +863,7 @@ def build(template: Path, out: Path) -> None:
         ["API Gateway and streams", "OCI API Gateway closes a response that is silent for 15 s; a comment every 5 s keeps a run's event stream alive. The CLI's --wait-for-state fails silently for api-gateway resources: poll."],
         ["Keep-alive", "The control room's client and LiteLLM's server both keep idle connections 5 s; a request on a just-closed one failed at once and marked a healthy gateway down. Expire idle connections at 2 s; retry a stale one once."],
         ["Stale ConfigMaps", "The cluster ran a six-day-old gateway (no Codex provider, an older head) while the laptop ran the repo: CODE answered from GPT-5.1. Pods restart on the hash of what they mount; deploy after every change."],
+        ["The Responses API and the node", "generative-ai-family covers the chat API, not the OpenAI-compatible Responses API: as the OKE node, every /openai/v1/responses call was 404 and Codex fell back to GPT-5.1, unseen by checks that judged the route. The node needs its own generative-ai-response statement; the checks now fail when a route with one primary falls back."],
     ], col_w=[3.0, 8.9], size=10.5)
     notes(s, "Each row cost at least an hour; the Landlock one cost the afternoon. All of it is in README's field notes and evidence/cloud-run.md.")
     put(appD)
@@ -869,7 +871,7 @@ def build(template: Path, out: Path) -> None:
     # 22 · upstream
     s = prs.slides.add_slide(blank)
     header(s, "For the LiteLLM team", "What we would send upstream")
-    table(s, 0.72, 1.85, 11.9, [
+    table(s, 0.72, 1.7, 11.9, [
         ["Found", "Proposal", "Kind"],
         ["Instance, resource and workload principals stop signing after ~20 min: LiteLLM calls do_request_sign(), which skips the SDK's token refresh (only __call__ refreshes)", "Refresh before signing (signer._reset_signers() or sign via __call__); we patch it in our hook today", "provider fix"],
         ["OCI Gemini rejects max_tokens 65,536; OCI Llama 4 allows 4,096, the map says 8,192", "OCI-specific max_output_tokens in model_prices_and_context_window.json, so the complexity router stops failing over silently", "model map PR"],
@@ -882,7 +884,8 @@ def build(template: Path, out: Path) -> None:
         ["The OCI provider speaks only the chat API; Codex models are served on OCI's Responses API", "OCI Responses support in the provider (we ship a CustomLLM for it today)", "provider"],
         ["The model map lacks the newer OCI models (cost is None) and prices OCI Gemini 2.5 Flash at $0.15 / $0.60; OCI's list says $0.30 / $2.50", "Refresh OCI entries from OCI's public price-list API", "model map PR"],
         ["OTel v2 reports provider \"oci\"", "gen_ai.provider.name = oracle_cloud.generative_ai: BerriAI/litellm#41824, open", "open PR"],
-    ], col_w=[4.3, 6.0, 1.6], size=8.5)
+        ["OCI Cohere models fail on the call after a tool call: the request keeps message with the tool result in chatHistory (OCI: 400), and the answer's citations say documentIds where CohereCitation expects document_ids", "Put trailing tool results in toolResults with an empty message; accept documentIds. Our gateway wraps both transformations today: BerriAI/litellm#46157, open", "open issue"],
+    ], col_w=[4.3, 6.0, 1.6], size=7.5)
     notes(s, "Each row has evidence in the repo: README field notes, evidence/, and the plugin in gateway/trained_classifier.py. Ask which they want as PRs first.")
     put(appD)
 

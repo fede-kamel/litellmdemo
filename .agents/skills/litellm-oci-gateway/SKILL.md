@@ -60,6 +60,23 @@ other call, and raises HTTP errors so fallbacks apply. A new module the
 gateway loads must also be added to the `gateway-code` ConfigMap list in
 `scripts/oci/deploy.sh`, or the pod fails with an ImportError.
 
+On OKE the node's IAM policy needs a `generative-ai-response` statement
+besides `generative-ai-family`: without it every Responses call is 404
+"Authorization failed or requested resource not found" and the CODE route
+falls back to GPT-5.1 (`scripts/oci/up.sh` adds and reconciles the
+statement; `scripts/probe_routes.py` fails when Codex does not answer).
+
+## Cohere after a tool call
+
+LiteLLM's OCI provider sends a Cohere model the call after a tool call with
+the tool result at the end of `chatHistory` and `message` still set; OCI
+answers 400 "cannot specify message if the last entry in chat history
+contains tool results". `gateway/oci_cohere_fix.py` (imported by
+`oci_session_signer.py`) moves trailing tool results to `toolResults` with an
+empty `message`, and copies the answer's `documentIds` citations to the
+`document_ids` LiteLLM's type expects. Without it the MULTILINGUAL route
+fell back to Gemini on every run that used a tool.
+
 ## Adding a deployment
 
 1. Smoke-test the model first with one direct call (see below). Many catalog

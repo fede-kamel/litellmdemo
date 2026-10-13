@@ -36,7 +36,7 @@ apply_cm classifier-code --from-file="$ROOT/classifier/__init__.py" --from-file=
   --from-file="$ROOT/classifier/model/meta.json"
 apply_cm gateway-code --from-file="$ROOT/gateway/config.yaml" --from-file="$ROOT/gateway/oci_session_signer.py" \
   --from-file="$ROOT/gateway/trained_classifier.py" --from-file="$ROOT/gateway/route_headers.py" \
-  --from-file="$ROOT/gateway/oci_responses.py"
+  --from-file="$ROOT/gateway/oci_responses.py" --from-file="$ROOT/gateway/oci_cohere_fix.py"
 # --from-file keeps the key file's trailing newline, and LiteLLM would then
 # never match the master key; strip it through a private temp file.
 KEYTMP="$(mktemp)"; PGTMP="$(mktemp)"; URLTMP="$(mktemp)"; chmod 600 "$KEYTMP" "$PGTMP" "$URLTMP"
@@ -59,7 +59,7 @@ stamp() {  # deployment files...
     -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"litellmdemo/config-hash\":\"$h\"}}}}}" >/dev/null
 }
 stamp route-classifier "$ROOT"/deploy/requirements/classifier.txt "$ROOT"/classifier/{__init__.py,router_model.py,serve.py,ladder.py} "$ROOT"/classifier/model/*
-stamp litellm-gateway "$ROOT"/deploy/requirements/gateway.txt "$ROOT"/gateway/{config.yaml,oci_session_signer.py,trained_classifier.py,route_headers.py,oci_responses.py} "$KEYTMP" "$URLTMP" <(echo "$COMP")
+stamp litellm-gateway "$ROOT"/deploy/requirements/gateway.txt "$ROOT"/gateway/{config.yaml,oci_session_signer.py,trained_classifier.py,route_headers.py,oci_responses.py,oci_cohere_fix.py} "$KEYTMP" "$URLTMP" <(echo "$COMP")
 stamp postgres "$PGTMP"
 echo "applied; waiting for both deployments (first start installs packages: a few minutes)"
 k rollout status -n "$NS" deployment/postgres --timeout=10m

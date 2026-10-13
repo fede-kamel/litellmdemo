@@ -42,6 +42,13 @@ PROFILE = os.environ.get("OCI_CONFIG_PROFILE", "DEFAULT")
 AUTH = os.environ.get("OCI_AUTH", "session")      # "session" or "instance_principal"
 REFRESH_SECONDS = 60
 
+# LiteLLM loads this module by path; its sibling with the Cohere request fix (a tool
+# result as the last turn) is applied on import, so every Cohere call gets it.
+import sys  # noqa: E402
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import oci_cohere_fix  # noqa: E402, F401
+
 
 class OCISessionSigner(CustomLogger):
     def __init__(self) -> None:

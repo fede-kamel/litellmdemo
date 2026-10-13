@@ -9,7 +9,8 @@ For each scenario in app/scenarios.py the langchain-oci agent runs once,
 asking the gateway for `oci-auto-trained` (or the scenario's own group).
 Checks: the first model call took the route the scenario expects, the
 premium request took the premium lane, the failing deployment fell back, the
-multi-step agent planned and routed every step,
+multi-step agent planned and routed every step, a route with one primary
+group (code, multilingual) never fell back and answered from its own models,
 and the agent produced an answer.
 """
 
@@ -22,8 +23,17 @@ import sys
 from pathlib import Path
 
 import httpx
+import yaml
 
 BASE = os.environ.get("LITELLMDEMO_APP", "http://127.0.0.1:8780")
+ROOT = Path(__file__).resolve().parents[1]
+
+# Routes with one primary group: a run on them must not fall back, and every call must be answered by that
+# group's own models, so a failing primary shows here instead of passing on its backup (gateway/config.yaml).
+PRIMARY = {"CODE": "oci-code", "MULTILINGUAL": "oci-multilingual"}
+MODELS = {route: {d["litellm_params"]["model"].split("/", 1)[-1]
+                  for d in yaml.safe_load((ROOT / "gateway" / "config.yaml").read_text())["model_list"] if d["model_name"] == group}
+          for route, group in PRIMARY.items()}
 
 
 def run(client: httpx.Client, scenario: str) -> list[dict]:
@@ -63,6 +73,11 @@ def check(s: dict, events: list[dict]) -> tuple[bool, str]:
         return ok, f"facts={'ok' if not missing else 'MISSING ' + ','.join(missing)} steps={len(plan['steps'])} routes={'/'.join(r or '-' for r in routes)} calls={len(calls)} spend=${sum(c.get('cost') or 0 for c in calls):.5f}"
     else:
         ok = first.get("route") in s.get("accept", [expect])
+        if ok and expect in MODELS:
+            strayed = [f"call {c.get('call')} {c.get('deployment')} fallbacks={c.get('fallbacks', 0)}" for c in calls
+                       if c.get("fallbacks", 0) or (c.get("deployment") or "").split("/", 1)[-1] not in MODELS[expect]]
+            if strayed:
+                return False, f"route={first.get('route')} but a call left the route's own models: " + "; ".join(strayed)
     spend = sum(c.get("cost") or 0 for c in calls)
     return ok, (f"route={first.get('route') or first.get('group')} deployment={first.get('deployment')} "
                 f"calls={len(calls)} fallbacks={sum(c.get('fallbacks', 0) for c in calls)} spend=${spend:.5f}")
