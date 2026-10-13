@@ -1,0 +1,174 @@
+<!doctype html>
+<!-- A static mockup of the proposed control room ("stage" layout): the request, the decision and the answer side by side
+     above the fold, the sandbox console under them, the demo's five beats in the header. Rendered to stage.png by
+     web/scripts/svg2png.mjs-style playwright (see docs/ui-proposal.md). Values are from the billing-dispute run in
+     docs/screenshots/00-ask.png; the console lines are the shapes OpenShell, LiteLLM and the classifier log. -->
+<html lang="en"><head><meta charset="utf-8"><title>LiteLLM Routing · stage layout (mockup)</title>
+<style>
+:root{--paper:#f6f5f1;--panel:#fff;--ink:#1b1d22;--ink2:#4a4d55;--ink3:#6b6f78;--line:#e4e2dc;--sand:#f0eee9;--well:#f4f3ef;
+--oracle:#c74634;--oracle-soft:#fdeeeb;--moss:#1f7a3a;--moss-soft:#e3f3e6;--teal:#0b6f79;--teal-soft:#e0f2f4;--indigo:#4a44b8;--indigo-soft:#ebe9fa;--ochre:#8a5f00;--ochre-soft:#fbf1d9;
+--simple:#2a78d6;--simple-ink:#2467b9;--simple-soft:#e1ecf9;--complex:#1baf7a;--complex-ink:#137a55;--complex-soft:#dff4ec;--reasoning:#eda100;--reasoning-ink:#916300;--reasoning-soft:#fcf2db;
+--term:#141414;--term2:#1d1d1d;--termline:#2a2a2a;--termtext:#c9d1d9;--termmuted:#8b949e;--green:#7ee787;--red:#ff7b72;--purple:#d2a8ff;--yellow:#e3b341;--blue:#79c0ff}
+*{box-sizing:border-box}
+body{margin:0;width:1500px;height:1000px;background:var(--paper);color:var(--ink);font:13px/1.45 Inter,-apple-system,"SF Pro Text",system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+.mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
+header{height:58px;flex:none;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 22px}
+.logo{width:32px;height:32px;border-radius:9px;background:var(--oracle);display:grid;place-items:center;color:#fff;font-weight:700}
+.brand b{display:block;font-size:14px;font-weight:600;line-height:1.15}.brand span{font-size:11px;color:var(--ink3);white-space:nowrap}
+.beats{display:flex;gap:4px;background:var(--sand);padding:4px;border-radius:12px;margin-left:10px}
+.beat{padding:6px 11px;border-radius:9px;font-size:12.5px;color:var(--ink3);font-weight:500;white-space:nowrap}
+.beat.on{background:var(--panel);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08);font-weight:600}
+.beat .n{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--oracle);color:#fff;font-size:10px;font-weight:700;margin-right:6px;vertical-align:-3px}
+.beat.more{color:var(--ink2)}
+.right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.pill{border-radius:999px;padding:5px 11px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:9px;padding:6px 11px;font-size:12.5px;font-weight:600;color:var(--ink2);display:flex;gap:6px;align-items:center;white-space:nowrap}
+.btn.kbd{font-weight:500;color:var(--ink3)}
+main{flex:1;display:grid;grid-template-rows:1fr 292px;gap:14px;padding:14px 22px 16px;min-height:0}
+.row1{display:grid;grid-template-columns:29fr 42fr 29fr;gap:14px;min-height:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.ph{display:flex;align-items:center;gap:10px;padding:11px 18px;border-bottom:1px solid #eeece6;flex:none}
+.ph .num{width:24px;height:24px;border-radius:50%;background:var(--oracle);color:#fff;font-size:11.5px;font-weight:700;display:grid;place-items:center}
+.ph b{font-size:14px;font-weight:600;white-space:nowrap}.ph span{font-size:12px;color:var(--ink3)}.ph .r{margin-left:auto;font-size:11.5px;color:var(--ink3)}
+.pb{padding:16px 18px;flex:1;min-height:0;overflow:hidden}
+.prompt{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;line-height:1.5;color:var(--ink)}
+.controls{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.route{background:var(--oracle);color:#fff;border-radius:11px;padding:9px 16px;font-weight:600;font-size:14px}
+.seg{display:flex;background:var(--sand);padding:3px;border-radius:10px}.seg span{padding:5px 10px;border-radius:8px;font-size:12px;font-weight:600;color:var(--ink3)}.seg span.on{background:var(--panel);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.bar{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:12px}.bar .track{flex:1;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--oracle) 0 56%,var(--line) 56%);position:relative}
+.bar .track i{position:absolute;left:56%;top:-5px;width:16px;height:16px;border-radius:50%;background:var(--oracle);transform:translateX(-50%);border:2px solid #fff;box-shadow:0 0 0 1px var(--oracle)}
+.path{margin-top:18px;border-top:1px solid #eeece6;padding-top:12px}
+.path h4{margin:0 0 8px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+.hop{display:grid;grid-template-columns:10px 1fr;gap:10px;align-items:start;padding:7px 0}.hop+.hop{border-top:1px dashed var(--line)}
+.hop .dot{width:10px;height:10px;border-radius:50%;margin-top:4px}.hop b{font-size:12.5px;font-weight:600;display:block}.hop span{font-size:11.5px;color:var(--ink3)}
+.hop .good{color:var(--moss);font-weight:600}
+.hero{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;border:1px solid;border-radius:7px;font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-weight:600;letter-spacing:.04em}
+.chip.lg{padding:5px 11px;font-size:13px}.chip.sm{padding:1px 6px;font-size:10.5px}
+.c-simple{background:var(--simple-soft);color:var(--simple-ink);border-color:#9fc0ea}.c-complex{background:var(--complex-soft);color:var(--complex-ink);border-color:#8fd6bb}.c-reasoning{background:var(--reasoning-soft);color:var(--reasoning-ink);border-color:#f0cf7a}
+.hero .name{font-size:19px;font-weight:600}.hero .arrow{color:var(--ink3);font-size:18px}
+.model{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:8px;padding:4px 9px;background:var(--panel);font-size:13px}
+.model i{font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.06em;background:#10a37f26;color:#0b6b53;border-radius:4px;padding:1px 5px}
+.why{font-size:15px;line-height:1.5;margin:12px 0 4px;color:var(--ink)}.stamp{font-size:11.5px;color:var(--ink3)}
+.ladder{margin-top:14px;background:var(--well);border:1px solid var(--line);border-radius:12px;padding:12px 16px 10px}
+.ladder h4{margin:0 0 8px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:600;display:flex}.ladder h4 span{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:500}
+.plot{position:relative;height:128px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px;padding:0 18px;align-items:end}
+.plot .qbar{position:absolute;left:0;right:0;bottom:82px;border-top:2px dashed var(--ink);opacity:.7}
+.plot .qbar em{position:absolute;right:0;top:-18px;font-style:normal;font-size:11px;font-weight:600;background:var(--well);padding:0 4px}
+.col{display:flex;flex-direction:column;align-items:center;gap:4px;justify-content:end;position:relative;z-index:1}
+.col .v{font-size:13px;font-weight:600}.col .v small{font-weight:500;color:var(--ink3);margin-left:4px}
+.col .b{width:100%;border-radius:6px 6px 0 0;background:var(--moss);opacity:.55}.col.chosen .b{background:var(--oracle);opacity:1}
+.labels{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;padding:8px 18px 0;text-align:center}
+.labels .tag{display:block;font-size:10.5px;color:var(--ink3);margin-top:4px}.labels .chosen .tag{color:var(--oracle);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:8px 12px}.stat b{display:block;font-size:16px;font-weight:600}.stat span{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.answer{font-size:14px;line-height:1.55;color:var(--ink2)}.answer p{margin:0 0 9px}.answer ol{margin:0 0 9px;padding-left:22px}.answer li{margin:3px 0}.answer strong{color:var(--ink);font-weight:600}
+.term{background:var(--term);border:1px solid var(--termline);border-radius:14px;display:flex;flex-direction:column;overflow:hidden;color:var(--termtext)}
+.th{height:42px;flex:none;background:var(--term2);border-bottom:1px solid #262626;display:flex;align-items:center;gap:12px;padding:0 16px;font-size:12.5px}
+.th .live{width:7px;height:7px;border-radius:50%;background:var(--oracle);box-shadow:0 0 0 3px rgba(199,70,52,.3)}
+.th b{font-weight:600}.th .meta{color:var(--termmuted)}.th .meta .g{color:var(--green)}.th .meta .r{color:var(--red)}
+.tabs{display:flex;border:1px solid #30363d;border-radius:7px;overflow:hidden;margin-left:14px}.tabs span{padding:4px 11px;color:var(--termmuted);font-size:12px}.tabs span.on{background:#30363d;color:#fff}
+.th .filter{margin-left:auto}
+.lines{padding:12px 16px;font-size:12.5px;line-height:1.75;white-space:nowrap;overflow:hidden}
+.t{color:#6e7681}.src{display:inline-block;width:92px;color:var(--green)}.src.l{color:var(--blue)}.src.c{color:var(--purple)}
+.k{color:var(--purple)}.ok{background:#1f3d29;color:var(--green);border-radius:4px;padding:0 5px;font-weight:600}.no{background:#4a1f1f;color:var(--red);border-radius:4px;padding:0 5px;font-weight:600}.pol{color:var(--yellow)}.rs{color:var(--red)}
+.foot{height:0}
+</style></head><body>
+<header>
+  <div class="logo">⇄</div>
+  <div class="brand"><b>LiteLLM Routing</b><span>LiteLLM AI Gateway · NVIDIA OpenShell · OCI Generative AI</span></div>
+  <nav class="beats">
+    <div class="beat on"><span class="n">1</span>Billing dispute</div>
+    <div class="beat"><span class="n">2</span>Premium tag</div>
+    <div class="beat"><span class="n">3</span>Invoice photo</div>
+    <div class="beat"><span class="n">4</span>Try to escape</div>
+    <div class="beat"><span class="n">5</span>A model fails</div>
+    <div class="beat more">All use cases ▾</div>
+  </nav>
+  <div class="right">
+    <span class="pill" style="background:var(--teal-soft);color:var(--teal)">6 calls · $0.0012</span>
+    <span class="btn">⛨ Safety</span>
+    <span class="btn">⚙ Under the hood</span>
+  </div>
+</header>
+<main>
+  <div class="row1">
+    <section class="panel">
+      <div class="ph"><span class="num">1</span><b>The request</b><span>Customer support · Billing dispute</span></div>
+      <div class="pb">
+        <div class="prompt">Draft a short, polite reply to a customer who was charged twice in September. Look up our refund policy and their account first.</div>
+        <div class="controls">
+          <span class="route">↵ Route it</span>
+          <div class="seg"><span class="on">One pass</span><span>Multi-step</span></div>
+          <span class="btn">▣ Image</span>
+        </div>
+        <div class="bar"><b>Quality bar</b><div class="track"><i></i></div><span class="mono"><b>75%</b></span><span style="color:var(--ink3)">trained</span></div>
+        <div class="path">
+          <h4>The path, live</h4>
+          <div class="hop"><span class="dot" style="background:var(--moss)"></span><div><b>OpenShell sandbox</b><span><span class="good">3 allowed · 0 denied</span> · the agent ran here with a placeholder key; only the gateway was reachable</span></div></div>
+          <div class="hop"><span class="dot" style="background:var(--indigo)"></span><div><b>LiteLLM AI Gateway</b><span>key <span class="mono">openshell-agent</span> · $0.71 of $5 · 2 calls checked, classified, routed, signed, billed</span></div></div>
+          <div class="hop"><span class="dot" style="background:var(--oracle)"></span><div><b>OCI Generative AI</b><span>1 model answered, in us-chicago-1 · signed as the OKE node</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="ph"><span class="num">2</span><b>The decision</b><span>by the quality ladder, inside LiteLLM, in 493 ms</span><span class="r mono">2 calls · $0.00034</span></div>
+      <div class="pb">
+        <div class="hero"><span class="chip lg c-simple">SIMPLE</span><span class="name">the fast models</span><span class="arrow">→</span><span class="model"><i>OPENAI</i><span class="mono">gpt-5.4-nano</span></span><span class="mono" style="color:var(--ink3);font-size:12px">1.44 s · $0.00009</span></div>
+        <p class="why">The fast models are <b>83%</b> likely to answer well, above the <b>75%</b> bar, and they are the cheapest route.</p>
+        <div class="stamp">the request's own features say 84%; the twelve most similar labelled requests say 83% · 2 calls in this run, each classified the same way</div>
+        <div class="ladder">
+          <h4>Each route's chance of a good answer, cheapest first <span>dashed line: the quality bar you asked for</span></h4>
+          <div class="plot">
+            <div class="qbar"><em>75% bar</em></div>
+            <div class="col chosen"><span class="v">83%<small>chosen</small></span><div class="b" style="height:91px"></div></div>
+            <div class="col"><span class="v">94%</span><div class="b" style="height:103px"></div></div>
+            <div class="col"><span class="v">89%</span><div class="b" style="height:98px"></div></div>
+          </div>
+          <div class="labels">
+            <div class="chosen"><span class="chip sm c-simple">SIMPLE</span><span class="tag">cheapest, and it passes</span></div>
+            <div><span class="chip sm c-complex">COMPLEX</span><span class="tag">good enough, costs more</span></div>
+            <div><span class="chip sm c-reasoning">REASONING</span><span class="tag">good enough, costs most</span></div>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat"><b>2</b><span>calls, both classified</span></div>
+          <div class="stat"><b class="mono">$0.00034</b><span>this run</span></div>
+          <div class="stat"><b>2.8 s</b><span>to the answer</span></div>
+          <div class="stat"><b>0</b><span>fallbacks</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="ph"><span class="num">3</span><b>The answer</b><span>from gpt-5.4-nano</span><span class="r mono">2.8 s</span></div>
+      <div class="pb answer">
+        <p>Hi there, sorry about the duplicate charge in September. We've confirmed the double billing and will refund the full amount to your original payment method.</p>
+        <p><strong>Next steps:</strong></p>
+        <ol><li>We'll issue the refund once the duplicate charge is verified (typically within 1–2 business days).</li>
+        <li>The refund should appear on your payment method within <strong>5 business days</strong> after confirmation.</li>
+        <li>We'll also email you a <strong>billing case number</strong> for tracking.</li></ol>
+        <p>If you'd like, share the order or invoice number and I can locate the exact charge faster.</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="term">
+    <div class="th"><span class="live"></span><b>Sandbox console</b><span class="meta"><span class="g">3 allowed</span> · <span>0 denied</span> · 2 routed</span>
+      <div class="tabs"><span class="on">Console</span><span>Every call (2)</span><span>Route map</span><span>Why, in detail</span></div>
+      <div class="tabs filter"><span>Sandbox</span><span>Gateway</span><span class="on">All</span></div>
+      <span style="color:var(--termmuted)">⤢</span>
+    </div>
+    <div class="lines mono">
+      <div><span class="t">20:30:31</span>  <span class="src">sandbox</span><span class="k">NET:OPEN</span> <span class="ok">ALLOWED</span> python3.12 → 10.0.10.4:30400 <span class="pol">[policy:_provider_litellm_agent]</span></div>
+      <div><span class="t">20:30:31</span>  <span class="src">sandbox</span><span class="k">HTTP:POST</span> <span class="ok">ALLOWED</span> POST http://10.0.10.4:30400/v1/chat/completions <span class="pol">[policy:_provider_litellm_agent]</span></div>
+      <div><span class="t">20:30:31</span>  <span class="src c">classifier</span>route=SIMPLE criterion="ladder" bar=0.75 fast=0.83 strong=0.94 reasoning=0.89</div>
+      <div><span class="t">20:30:31</span>  <span class="src l">litellm</span>key=openshell-agent asked=oci-auto-trained route=SIMPLE model=openai.gpt-5.4-nano why="ladder: fast 83% ≥ bar 75%" cost=$0.00009</div>
+      <div><span class="t">20:30:32</span>  <span class="src">sandbox</span><span class="k">HTTP:POST</span> <span class="ok">ALLOWED</span> POST http://10.0.10.4:30400/v1/chat/completions <span class="pol">[policy:_provider_litellm_agent]</span></div>
+      <div><span class="t">20:30:33</span>  <span class="src l">litellm</span>key=openshell-agent asked=oci-auto-trained route=SIMPLE model=openai.gpt-5.4-nano why="ladder: fast 83% ≥ bar 75%" cost=$0.00025</div>
+      <div><span class="t">20:30:36</span>  <span class="src">sandbox</span><span class="k">NET:OPEN</span> <span class="no">DENIED</span> python3.12 → inference.generativeai.us-chicago-1.oci.oraclecloud.com:443 <span class="rs">[reason:no_matching_rule]</span></div>
+    </div>
+  </section>
+</main>
+</body></html>

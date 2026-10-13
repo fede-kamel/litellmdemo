@@ -45,7 +45,7 @@ const DETAILS: { id: Detail; label: string; icon: typeof ListTree }[] = [
   { id: "map", label: "Route map", icon: MapIcon },
   { id: "why", label: "Why, in detail", icon: ScrollText },
   { id: "sandbox", label: "Sandbox", icon: Box },
-  { id: "logs", label: "Live logs", icon: TerminalSquare },
+  { id: "logs", label: "Sandbox console", icon: TerminalSquare },
 ];
 
 /** One numbered part of the story: the request, the decision, the answer. */
@@ -224,7 +224,7 @@ export function Ask() {
   const attach = async (f?: File | null) => { if (f && f.type.startsWith("image/")) setImage(await toDataUrl(f)); };
   const [events, setEvents] = useState<Ev[]>([]);
   const [running, setRunning] = useState(false);
-  const [detail, setDetail] = useState<Detail | null>(null);
+  const [detail, setDetail] = useState<Detail | null>("logs");   // the sandbox console shows from the first run
   const [probe, setProbe] = useState<Probe>(null);
   const es = useRef<EventSource | null>(null);
   const [scenarios, setScenarios] = useState<UseCase[]>([]);

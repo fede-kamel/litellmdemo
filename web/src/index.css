@@ -50,6 +50,7 @@ html { color-scheme: light; }
 body { @apply bg-paper text-ink font-sans antialiased; font-feature-settings: "cv11", "ss01"; }
 ::selection { background: color-mix(in srgb, var(--color-oracle) 18%, transparent); }
 .scroll-thin { scrollbar-width: thin; scrollbar-color: #cfcdc6 transparent; }
+.scroll-term { scrollbar-width: thin; scrollbar-color: #3a3a3a transparent; }
 
 @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgb(199 70 52 / .40); } 70% { box-shadow: 0 0 0 7px rgb(199 70 52 / 0); } 100% { box-shadow: 0 0 0 0 rgb(199 70 52 / 0); } }
 .live-dot { animation: pulse-ring 1.6s infinite; }

@@ -78,7 +78,9 @@ silently for `api-gateway` resources: `edge.sh` polls `get` instead.
 
 Three numbered parts: the request, the decision (route, model, one sentence
 why, the ladder beside it), the answer. The rest is under Details, one tab at a
-time: Every call, Route map, Why in detail, Sandbox, Live logs. The browser
+time: Every call, Route map, Why in detail, Sandbox, Sandbox console (open by
+default). The header's Safety button opens a drawer that explains the three
+layers (OpenShell, LiteLLM, OCI) and carries the escape button. The browser
 test (`web/scripts/ui-e2e.mjs`) opens those tabs by their labels.
 
 ## Multi-step runs
@@ -95,7 +97,8 @@ sometimes writes one step or a cheaper route misses a number (about 1 run in
 
 ## The console
 
-Live logs follows `openshell logs`, the gateway's pod log (one `ROUTE` line per
+The Sandbox console (dark, like the Deep Agents app's) follows `openshell logs`
+(every `ALLOWED`/`DENIED` connection with its policy), the gateway's pod log (one `ROUTE` line per
 request: key, route, why, model, seconds, cost, fallbacks) and the classifier's
 `CLASSIFY` lines. When a request misbehaves, read the `ROUTE`/`ROUTE-FAIL`
 lines first: they name the deployment and the error.

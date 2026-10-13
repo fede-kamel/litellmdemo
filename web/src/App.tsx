@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Brain, MessageSquareText, Network, Route, Scale } from "lucide-react";
+import { Brain, MessageSquareText, Network, Route, Scale, ShieldCheck } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { getJSON, usd } from "./api";
 import { Ask } from "./components/Ask";
@@ -7,6 +7,7 @@ import { Console } from "./components/Console";
 import { ClassifierView } from "./components/ClassifierView";
 import { Compare } from "./components/Compare";
 import { GatewayView } from "./components/GatewayView";
+import { Safety } from "./components/Safety";
 
 type Tab = "demo" | "hood";
 type Hood = "compare" | "classifier" | "gateway";
@@ -32,6 +33,7 @@ export default function App() {
   const [hood, setHood] = useState<Hood>("compare");
   const [gw, setGw] = useState<Gateway | null>(null);
   const [sess, setSess] = useState<Session | null>(null);
+  const [safety, setSafety] = useState(false);
   const refresh = useCallback(() => { getJSON<Stats>("/api/stats").then(setStats).catch(() => undefined); }, []);
   useEffect(() => {
     const poll = () => {
@@ -50,7 +52,7 @@ export default function App() {
           <div className="grid size-8 place-items-center rounded-lg bg-oracle text-white"><Route className="size-4" /></div>
           <div>
             <div className="text-[14px] font-semibold leading-tight">LiteLLM routing control room</div>
-            <div className="whitespace-nowrap text-[11px] text-ink-3">langchain-oci · LiteLLM · OCI Generative AI</div>
+            <div className="whitespace-nowrap text-[11px] text-ink-3">LiteLLM AI Gateway · NVIDIA OpenShell · OCI Generative AI</div>
           </div>
           <nav className="ml-6 flex gap-1 rounded-xl bg-sand p-1">
             {TABS.map((t) => (
@@ -75,9 +77,13 @@ export default function App() {
               </span>
             )}
             {stats && stats.fallbacks > 0 && <span className={clsx(pill, "bg-ochre-soft text-ochre")}>{stats.fallbacks} fallbacks</span>}
+            <button onClick={() => setSafety(true)} className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-[12.5px] text-ink-2 hover:bg-sand hover:text-ink">
+              <ShieldCheck className="size-3.5" /> Safety
+            </button>
           </div>
         </div>
       </header>
+      {safety && <Safety onClose={() => setSafety(false)} />}
       <main className="mx-auto w-full max-w-[1500px] flex-1 px-6 py-5">
         {/* both screens stay mounted: a run survives a look at the router and back */}
         <div className={clsx(tab !== "demo" && "hidden")}><Ask /></div>

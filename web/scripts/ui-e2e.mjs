@@ -55,7 +55,7 @@ try {
   await page.locator("button:has-text('Try to escape')").click();
   check("the sandbox refuses OCI, a vendor and the admin API", await visible("REFUSED", 120000) && (await page.locator("text=/REFUSED/").count()) >= 3);
   await shot("00-ask-escape");
-  await detail("Live logs");
+  await detail("Sandbox console");
   check("the console streams LiteLLM and OpenShell lines", await page.locator("text=/key=openshell-agent|ALLOWED/").count() > 0 || await visible("route=", 20000));
   await detail("Every call");
   await page.locator("button:has-text('sample: an invoice photo')").click();

@@ -29,7 +29,10 @@ Three numbered parts, top to bottom: **The request** (pick a use case, Route it)
 (the route, the model, and why, in one sentence; each route's chance of a good answer beside it) and
 **The answer**. Everything else is under **Details**, one tab at a time: *Every call* (the agent trace,
 with LiteLLM's decision on each call), *Route map*, *Why, in detail* (every check and the closest
-training requests), *Sandbox* (what OpenShell allowed and refused; the escape button) and *Live logs*.
+training requests), *Sandbox* (what OpenShell allowed and refused; the escape button) and the *Sandbox console*,
+open by default: every connection the sandbox opens or is refused, with the policy that decided it, and LiteLLM's
+`ROUTE` line for every request. The header's **Safety** button explains the three layers (OpenShell, LiteLLM, OCI)
+and has the escape button too.
 
 ## The click path (about 8 minutes)
 
@@ -60,7 +63,7 @@ If there is time:
 - **How the router decides** → **The gateway**: every route, its models and its fallbacks, read from LiteLLM's config; "Beyond classification" lists the context-window fallback (a prompt too big for `oci-compact` moves to `oci-long` before the call, checked by `scripts/probe_routes.py`).
 - **How the router decides** → **Compare routers**: the same request through LiteLLM's heuristic, its LLM classifier and our ladder.
 
-Details → Live logs shows LiteLLM's and OpenShell's own log lines for every step; point at a `ROUTE` line once.
+The Sandbox console (Details → Sandbox console) shows OpenShell's and LiteLLM's own lines for every step, `ALLOWED` and `DENIED` with the policy; point at a `ROUTE` line once.
 
 If someone asks what the classifier runs on: a CPU, no GPU. A frozen e5-small encoder and small logistic models answer in tens of milliseconds;
 if the classifier is down or slow, LiteLLM routes to `fallback_tier` and the request still gets an answer.
