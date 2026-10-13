@@ -80,3 +80,20 @@ if the classifier is down or slow, LiteLLM routes to `fallback_tier` and the req
 | a run taking over a minute | a reasoning model (Grok 4.7 has taken up to 2.5 minutes once) | talk over it, or switch to the next use case |
 
 `scripts/oci/preflight.sh` (the cloud) and `scripts/preflight.sh` (the laptop) print the fix for every failing check.
+
+## Videos of the beats
+
+For a room where the live path is slow (every run pays about six seconds of
+sandbox start-up before the first model call, and a reasoning model can think
+for a minute), record the beats the day before and keep them in the deck:
+
+```shell
+LITELLMDEMO_APP=https://<host> node web/scripts/record-demo.mjs ~/Downloads/litellmdemo-videos
+```
+
+One video per beat, run through the real control room the way a click does:
+the billing dispute with every call and the sandbox console, the premium lane,
+the invoice-photo plan, "Try to escape", the failing deployment, the Japanese
+request, the race-condition fix on Codex, and the three routers compared. Each
+is a `.webm` and, with ffmpeg installed, an `.mp4` that PowerPoint and Keynote
+play. `ONLY=invoice` records one beat again.
