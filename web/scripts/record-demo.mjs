@@ -55,6 +55,10 @@ const BEATS = [
   ["08-compare-routers", async (page) => {   // the same request through LiteLLM's heuristic, its LLM classifier and the trained ladder
     await page.locator('nav button:has-text("How the router decides")').click(); await look(page, 1500);
     await page.locator('main button:has-text("Compare routers")').first().click(); await look(page, 2500);
+    // the request to compare on (COMPARE=<text in the dropdown>); by default the coding task, which only the trained classifier sends to CODE
+    const wanted = process.env.COMPARE ?? "race condition";
+    const index = await page.locator("select option").evaluateAll((options, text) => options.findIndex((o) => o.textContent.includes(text)), wanted);
+    if (index >= 0) { await page.locator("select").first().selectOption({ index }); await look(page, 2000); }
     await page.locator("button:has-text('Send to all three')").click();
     await page.getByText("Built-in heuristic", { exact: false }).first().waitFor({ timeout: 240000 });
     await look(page, 9000);
