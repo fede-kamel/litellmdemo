@@ -83,7 +83,8 @@ After the policy update (`scripts/oci/up.sh`) and the redeploy
 | `/openai/v1/responses` from the gateway pod, signed as the node | 200 |
 | `scripts/oci/preflight.sh` | `CLOUD PREFLIGHT OK (10/10)` |
 | `scripts/probe_routes.py` against the cluster gateway (port-forward) | 11/12: code → Codex, no fallback; Spanish and the tool-result turn → Cohere, no fallback. The miss is "constrained planning", COMPLEX instead of REASONING: the router's known miss (`strong-vs-reasoning.json`), not changed here |
-| `scripts/e2e.py` through the public URL | 14/17: both coding cases on Codex, both language cases on Cohere (the Japanese one in two calls), every other call `fallbacks=0` except the fallback scenario itself. Misses: `support-escalation` and `analyst-forecast` go to the strong route (the same known miss; the afternoon's 15/17 ran on the 6 October head) and one `agent-incident` planner run missed a number (its known variance) |
+| `scripts/e2e.py` through the public URL | 14/17, twice in a row: both coding cases on Codex, both language cases on Cohere (the Japanese one in two calls), every other call `fallbacks=0` except the fallback scenario itself. Misses: `support-escalation` and `analyst-forecast` go to the strong route (the same known miss; the afternoon's 15/17 ran on the 6 October head) and `agent-incident` missed its number (51.2) in all three runs of the day, its arithmetic step landing on the strong route |
+| `web/scripts/ui-e2e.mjs` through the public URL | `UI E2E OK (28/28)` |
 
 ## Streams through the API gateway
 
