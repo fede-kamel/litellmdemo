@@ -79,20 +79,23 @@ AGENT_MODELS='["oci-auto-trained", "oci-auto", "oci-auto-llm", "oci-chat", "oci-
 # requests a minute for the agent's key: a multi-step run makes 10-15 calls in under a minute
 AGENT_RPM="${AGENT_RPM:-120}"
 issue_key() {
-  k exec -n "$NS" deploy/litellm-gateway -c gateway -- env AGENT_MODELS="$AGENT_MODELS" AGENT_RPM="$AGENT_RPM" python3 -c '
+  k exec -n "$NS" deploy/litellm-gateway -c gateway -- env AGENT_MODELS="$AGENT_MODELS" AGENT_RPM="$AGENT_RPM" \
+    KEY_ALIAS="${KEY_ALIAS:-openshell-agent}" KEY_BUDGET="${KEY_BUDGET:-5}" \
+    KEY_OWNER="${KEY_OWNER:-OpenShell sandbox: the routing control room agent}" python3 -c '
 import json, os, urllib.request
 base, master = "http://127.0.0.1:4000", os.environ["LITELLM_MASTER_KEY"]
 def call(path, body=None):
     req = urllib.request.Request(base + path, data=None if body is None else json.dumps(body).encode(),
                                  headers={"Authorization": "Bearer " + master, "Content-Type": "application/json"})
     return json.load(urllib.request.urlopen(req, timeout=30))
-old = [k for k in call("/key/list?key_alias=openshell-agent&return_full_object=true").get("keys", [])]
+alias = os.environ["KEY_ALIAS"]
+old = [k for k in call(f"/key/list?key_alias={alias}&return_full_object=true").get("keys", [])]
 tokens = [k["token"] for k in old if isinstance(k, dict) and k.get("token")]
 if tokens:
     call("/key/delete", {"keys": tokens})
-new = call("/key/generate", {"key_alias": "openshell-agent", "models": json.loads(os.environ["AGENT_MODELS"]),
-                             "max_budget": 5, "budget_duration": "30d", "rpm_limit": int(os.environ["AGENT_RPM"]),
-                             "metadata": {"owner": "OpenShell sandbox: the routing control room agent"}})
+new = call("/key/generate", {"key_alias": alias, "models": json.loads(os.environ["AGENT_MODELS"]),
+                             "max_budget": float(os.environ["KEY_BUDGET"]), "budget_duration": "30d",
+                             "rpm_limit": int(os.environ["AGENT_RPM"]), "metadata": {"owner": os.environ["KEY_OWNER"]}})
 print(new["key"], end="")' </dev/null
 }
 key_works() {
@@ -118,6 +121,18 @@ else
   ( umask 077; issue_key > "$AGENT_KEY.new" ) && [[ -s "$AGENT_KEY.new" ]] && mv "$AGENT_KEY.new" "$AGENT_KEY" \
     && echo "agent key: issued (openshell-agent: 3 routers + 2 demo lanes, \$5 / 30 days, $AGENT_RPM rpm) -> $AGENT_KEY" \
     || { rm -f "$AGENT_KEY.new"; echo "ABORT: could not issue the agent key" >&2; exit 1; }
+fi
+# Codex's own key: the trained router only, $10 every 30 days, 60 requests a minute. Codex reaches the gateway
+# through the API gateway's /v1 route (scripts/oci/edge.sh) with this key, and never holds an OCI credential.
+CODEX_KEY="${CODEX_KEY_FILE:-$CONF_DIR/codex_key}"
+if ! { [[ -s "$CODEX_KEY" ]] && AGENT_KEY="$CODEX_KEY" key_works; }; then
+  ( umask 077; AGENT_MODELS='["oci-auto-trained"]' AGENT_RPM=60 KEY_ALIAS=codex KEY_BUDGET=10 \
+      KEY_OWNER="Codex, through the API gateway's /v1 route" issue_key > "$CODEX_KEY.new" ) \
+    && [[ -s "$CODEX_KEY.new" ]] && mv "$CODEX_KEY.new" "$CODEX_KEY" \
+    && echo "codex key: issued (codex: oci-auto-trained, \$10 / 30 days, 60 rpm) -> $CODEX_KEY" \
+    || { rm -f "$CODEX_KEY.new"; echo "ABORT: could not issue the Codex key" >&2; exit 1; }
+else
+  echo "codex key: still valid ($CODEX_KEY)"
 fi
 k get pods -n "$NS" -o wide
 if [[ "${1:-}" == "--forward" ]]; then

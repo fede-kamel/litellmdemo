@@ -81,12 +81,20 @@ done
 HOST="$(o api-gateway gateway get --gateway-id "$GW" --query data.hostname --raw-output)"
 put api_hostname "$HOST"
 
-# 3. One deployment: every path to the control room ------------------------------
+# 3. One deployment: /v1 to LiteLLM, for OpenAI clients such as Codex; every other path to the control room
+# Only the OpenAI-compatible API under /v1 is public, and LiteLLM checks a key on every call; its admin API
+# (/key/*, /user/*, the UI) is not routed. The node's VCN address comes from control-deploy.sh.
+NODE_IP="$(get control_gateway_host)"
+[[ -n "$NODE_IP" ]] || { echo "ABORT: run scripts/oci/control-deploy.sh first (it records the gateway's node)" >&2; exit 1; }
 SPEC="$(mktemp)"; trap 'rm -f "$SPEC"' EXIT
 cat > "$SPEC" <<JSON
 {
   "requestPolicies": {"rateLimiting": {"rateInRequestsPerSecond": 50, "rateKey": "CLIENT_IP"}},
   "routes": [{
+    "path": "/v1/{path*}", "methods": ["GET", "POST"],
+    "backend": {"type": "HTTP_BACKEND", "url": "http://$NODE_IP:30400/v1/\${request.path[path]}",
+                "connectTimeoutInSeconds": 10, "readTimeoutInSeconds": 300, "sendTimeoutInSeconds": 300}
+  }, {
     "path": "/{path*}", "methods": ["ANY"],
     "backend": {"type": "HTTP_BACKEND", "url": "http://$VM_IP:8780/\${request.path[path]}",
                 "connectTimeoutInSeconds": 10, "readTimeoutInSeconds": 300, "sendTimeoutInSeconds": 300}
