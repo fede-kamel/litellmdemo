@@ -39,7 +39,7 @@ if os.environ.get("OCI_SDK_PATH"):
     sys.path.append(os.environ["OCI_SDK_PATH"])
 
 PROFILE = os.environ.get("OCI_CONFIG_PROFILE", "DEFAULT")
-AUTH = os.environ.get("OCI_AUTH", "session")      # "session" or "instance_principal"
+AUTH = os.environ.get("OCI_AUTH", "session")      # "session", "api_key" or "instance_principal"
 REFRESH_SECONDS = 60
 
 # LiteLLM loads this module by path; its sibling with the Cohere request fix (a tool
@@ -70,6 +70,14 @@ class OCISessionSigner(CustomLogger):
                 # cached read until the token is near expiry.
                 self._signer._reset_signers()
                 return self._signer
+            if AUTH == "api_key":   # an OCI CLI profile with an API key: nothing expires
+                if self._signer is None:
+                    import oci
+
+                    config = oci.config.from_file(file_location=os.environ.get("OCI_CONFIG_FILE", "~/.oci/config"),
+                                                  profile_name=PROFILE)
+                    self._signer = oci.signer.Signer.from_config(config)
+                return self._signer
             if self._signer is None or time.monotonic() - self._loaded_at > REFRESH_SECONDS:
                 import oci
 
@@ -90,10 +98,19 @@ class OCISessionSigner(CustomLogger):
             # function tools ("Function tools with reasoning_effort are not supported");
             # with reasoning_effort "none" they call tools. Only for requests that carry
             # tools, so plain requests keep the default reasoning the trial measured.
-            if "openai.gpt-6" in model and (kwargs.get("tools") or (kwargs.get("optional_params") or {}).get("tools")):
+            # Coding agents (Codex) send their own reasoning_effort with every tool call, which OCI's chat API
+            # refuses the same way for GPT-5.4 ("Function tools with reasoning_effort are not supported") and
+            # Grok 4.20 ("does not support parameter"): with tools, every other deployment drops it and keeps
+            # its default.
+            tools = kwargs.get("tools") or (kwargs.get("optional_params") or {}).get("tools")
+            if tools and "openai.gpt-6" in model:
                 kwargs["reasoning_effort"] = "none"
                 if isinstance(kwargs.get("optional_params"), dict):
                     kwargs["optional_params"]["reasoning_effort"] = "none"
+            elif tools:
+                kwargs.pop("reasoning_effort", None)
+                if isinstance(kwargs.get("optional_params"), dict):
+                    kwargs["optional_params"].pop("reasoning_effort", None)
         return kwargs
 
 

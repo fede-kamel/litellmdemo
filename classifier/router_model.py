@@ -19,6 +19,7 @@ class probabilities and the time it took. The LiteLLM plugin
 from __future__ import annotations
 
 import json
+import re
 import threading
 import time
 from dataclasses import asdict, dataclass, field
@@ -102,7 +103,17 @@ def text_of(messages: list[dict]) -> tuple[str, bool]:
                         image = True
                     elif isinstance(p.get("text"), str):
                         parts.append(p["text"])
-    return "\n".join(parts), image
+    kept = [t for t in (HARNESS.sub("", x).strip() for x in parts)
+            if t and not t.startswith(HARNESS_PREFIXES)]
+    return "\n".join(kept), image
+
+
+# Coding agents send their own context as user turns: Codex adds the repository's AGENTS.md
+# ("# AGENTS.md instructions for <dir>") and an <environment_context> block before the request.
+# That text is the same for every request of a session and drowned the request itself (every
+# Codex task routed COMPLEX), so it is not part of what the router reads.
+HARNESS = re.compile(r"<(environment_context|user_instructions|INSTRUCTIONS|permissions[^>]*)>.*?</\1>", re.S)
+HARNESS_PREFIXES = ("# AGENTS.md instructions", "<environment_context>", "<user_instructions>")
 
 
 class RouterModel:

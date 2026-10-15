@@ -68,3 +68,19 @@ def transform_response(self, model, raw_response, model_response, *args, **kwarg
 
 OCIChatConfig.transform_request = transform_request
 OCIChatConfig.transform_response = transform_response
+
+
+# Streaming. OCI compresses its event stream (zstd), and httpx decoding it chunk by chunk fails
+# with "cannot use a decompressobj multiple times" (LiteLLM 1.104): every streamed OCI chat call
+# broke, which is how Codex and most OpenAI clients call. Ask for an uncompressed stream; the
+# header is not part of OCI's request signature.
+_validate_environment = OCIChatConfig.validate_environment
+
+
+def validate_environment(self, headers, *args, **kwargs):
+    out = _validate_environment(self, headers, *args, **kwargs)
+    out["Accept-Encoding"] = "identity"
+    return out
+
+
+OCIChatConfig.validate_environment = validate_environment

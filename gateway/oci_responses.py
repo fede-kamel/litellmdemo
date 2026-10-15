@@ -120,5 +120,32 @@ class OCIResponses(CustomLLM):
     def completion(self, *args, **kwargs):
         return asyncio.run(self.acompletion(*args, **kwargs))
 
+    async def astreaming(self, model, messages, api_base, custom_prompt_dict, model_response: ModelResponse, print_verbose,
+                         encoding, api_key, logging_obj, optional_params, acompletion=None, litellm_params=None,
+                         logger_fn=None, headers=None, timeout=None, client=None):
+        """A streamed request (Codex and most OpenAI clients stream): one buffered OCI call, replayed as chunks.
+
+        Without this LiteLLM failed every streamed call ("'coroutine' object is not an iterator") and the
+        CODE route fell back to its backup, quietly."""
+        r = await self.acompletion(model, messages, api_base, custom_prompt_dict, ModelResponse(), print_verbose, encoding,
+                                   api_key, logging_obj, optional_params, acompletion, litellm_params, logger_fn, headers,
+                                   timeout, client)
+        msg, u = r.choices[0].message, r.usage
+        usage = {"prompt_tokens": u.prompt_tokens, "completion_tokens": u.completion_tokens, "total_tokens": u.total_tokens}
+        calls = msg.tool_calls or []
+        yield {"text": msg.content or "", "tool_use": None, "is_finished": not calls, "index": 0,
+               "finish_reason": "" if calls else "stop", "usage": None if calls else usage}
+        for i, c in enumerate(calls):
+            last = i == len(calls) - 1
+            yield {"text": "", "index": 0, "is_finished": last, "finish_reason": "tool_calls" if last else "",
+                   "usage": usage if last else None,
+                   "tool_use": {"id": c.id, "type": "function", "index": i,
+                                "function": {"name": c.function.name, "arguments": c.function.arguments}}}
+
+    def streaming(self, *args, **kwargs):
+        async def collect():
+            return [chunk async for chunk in self.astreaming(*args, **kwargs)]
+        yield from asyncio.run(collect())
+
 
 handler = OCIResponses()

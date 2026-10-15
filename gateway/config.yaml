@@ -207,7 +207,7 @@ router_settings:
     - {oci-reasoning: [oci-reasoning-backup]}
     - {oci-code: [oci-code-backup]}
     - {oci-long: [oci-long-backup]}
-    - {oci-multilingual: [oci-multilingual-backup]}
+    - {oci-multilingual: [oci-multilingual-backup, oci-balanced]}   # coding agents: Cohere 500s and Gemini rejects Codex's tool schema
     - {oci-flaky: [oci-balanced]}
   context_window_fallbacks:
     - {oci-compact: [oci-long]}
