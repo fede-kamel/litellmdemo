@@ -10,8 +10,8 @@ Each case runs `codex exec` in a fresh temporary directory with LiteLLM as Codex
   - the outcome: an answer that says what was asked, or code that builds and passes `go vet` and
     the race detector.
 
-The key is the gateway's master key from ~/.config/litellmdemo/master_key, passed to Codex through
-the environment, never on a command line. Ends with "CODEX E2E OK (n/n)". Paid: cents per run, most
+The key is LITELLM_API_KEY, or the gateway's master key next to its config (LITELLMDEMO_CONFIG), passed to Codex
+through the environment, never on a command line. Ends with "CODEX E2E OK (n/n)". Paid: cents per run, most
 of it the code case (Codex sends about 48k tokens of context per turn).
 """
 
@@ -28,7 +28,7 @@ from pathlib import Path
 
 GATEWAY = os.environ.get("LITELLM_GATEWAY", "http://127.0.0.1:4400")
 LOG = Path(os.environ.get("GATEWAY_LOG", "out/gateway.log"))
-KEY = Path.home() / ".config/litellmdemo/master_key"
+KEY = Path(os.environ.get("LITELLMDEMO_CONFIG", Path.home() / ".config/litellmdemo/config.json")).parent / "master_key"
 
 RACE = """package main
 
@@ -95,7 +95,7 @@ def run(case: dict) -> tuple[bool, str]:
                "-c", "model_provider=litellm", "-m", "oci-auto-trained", "-o", str(last), case["prompt"]]
         started = time.time()
         r = subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=900,
-                           env=dict(os.environ, LITELLM_KEY=KEY.read_text().strip()))
+                           env=dict(os.environ, LITELLM_KEY=os.environ.get("LITELLM_API_KEY") or KEY.read_text().strip()))
         seconds = time.time() - started
         # the gateway writes a streamed call's line after the stream ends: wait until its log is quiet
         seen, quiet_since = -1, time.time()
