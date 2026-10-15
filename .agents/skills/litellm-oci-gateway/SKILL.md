@@ -40,7 +40,7 @@ their own terminal; the gateway picks it up within a minute, no restart.
 |---|---|---|
 | the laptop, 127.0.0.1:4000 (fallback) | the operator's OCI session, from `~/.oci` | `scripts/gateway.sh` |
 | Rancher Desktop Kubernetes, node port 30400 (the demo) | the same session, mounted from Secret `oci-session`; `OCI_CONFIG_FILE=/oci/config` | `scripts/local/deploy.sh`; `scripts/local/refresh.sh` keeps the Secret fresh |
-| OKE (read-only for agents) | the node's instance principal; no stored key | `scripts/oci/deploy.sh` |
+| OKE (changes only through `scripts/oci/*.sh`, and only when the operator asks) | the node's instance principal; no stored key | `scripts/oci/deploy.sh` |
 
 The Kubernetes gateway runs LiteLLM's official image
 (`ghcr.io/berriai/litellm-database:v1.104.0`) with Postgres for virtual keys;

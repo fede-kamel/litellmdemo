@@ -57,11 +57,11 @@ then `scripts/local/push-session.sh`). Never try to log in for them.
 | OKE pods | a pod in CrashLoopBackOff; an ImportError is a module missing from a ConfigMap list in `scripts/oci/deploy.sh` | `KUBECONFIG=~/.config/litellmdemo/kubeconfig kubectl logs -n litellmdemo deploy/<name> -c <container> --tail=40`; `scripts/oci/deploy.sh` |
 | kubectl times out | the cluster's API admits one address and the operator's changed (NAT pools: `api_allow_cidr` in `deploy.json`) | `scripts/oci/up.sh` (refreshes the rule), `scripts/oci/control.sh` (the VM's SSH rule) |
 | the VM's services | the unit stopped, or the VM rebooted before linger was on | `scripts/oci/control.sh ssh 'systemctl --user restart openshell-gateway litellmdemo-control'` |
-| the sandbox | `Landlock probe` error: Landlock is off in the kernel; `controller cpu is not available`: cgroup delegation missing | `scripts/oci/control.sh` sets both at first boot; on an older VM add `lsm=landlock,...` with grubby and `Delegate=cpu cpuset io memory pids` for `user@.service`, reboot, then `scripts/oci/control-deploy.sh` |
+| the sandbox | `Landlock probe` error: Landlock is off in the kernel; `controller cpu is not available`: cgroup delegation missing | `scripts/oci/control.sh` sets both at first boot and waits for the reboot; a VM created before that needs a repair the operator authorises (`lsm=landlock,...` with grubby, `Delegate=cpu cpuset io memory pids` for `user@.service`, a reboot): stop and report |
 | a request fails with `Argument list too long` | the request went to the sandbox on the command line (Linux caps one argument at 128 KiB) | the control room hands it over as a file (`ui/sandbox.py`, `scripts/openshell.sh ask @file`); update the VM with `scripts/oci/control-deploy.sh` |
 | the public URL | the API gateway deployment not ACTIVE, or the VM's firewall | `scripts/oci/edge.sh`; the VM allows 8780 from 10.20.0.0/16 only |
 | a run's stream stops mid-way | API Gateway closes a response silent for 15 s | the streams send a keep-alive every 5 s (`ui/server.py`); check the deployment's read timeout (300 s) with `scripts/oci/edge.sh` |
-| the agent's virtual key | spent, or missing after a fresh database | `scripts/oci/deploy.sh` re-issues it; then `scripts/oci/control-deploy.sh` (the provider is recreated only when missing: `scripts/openshell.sh provider` on the VM to refresh it) |
+| the agent's virtual key | missing or invalid (a fresh database) | `scripts/oci/deploy.sh` issues a new one, then `scripts/oci/control-deploy.sh`. A valid key near its budget is kept as it is: its spend resets every 30 days; rotating it early is the operator's decision (and the VM's provider is recreated only when missing) |
 | the CODE route answers with GPT-5.1, not Codex | the cluster runs an older `gateway/` than the repository | `scripts/oci/deploy.sh` (the pods restart when their ConfigMaps' hash changes) |
 | the sandbox cannot escape | a probe reached something | stop: that is a policy regression, report it, do not loosen anything |
 | laptop: OCI session | expired, or at its maximum lifetime | the operator logs in (above); then `scripts/local/push-session.sh` |
@@ -90,8 +90,9 @@ The "Escalation, end to end" use case runs in plan mode (`mode: plan` in
 each step as its own request, so LiteLLM routes every task separately. Events:
 `plan`, `step`, `step_done`, and `step` on every `llm` event (0 = the
 planner). A task routed somewhere unexpected is usually its wording: the router
-reads only the step's instruction. Fix the planner prompt (`PLANNER` in
-`app/agent.py`), never the router, and say so in the report. The planner
+reads only the step's instruction. That is the planner prompt (`PLANNER` in
+`app/agent.py`), not the router: report it; change the prompt only when the
+operator asks for it, never to make a check pass. The planner
 sometimes writes one step or a cheaper route misses a number (about 1 run in
 6): report it, do not loosen the check.
 

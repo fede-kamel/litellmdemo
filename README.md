@@ -379,7 +379,15 @@ room sends requests to `LITELLM_GATEWAY` and falls back to
 `LITELLM_GATEWAY_FALLBACK` when it is unreachable or its OCI signing fails:
 `uv run python scripts/failover.py` ends with `FAILOVER OK`.
 
-Or hand it to Codex: `codex "$(cat codex/PROMPT.md)"` with the flags in
+Or hand it to Codex: `codex "$(cat codex/PROMPT-laptop.md)"` with the flags in
+[codex/README.md](codex/README.md).
+
+### With Codex
+
+Codex builds the cloud demo from a clone and gets it ready for a talk:
+`codex "$(cat codex/PROMPT.md)"` to build it (Codex shows the plan and waits
+for your yes before the first cloud change) and `codex exec
+"$(cat codex/PROMPT-ops.md)"` before a talk, both with the flags in
 [codex/README.md](codex/README.md). Codex follows [codex/SPEC.md](codex/SPEC.md),
 the rules in [AGENTS.md](AGENTS.md), and the skills in
 [.agents/skills/](.agents/skills/):

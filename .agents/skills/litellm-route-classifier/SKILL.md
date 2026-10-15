@@ -21,7 +21,7 @@ compatibility: sentence-transformers, scikit-learn, py3langid; the laptop gatewa
    difficulty signals, averaged with the pass rates of the 12 most similar
    labelled prompts. The cheapest route at least as likely as the quality bar
    wins; if none is, the most likely one. Training chose the route set
-   (fast, balanced, reasoning) and the bar (75%).
+   (fast, strong, reasoning) and the bar (75%).
 
 LiteLLM calls it as the complexity router's `classifier_type: custom`
 (`gateway/trained_classifier.py`, through the `route-classifier` service on
