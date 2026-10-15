@@ -189,7 +189,7 @@ steps = [
     ("3", "Trained ladder", RED, ["code? → CODE", "else P(good answer)", "for every route", "cheapest over the bar"]),
     ("4", "Route → group", INDIGO, ["REASONING → oci-reasoning", "MEDIUM → oci-balanced", "CODE → oci-code ..."]),
     ("5", "Deployment", TEAL, ["latency-based choice", "context-window check", "fallback if it fails"]),
-    ("6", "OCI model", RED, ["signed with the", "operator's session", "e.g. Grok 4.20 reasoning"]),
+    ("6", "OCI model", RED, ["signed as the OKE node", "no key in the cloud", "e.g. Grok 4.20 reasoning"]),
 ]
 x = 70
 for n, title, c, lines in steps:
@@ -405,10 +405,11 @@ f.text(1740, 710, "IAM", 22, RED, weight="700", spacing="4")
 f.rect(1580, 735, 320, 245, stroke=RED, sw=2)
 f.text(1740, 780, "dynamic group", 19, INK, weight="700")
 f.text(1740, 810, "instances in compartment", 15, SUB, mono=True)
-f.text(1740, 870, "policy", 19, INK, weight="700")
-f.text(1740, 900, "use generative-ai-family", 15, SUB, mono=True)
-f.text(1740, 925, "in compartment litellmdemo", 15, SUB, mono=True)
-f.text(1740, 962, "no key · no token stored", 16, OKG, weight="700")
+f.text(1740, 858, "policy", 19, INK, weight="700")
+f.text(1740, 886, "use generative-ai-family", 15, SUB, mono=True)
+f.text(1740, 910, "manage generative-ai-response", 15, SUB, mono=True)
+f.text(1740, 934, "in compartment litellmdemo", 15, SUB, mono=True)
+f.text(1740, 966, "no key · no token stored", 16, OKG, weight="700")
 f.text(1000, 1130, "scripts/oci/up.sh · deploy.sh · control.sh · control-deploy.sh · edge.sh · preflight.sh · down.sh", 18, MUT, mono=True)
 f.save("figure5-kubernetes.svg")
 
@@ -419,7 +420,7 @@ f.header("FIGURE 6 · ISOLATION", "The agent holds nothing; LiteLLM decides, sig
 # sandbox
 f.panel(60, 270, 520, 760, GREEN)
 f.text(320, 322, "OPENSHELL SANDBOX", 22, "#4C7A00", weight="700", spacing="4")
-f.text(320, 354, "litellmdemo-agent · on the operator's laptop", 16, SUB, mono=True)
+f.text(320, 354, "litellmdemo-agent · on the VM in OCI", 16, SUB, mono=True)
 f.rect(100, 385, 440, 150, stroke="#4C7A00", sw=2)
 f.text(320, 430, "the langchain-oci agent", 22, INK, weight="700")
 f.text(320, 465, "create_oci_agent · tools · the control room's", 16, SUB)
@@ -445,7 +446,7 @@ f.text(1090, 354, "official image ghcr.io/berriai/litellm-database:v1.104.0", 16
 steps6 = [("1", "Key check", "virtual key openshell-agent: 5 model groups, $5 / 30 days, 120 rpm (Postgres)"),
           ("2", "Classify", "complexity router → classifier_type: custom → route-classifier (the ladder)"),
           ("3", "Route", "route → model group → fastest healthy deployment · fallbacks · retries"),
-          ("4", "Sign", "OCI request signing: on OKE as the node (instance principal); on the laptop with the OCI session"),
+          ("4", "Sign", "OCI request signing as the OKE node (instance principal): no key, no token stored"),
           ("5", "Account", "cost per call, spend per key · x-litellm-route-decision explains the route")]
 for i, (n, t, d) in enumerate(steps6):
     y = 390 + i * 118
@@ -453,7 +454,7 @@ for i, (n, t, d) in enumerate(steps6):
     f.badge(762, y + 50, n, INDIGO, r=19)
     f.text(800, y + 42, t, 21, INDIGO, anchor="start", weight="700")
     f.text(800, y + 74, d, 15.5, SUB, anchor="start")
-f.text(1090, 1000, "pods: litellm-gateway · route-classifier · postgres  (OKE, or Rancher Desktop on the laptop)", 15, MUT)
+f.text(1090, 1000, "pods: litellm-gateway · route-classifier · postgres  (OKE Basic cluster, namespace litellmdemo)", 15, MUT)
 f.arrow(1500, 520, 1580, 520, color=RED, sw=4)
 f.text(1540, 490, "signed", 15, SUB, weight="600")
 # OCI
@@ -464,15 +465,16 @@ f.text(1760, 420, "us-chicago-1", 17, SUB)
 for i, v in enumerate(["OpenAI", "Google", "Meta", "xAI", "Cohere"]):
     f.rect(1620, 450 + i * 70, 280, 56, stroke=RED, sw=1.5, rx=10)
     f.text(1760, 485 + i * 70, v, 19, INK, weight="600")
-f.text(1760, 840, "IAM: a dynamic group", 16, SUB)
-f.text(1760, 866, "of the demo's nodes,", 16, SUB)
-f.text(1760, 892, "one policy:", 16, SUB)
-f.text(1760, 920, "use generative-ai-family", 15, SUB, mono=True)
+f.text(1760, 830, "IAM: a dynamic group", 16, SUB)
+f.text(1760, 856, "of the demo's instances,", 16, SUB)
+f.text(1760, 882, "one policy:", 16, SUB)
+f.text(1760, 910, "use generative-ai-family", 14.5, SUB, mono=True)
+f.text(1760, 934, "manage generative-ai-response", 14.5, SUB, mono=True)
 # who holds what
 f.panel(60, 1060, 1880, 200, NAVY)
 f.text(1000, 1105, "WHO HOLDS WHICH SECRET", 20, NAVY, weight="700", spacing="4")
 cols6 = [("the agent, in the sandbox", "nothing: a placeholder", OKG), ("the OpenShell gateway", "the agent's LiteLLM virtual key", "#4C7A00"),
-         ("LiteLLM", "its master key · Postgres: keys, budgets, spend", INDIGO), ("OCI", "OKE: the node's identity · laptop: a 1-hour session", RED)]
+         ("LiteLLM", "its master key · Postgres: keys, budgets, spend", INDIGO), ("OCI", "the node's identity: nothing stored", RED)]
 for i, (who, what, c) in enumerate(cols6):
     x = 120 + i * 455
     f.text(x + 200, 1160, who, 19, c, weight="700")
@@ -525,3 +527,92 @@ msg(1300, 2, 1, "answer + x-litellm-* headers", "tier · model · cost · route-
 msg(1365, 1, 0, "answer (headers intact)", None, color="#4C7A00", dash="8 6")
 f.text(1000, 1470, "gateway/route_headers.py · gateway/trained_classifier.py · gateway/oci_session_signer.py · sandbox/profile/litellm-gateway.yaml", 16, MUT, mono=True)
 f.save("figure7-sequence.svg")
+
+
+# ===================================================== Figure 8 · the Codex harness
+CODEX = "#5B4BC4"     # Codex, as in the OpenShell guide's figures
+f = Fig(2000, 1300)
+f.header("FIGURE 8 · BUILT AND RUN BY CODEX", "You ask; Codex runs the scripts and the checks, and reports",
+         "the repository carries the rules, the skills and the spec; the scripts change the cloud; the checks say when it is done", accent=CODEX)
+# the operator
+f.panel(60, 270, 330, 640, NAVY)
+f.text(225, 322, "OPERATOR", 22, NAVY, weight="700", spacing="4")
+f.text(225, 352, "plain-language requests", 16, SUB)
+for i, ask in enumerate(["“Build the demo", "“Get it ready", "“Add a model", "“Is the router"]):
+    tail = ["in my tenancy”", "for my talk”", "to a route”", "still good?”"][i]
+    y = 380 + i * 104
+    f.rect(92, y, 266, 86, stroke=NAVY, sw=2, rx=12)
+    f.text(225, y + 36, ask, 18, NAVY, weight="700")
+    f.text(225, y + 64, tail, 18, NAVY, weight="700")
+f.rect(92, 806, 266, 84, fill="#FCF6E8", stroke=OCHRE, sw=2, rx=12)
+f.text(225, 840, "keeps the OCI API key", 16, OCHRE, weight="700")
+f.text(225, 868, "read by the OCI CLI, never by Codex", 13.5, SUB)
+f.arrow(390, 470, 450, 470, color=NAVY, sw=4)
+f.badge(420, 505, "1", NAVY, r=15)
+f.text(420, 440, "asks", 16, SUB, weight="600")
+# Codex and the harness
+f.panel(450, 270, 520, 640, CODEX, fill="#F5F3FC")
+f.logo("openai-mark.png", 492, 296, 50)
+f.text(740, 330, "Codex", 30, CODEX, weight="700")
+f.text(710, 362, "codex exec -s workspace-write", 15, SUB, mono=True)
+harness = [("AGENTS.md", "loaded on start: the hard rules",
+            ["no secret ever passes through Codex", "the cloud changes only through scripts/oci", "never change code to make a check pass"]),
+           ("five skills", ".agents/skills/: one per part",
+            ["demo-ops · oci-gateway · oci-routing", "route-classifier · route-verify"]),
+           ("codex/SPEC.md + PROMPT*.md", "the build, as steps with checkpoints",
+            ["inputs · preflight · a plan you approve", "known behaviour · the report"])]
+y = 395
+for title, sub, lines in harness:
+    h = 74 + 25 * len(lines)
+    f.rect(482, y, 456, h, stroke=CODEX, sw=2, rx=12)
+    f.text(710, y + 32, title, 19, CODEX, weight="700", mono=title.startswith(("AGENTS", "codex")))
+    f.text(710, y + 56, sub, 15, SUB)
+    for j, ln in enumerate(lines):
+        f.text(710, y + 84 + j * 25, ln, 15, INK)
+    y += h + 14
+f.arrow(970, 470, 1040, 470, color=CODEX, sw=4)
+f.badge(1005, 505, "2", CODEX, r=15)
+f.text(1005, 440, "runs", 16, SUB, weight="600")
+# the scripts
+f.panel(1040, 270, 440, 640, INDIGO, fill="#F3F2FB")
+f.text(1260, 322, "THE SCRIPTS", 22, INDIGO, weight="700", spacing="4")
+f.text(1260, 352, "idempotent · rerun after any failure", 16, SUB)
+for i, (script, end) in enumerate([("scripts/oci/up.sh", "UP OK"), ("scripts/oci/deploy.sh", "DEPLOY OK"),
+                                   ("scripts/oci/control.sh", "CONTROL OK"), ("scripts/oci/control-deploy.sh", "CONTROL DEPLOY OK"),
+                                   ("scripts/oci/edge.sh", "EDGE OK  https://…")]):
+    y = 380 + i * 102
+    f.rect(1072, y, 376, 86, stroke=INDIGO, sw=2, rx=12)
+    f.text(1260, y + 34, script, 16, INDIGO, weight="700", mono=True)
+    f.text(1260, y + 64, end, 15, OKG, weight="700", mono=True)
+f.arrow(1480, 470, 1540, 470, color=RED, sw=4)
+f.badge(1510, 505, "3", RED, r=15)
+f.text(1510, 440, "create", 16, SUB, weight="600")
+# Oracle Cloud
+f.panel(1540, 270, 400, 640, RED, fill="#FDF4F2")
+f.logo("oracle.png", 1630, 292, 220)
+f.text(1740, 384, "one tenancy, nothing on a laptop", 16, SUB)
+for i, (t, s_) in enumerate([("OKE Basic cluster", "LiteLLM · classifier · Postgres"), ("one A1 VM", "control room · OpenShell · sandbox"),
+                             ("OCI API Gateway", "the public HTTPS URL"), ("OCI Generative AI", "20 models · signed as the node")]):
+    y = 410 + i * 120
+    f.rect(1572, y, 336, 102, stroke=RED, sw=2, rx=12)
+    f.text(1740, y + 42, t, 19, INK, weight="700")
+    f.text(1740, y + 72, s_, 15, SUB)
+# the checks
+f.panel(60, 950, 1880, 220, TEAL, fill="#F0F7F8")
+f.text(1000, 998, "THE CHECKS SAY WHEN IT IS DONE", 21, TEAL, weight="700", spacing="4")
+checks = [("scripts/oci/preflight.sh", "CLOUD PREFLIGHT OK (10/10)"), ("scripts/probe_routes.py", "ROUTES OK"),
+          ("scripts/e2e.py", "E2E OK"), ("web/scripts/ui-e2e.mjs", "UI E2E OK")]
+for i, (c, end) in enumerate(checks):
+    x = 100 + i * 370
+    f.rect(x, 1030, 340, 100, stroke=TEAL, sw=2, rx=12)
+    f.text(x + 170, 1072, c, 16, TEAL, weight="700", mono=True)
+    f.text(x + 170, 1104, end, 15, OKG, weight="700", mono=True)
+f.rect(1580, 1030, 320, 100, fill="#FFFFFF", stroke=NAVY, sw=2.5, rx=12)
+f.text(1740, 1072, "the report", 19, NAVY, weight="700")
+f.text(1740, 1104, "every last line · every known miss", 14.5, SUB)
+f.arrow(1540, 1080, 1576, 1080, color=TEAL, sw=4)
+f.arrow(640, 910, 640, 1026, color=CODEX, sw=4)
+f.badge(610, 966, "4", CODEX, r=15)
+f.text(660, 972, "verifies", 16, SUB, weight="600", anchor="start")
+f.text(1000, 1235, "You ask. Codex runs the scripts and the checks. The keys stay where the scripts read them.", 24, INK, weight="700")
+f.save("figure8-codex.svg")
