@@ -22,7 +22,7 @@ put() { python3 -c "import json,sys; p=sys.argv[1]; d=json.load(open(p)); d[sys.
 PROFILE="$(cfg profile)"; REGION="$(cfg region)"
 export OCI_CLI_AUTH=api_key OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING=True PYTHONWARNINGS=ignore
 o() { oci "$@" --profile "$PROFILE" --region "$REGION"; }
-say() { printf '\033[1;32m$\033[0m %s\n' "$*"; }
+say() { printf '\033[1;32m$\033[0m %s\n' "$*" >&2; }   # stderr: some callers capture stdout
 TAGS='{"demo": "litellmdemo"}'
 COMP="$(get compartment)"; VCN="$(get vcn)"; RT="$(get route_table)"; VM_IP="$(get control_private_ip)"
 [[ -n "$COMP" && -n "$VCN" && -n "$RT" ]] || { echo "ABORT: run scripts/oci/up.sh first" >&2; exit 1; }

@@ -24,7 +24,7 @@ put() { python3 -c "import json,sys; p=sys.argv[1]; d=json.load(open(p)); d[sys.
 PROFILE="$(cfg profile)"; REGION="$(cfg region)"
 export OCI_CLI_AUTH=api_key OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING=True PYTHONWARNINGS=ignore
 o() { oci "$@" --profile "$PROFILE" --region "$REGION"; }
-say() { printf '\033[1;32m$\033[0m %s\n' "$*"; }
+say() { printf '\033[1;32m$\033[0m %s\n' "$*" >&2; }   # stderr: some callers capture stdout
 TAGS='{"demo": "litellmdemo"}'
 SSH_KEY="${LITELLMDEMO_SSH_KEY:-$HOME/.ssh/id_ed25519}"
 COMP="$(get compartment)"; VCN="$(get vcn)"; NODE_SUBNET="$(get node_subnet)"
@@ -91,13 +91,36 @@ fi
 PUB="$(ip_of public-ip)"; PRIV="$(ip_of private-ip)"
 put control_private_ip "$PRIV"
 say "VM: $PRIV (SSH via $PUB)"
+# cloud-init writes the marker just before its reboot: ready means the marker and
+# the rebooted kernel, with Landlock among its security modules
+READY='test -f /var/lib/litellmdemo-ready && grep -qw landlock /sys/kernel/security/lsm'
 for _ in $(seq 60); do
-  ssh -i "$SSH_KEY" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 "opc@$PUB" test -f /var/lib/litellmdemo-ready 2>/dev/null && break
+  ssh -i "$SSH_KEY" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 "opc@$PUB" "$READY" 2>/dev/null && break
   sleep 15
 done
-ssh -i "$SSH_KEY" -o ConnectTimeout=10 "opc@$PUB" test -f /var/lib/litellmdemo-ready || { echo "ABORT: cloud-init not finished" >&2; exit 1; }
+ssh -i "$SSH_KEY" -o ConnectTimeout=10 "opc@$PUB" "$READY" || { echo "ABORT: cloud-init or its reboot not finished (Landlock not active yet)" >&2; exit 1; }
 
-# 3. The gateway and the logs, as the VM sees them -------------------------------
+# 3. OpenShell on the VM: the CLI and the gateway, rootless Podman, as user services --
+OPENSHELL_VERSION="${OPENSHELL_VERSION:-0.1.2}"
+say "OpenShell $OPENSHELL_VERSION and rootless Podman on the VM"
+ssh -i "$SSH_KEY" -o ConnectTimeout=10 -o LogLevel=ERROR "opc@$PUB" "V=$OPENSHELL_VERSION bash -s" <<'VM'
+set -euo pipefail
+if ! command -v openshell >/dev/null || [[ "$(openshell --version 2>/dev/null)" != *"$V"* ]]; then
+  d="$(mktemp -d)"; cd "$d"; B="https://github.com/NVIDIA/OpenShell/releases/download/v$V"
+  for f in "openshell-$V-1.fc44.aarch64.rpm" "openshell-gateway-$V-1.fc44.aarch64.rpm" \
+           openshell-checksums-sha256.txt openshell-gateway-checksums-sha256.txt; do curl -fsSLO "$B/$f"; done
+  cat openshell-checksums-sha256.txt openshell-gateway-checksums-sha256.txt \
+    | grep -E " (openshell|openshell-gateway)-$V-1\.fc44\.aarch64\.rpm$" | sha256sum -c --quiet
+  sudo dnf -y -q install podman "./openshell-$V-1.fc44.aarch64.rpm" "./openshell-gateway-$V-1.fc44.aarch64.rpm"
+  cd /; rm -rf "$d"
+fi
+export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+systemctl --user enable --now podman.socket openshell-gateway >/dev/null 2>&1
+for _ in $(seq 20); do systemctl --user is-active --quiet openshell-gateway && exit 0; sleep 3; done
+echo "ABORT: the openshell-gateway user service is not active (journalctl --user -u openshell-gateway)" >&2; exit 1
+VM
+
+# 4. The gateway and the logs, as the VM sees them -------------------------------
 export KUBECONFIG="$CONF_DIR/kubeconfig"
 say "the gateway on a VCN node port, a read-only log reader for the console"
 kubectl apply -f "$ROOT/deploy/k8s/control-access.yaml" >/dev/null

@@ -25,7 +25,7 @@ put() { python3 -c "import json,sys; p=sys.argv[1]; d=json.load(open(p)); d[sys.
 PROFILE="$(cfg profile)"; REGION="$(cfg region)"; NAME="$(cfg compartment_name)"
 export OCI_CLI_AUTH=api_key OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING=True PYTHONWARNINGS=ignore
 o() { oci "$@" --profile "$PROFILE" --region "$REGION"; }
-say() { printf '\033[1;32m$\033[0m %s\n' "$*"; }
+say() { printf '\033[1;32m$\033[0m %s\n' "$*" >&2; }   # stderr: some callers capture stdout
 TAGS='{"demo": "litellmdemo"}'
 wait_wr() {  # poll an OKE work request until it succeeds (30 minutes at most)
   local s=""
@@ -44,7 +44,7 @@ TENANCY="$(python3 -c "import configparser,os,sys; c=configparser.ConfigParser()
 # set api_allow_cidr to admit a whole NAT pool instead.
 API_CIDR="$(python3 -c "import json,sys; print(json.load(open(sys.argv[1])).get('api_allow_cidr', ''))" "$DEPLOY")"
 if [[ -z "$API_CIDR" ]]; then
-  API_CIDR="$(curl -fsS -m 10 http://portquiz.net:6443 | sed -n 's/.*Your IP: \([0-9.]*\).*/\1/p')/32"
+  API_CIDR="$( (curl -fsS -m 10 http://portquiz.net:6443 || true) | sed -n 's/.*Your IP: \([0-9.]*\).*/\1/p')/32"
 fi
 [[ "$API_CIDR" == */* && "$API_CIDR" != "/32" ]] || { echo "ABORT: cannot determine the address to admit to the Kubernetes API" >&2; exit 1; }
 MY_IP="$API_CIDR"
@@ -105,6 +105,7 @@ subnet() {  # key cidr name dns
     id="$(o network subnet create --compartment-id "$COMP" --vcn-id "$VCN" --cidr-block "$2" --display-name "$3" --dns-label "$4" \
           --route-table-id "$RT" --security-list-ids "[\"$SL\"]" --freeform-tags "$TAGS" \
           --wait-for-state AVAILABLE --query data.id --raw-output)"
+    [[ -n "$id" && "$id" != null ]] || { echo "ABORT: could not create subnet $3" >&2; return 1; }
     put "$1" "$id"
   fi
   echo "$id"
@@ -173,6 +174,7 @@ for _ in $(seq 60); do
   [[ "$NODE_NOW" == FAILED ]] && { echo "ABORT: node FAILED" >&2; exit 1; }
   sleep 30
 done
+[[ "$NODE_NOW" == ACTIVE ]] || { echo "ABORT: the node is still $NODE_NOW after 30 minutes" >&2; exit 1; }
 
 # 5. Instance principal: dynamic group of the demo's instances + a scoped policy ---------
 DG="$(get dynamic_group)"

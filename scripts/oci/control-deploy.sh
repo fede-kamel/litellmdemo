@@ -18,7 +18,7 @@ DEPLOY="$CONF_DIR/deploy.json"
 get() { python3 -c "import json,sys; print(json.load(open(sys.argv[1])).get(sys.argv[2], ''))" "$STATE" "$1"; }
 put() { python3 -c "import json,sys; p=sys.argv[1]; d=json.load(open(p)); d[sys.argv[2]]=sys.argv[3]; json.dump(d, open(p,'w'), indent=1)" "$STATE" "$1" "$2"; }
 cfg() { python3 -c "import json,sys; print(json.load(open(sys.argv[1]))[sys.argv[2]])" "$DEPLOY" "$1"; }
-say() { printf '\033[1;32m$\033[0m %s\n' "$*"; }
+say() { printf '\033[1;32m$\033[0m %s\n' "$*" >&2; }   # stderr: some callers capture stdout
 export OCI_CLI_AUTH=api_key OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING=True PYTHONWARNINGS=ignore
 export KUBECONFIG="$CONF_DIR/kubeconfig"
 SSH_KEY="${LITELLMDEMO_SSH_KEY:-$HOME/.ssh/id_ed25519}"
@@ -74,7 +74,7 @@ if ! command -v kubectl >/dev/null; then
   echo "$(cat kubectl.sha256)  kubectl" | sha256sum -c >/dev/null && sudo install -m 0755 kubectl /usr/local/bin/kubectl && rm -f kubectl kubectl.sha256
 fi
 cd ~/litellmdemo && ~/.local/bin/uv sync --quiet
-openshell status 2>/dev/null | grep -q Connected || openshell gateway add --local https://127.0.0.1:17670 </dev/null >/dev/null
+[[ "$(openshell status </dev/null 2>/dev/null)" == *Connected* ]] || openshell gateway add --local https://127.0.0.1:17670 </dev/null >/dev/null
 podman build -q -t litellmdemo-agent:0.1 sandbox/ >/dev/null
 KUBECONFIG=~/.config/litellmdemo/kubeconfig kubectl get pods >/dev/null
 VM
@@ -109,5 +109,7 @@ WantedBy=default.target
 UNIT
 "${SSH[@]}" 'export XDG_RUNTIME_DIR=/run/user/$(id -u); systemctl --user daemon-reload && systemctl --user enable litellmdemo-control >/dev/null 2>&1; systemctl --user restart litellmdemo-control'
 for _ in $(seq 30); do "${SSH[@]}" 'curl -sf -m 3 -o /dev/null http://127.0.0.1:8780/api/health' && break; sleep 3; done
+"${SSH[@]}" 'curl -sf -m 3 -o /dev/null http://127.0.0.1:8780/api/health' \
+  || { echo "ABORT: the control room does not answer on :8780 (on the VM: journalctl --user -u litellmdemo-control -n 40)" >&2; exit 1; }
 "${SSH[@]}" 'curl -sf -m 5 http://127.0.0.1:8780/api/gateways; echo; curl -sf -m 30 http://127.0.0.1:8780/api/sandbox; echo'
 echo "CONTROL DEPLOY OK  (control room on $(get control_private_ip):8780 inside the VCN)"

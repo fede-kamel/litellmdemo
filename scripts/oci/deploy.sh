@@ -37,6 +37,10 @@ apply_cm classifier-code --from-file="$ROOT/classifier/__init__.py" --from-file=
 apply_cm gateway-code --from-file="$ROOT/gateway/config.yaml" --from-file="$ROOT/gateway/oci_session_signer.py" \
   --from-file="$ROOT/gateway/trained_classifier.py" --from-file="$ROOT/gateway/route_headers.py" \
   --from-file="$ROOT/gateway/oci_responses.py" --from-file="$ROOT/gateway/oci_cohere_fix.py"
+# The gateway's master key: generated once (as scripts/gateway.sh does on a laptop), kept in a 0600 file, never printed.
+if [[ ! -s "$CONF_DIR/master_key" ]]; then
+  ( umask 077; python3 -c "import secrets; print('sk-' + secrets.token_urlsafe(24))" > "$CONF_DIR/master_key" )
+fi
 # --from-file keeps the key file's trailing newline, and LiteLLM would then
 # never match the master key; strip it through a private temp file.
 KEYTMP="$(mktemp)"; PGTMP="$(mktemp)"; URLTMP="$(mktemp)"; chmod 600 "$KEYTMP" "$PGTMP" "$URLTMP"
