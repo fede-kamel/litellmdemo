@@ -26,6 +26,13 @@ export OCI_CLI_AUTH=api_key OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING=True PYTHO
 o() { oci "$@" --profile "$PROFILE" --region "$REGION"; }
 say() { printf '\033[1;32m$\033[0m %s\n' "$*" >&2; }   # stderr: some callers capture stdout
 TAGS='{"demo": "litellmdemo"}'
+adopt() {  # record a demo resource an interrupted run already created: adopt <state key> <oci list args...>
+  [[ -n "$(get "$1")" ]] && return 0
+  local key="$1" id; shift
+  id="$(o "$@" --all --query 'data[?"lifecycle-state"!=`DELETED` && "lifecycle-state"!=`DELETING` && "lifecycle-state"!=`TERMINATED` && "lifecycle-state"!=`TERMINATING`].id | [0]' --raw-output 2>/dev/null || true)"
+  [[ -n "$id" && "$id" != null ]] && { put "$key" "$id"; say "adopt $key from an earlier run"; }
+  return 0
+}
 SSH_KEY="${LITELLMDEMO_SSH_KEY:-$HOME/.ssh/id_ed25519}"
 COMP="$(get compartment)"; VCN="$(get vcn)"; NODE_SUBNET="$(get node_subnet)"
 [[ -n "$COMP" && -n "$VCN" && -n "$NODE_SUBNET" ]] || { echo "ABORT: run scripts/oci/up.sh first" >&2; exit 1; }
@@ -39,6 +46,7 @@ MY_CIDR="$(cfg api_allow_cidr)"
 [[ -n "$MY_CIDR" ]] || MY_CIDR="$(curl -fsS -m 10 https://ifconfig.me)/32"
 
 # 1. NSG: SSH from the operator only --------------------------------------------
+adopt control_nsg network nsg list --compartment-id "$COMP" --vcn-id "$VCN" --display-name litellmdemo-control
 NSG="$(get control_nsg)"
 if [[ -z "$NSG" ]]; then
   say "create NSG litellmdemo-control"
@@ -53,6 +61,7 @@ o network nsg rules add --nsg-id "$NSG" --security-rules "[{\"direction\":\"INGR
   \"sourceType\":\"CIDR_BLOCK\",\"isStateless\":false,\"tcpOptions\":{\"destinationPortRange\":{\"min\":22,\"max\":22}}}]" >/dev/null
 
 # 2. The VM ---------------------------------------------------------------------
+adopt control_instance compute instance list --compartment-id "$COMP" --display-name litellmdemo-control
 VM="$(get control_instance)"
 if [[ -z "$VM" ]]; then
   TENANCY="$(python3 -c "import configparser,os,sys; c=configparser.ConfigParser(); c.read(os.path.expanduser('~/.oci/config')); print(c[sys.argv[1]]['tenancy'])" "$PROFILE")"
@@ -76,7 +85,8 @@ runcmd:
   - loginctl enable-linger opc
   # OpenShell confines the agent with Landlock: built into UEK, off by default
   - grubby --update-kernel=ALL --args="lsm=landlock,lockdown,capability,yama,selinux,bpf,ima,evm"
-  - touch /var/lib/litellmdemo-ready
+  # the marker only when every step above took: a rerun of control.sh repairs the packages, not the rest
+  - sh -c 'command -v rsync git jq docker >/dev/null && test -f /etc/systemd/system/user@.service.d/delegate.conf && grep -rqs landlock /boot/loader/entries /boot/grub2/grubenv /etc/kernel/cmdline && touch /var/lib/litellmdemo-ready'
   - systemctl reboot
 CLOUD
   say "create VM litellmdemo-control: VM.Standard.A1.Flex ($(cfg control_ocpus 2) OCPU, $(cfg control_memory_gbs 12) GB)"
@@ -105,6 +115,7 @@ OPENSHELL_VERSION="${OPENSHELL_VERSION:-0.1.2}"
 say "OpenShell $OPENSHELL_VERSION and rootless Podman on the VM"
 ssh -i "$SSH_KEY" -o ConnectTimeout=10 -o LogLevel=ERROR "opc@$PUB" "V=$OPENSHELL_VERSION bash -s" <<'VM'
 set -euo pipefail
+command -v rsync >/dev/null && command -v git >/dev/null && command -v jq >/dev/null || sudo dnf -y -q install git rsync jq
 if ! command -v openshell >/dev/null || [[ "$(openshell --version 2>/dev/null)" != *"$V"* ]]; then
   d="$(mktemp -d)"; cd "$d"; B="https://github.com/NVIDIA/OpenShell/releases/download/v$V"
   for f in "openshell-$V-1.fc44.aarch64.rpm" "openshell-gateway-$V-1.fc44.aarch64.rpm" \

@@ -24,11 +24,19 @@ export OCI_CLI_AUTH=api_key OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING=True PYTHO
 o() { oci "$@" --profile "$PROFILE" --region "$REGION"; }
 say() { printf '\033[1;32m$\033[0m %s\n' "$*" >&2; }   # stderr: some callers capture stdout
 TAGS='{"demo": "litellmdemo"}'
+adopt() {  # record a demo resource an interrupted run already created: adopt <state key> <oci list args...>
+  [[ -n "$(get "$1")" ]] && return 0
+  local key="$1" id; shift
+  id="$(o "$@" --all --query 'data[?"lifecycle-state"!=`DELETED` && "lifecycle-state"!=`DELETING` && "lifecycle-state"!=`TERMINATED` && "lifecycle-state"!=`TERMINATING`].id | [0]' --raw-output 2>/dev/null || true)"
+  [[ -n "$id" && "$id" != null ]] && { put "$key" "$id"; say "adopt $key from an earlier run"; }
+  return 0
+}
 COMP="$(get compartment)"; VCN="$(get vcn)"; RT="$(get route_table)"; VM_IP="$(get control_private_ip)"
 [[ -n "$COMP" && -n "$VCN" && -n "$RT" ]] || { echo "ABORT: run scripts/oci/up.sh first" >&2; exit 1; }
 [[ -n "$VM_IP" ]] || { echo "ABORT: run scripts/oci/control.sh first" >&2; exit 1; }
 
 # 1. A public subnet of its own: HTTPS from anywhere, nothing else ----------------
+adopt edge_security_list network security-list list --compartment-id "$COMP" --vcn-id "$VCN" --display-name litellmdemo-edge
 SL="$(get edge_security_list)"
 if [[ -z "$SL" ]]; then
   say "create security list litellmdemo-edge (443 from anywhere)"
@@ -38,6 +46,7 @@ if [[ -z "$SL" ]]; then
         --freeform-tags "$TAGS" --wait-for-state AVAILABLE --query data.id --raw-output)"
   put edge_security_list "$SL"
 fi
+adopt edge_subnet network subnet list --compartment-id "$COMP" --vcn-id "$VCN" --display-name litellmdemo-edge
 SUBNET="$(get edge_subnet)"
 if [[ -z "$SUBNET" ]]; then
   say "create subnet litellmdemo-edge 10.20.20.0/24"

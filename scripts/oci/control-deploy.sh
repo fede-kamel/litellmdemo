@@ -37,7 +37,7 @@ say "build the web front end"
 (cd "$ROOT/web" && npm run build >/dev/null)
 
 say "copy the repository to the VM"
-rsync -az --delete -e "ssh -i $SSH_KEY -o LogLevel=ERROR" \
+rsync -az --delete -e "ssh -i '$SSH_KEY' -o LogLevel=ERROR" \
   --exclude .venv --exclude node_modules --exclude out --exclude .git --exclude __pycache__ --exclude 'web/node_modules' \
   "$ROOT/" "opc@$PUB:litellmdemo/"
 
@@ -79,11 +79,18 @@ podman build -q -t litellmdemo-agent:0.1 sandbox/ >/dev/null
 KUBECONFIG=~/.config/litellmdemo/kubeconfig kubectl get pods >/dev/null
 VM
 
+# The provider holds the agent's key and the gateway's address, and the sandbox is built from sandbox/:
+# when any of them changed since the last deploy (a re-issued key, a new node, a new image or policy),
+# recreate the provider and the sandbox; otherwise keep them and upload the agent's code.
+STAMP="$( { shasum -a 256 < "$CONF_DIR/agent_key"; echo "$GW"; cat "$ROOT"/sandbox/Dockerfile "$ROOT"/sandbox/requirements.txt \
+           "$ROOT"/sandbox/policy.yaml "$ROOT"/sandbox/profile/litellm-gateway.yaml; } | shasum -a 256 | cut -c1-16)"
 say "the sandbox (provider, policy, agent) against $GW"
 "${SSH[@]}" "cd ~/litellmdemo && export XDG_RUNTIME_DIR=/run/user/\$(id -u) LITELLMDEMO_SANDBOX_GATEWAY=$GW \
   LITELLMDEMO_AGENT_KEY_FILE=\$HOME/.config/litellmdemo/agent_key LITELLMDEMO_SANDBOX_IMAGE=localhost/litellmdemo-agent:0.1 \
-  && { openshell provider get litellm-agent </dev/null >/dev/null 2>&1 || scripts/openshell.sh provider; } \
-  && scripts/openshell.sh up && scripts/openshell.sh sync"
+  && if [[ \"\$(cat ~/.config/litellmdemo/sandbox.stamp 2>/dev/null)\" != $STAMP ]] \
+       || ! openshell provider get litellm-agent </dev/null >/dev/null 2>&1; then \
+       scripts/openshell.sh down && scripts/openshell.sh provider; fi \
+  && scripts/openshell.sh up && scripts/openshell.sh sync && echo $STAMP > ~/.config/litellmdemo/sandbox.stamp"
 
 say "the control room as a service on :8780"
 "${SSH[@]}" "mkdir -p ~/.config/systemd/user && cat > ~/.config/systemd/user/litellmdemo-control.service" <<UNIT
@@ -111,5 +118,11 @@ UNIT
 for _ in $(seq 30); do "${SSH[@]}" 'curl -sf -m 3 -o /dev/null http://127.0.0.1:8780/api/health' && break; sleep 3; done
 "${SSH[@]}" 'curl -sf -m 3 -o /dev/null http://127.0.0.1:8780/api/health' \
   || { echo "ABORT: the control room does not answer on :8780 (on the VM: journalctl --user -u litellmdemo-control -n 40)" >&2; exit 1; }
-"${SSH[@]}" 'curl -sf -m 5 http://127.0.0.1:8780/api/gateways; echo; curl -sf -m 30 http://127.0.0.1:8780/api/sandbox; echo'
+# what a visitor needs: the OKE gateway as the primary, the sandbox ready, the agent's key known to LiteLLM
+"${SSH[@]}" 'curl -fsS -m 5 http://127.0.0.1:8780/api/gateways && curl -fsS -m 60 http://127.0.0.1:8780/api/sandbox' | python3 -c '
+import json, sys
+gw, sb = (json.loads(x) for x in sys.stdin.read().replace("}{", "}\n{").splitlines())
+print("gateway:", gw.get("role"), gw.get("cluster"), "| sandbox ready:", sb.get("ready"), "| agent key:", bool(sb.get("key")))
+sys.exit(0 if gw.get("role") == "primary" and gw.get("cluster") == "oke" and sb.get("ready") and sb.get("key") else 1)' \
+  || { echo "ABORT: the control room answers, but not with the OKE gateway, a ready sandbox and the agent key" >&2; exit 1; }
 echo "CONTROL DEPLOY OK  (control room on $(get control_private_ip):8780 inside the VCN)"

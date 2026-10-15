@@ -20,14 +20,22 @@ APP = os.environ.get("LITELLMDEMO_APP", "http://127.0.0.1:8780")
 
 
 def run(body: dict) -> bool:
+    """True when the run answered live in the OpenShell sandbox: no replay, no host-agent failover."""
+    body = {**body, "replay": False}   # a replay must never count as a recording
     req = urllib.request.Request(f"{APP}/api/runs", data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
     rid = json.load(urllib.request.urlopen(req, timeout=30))["id"]
-    answered = False
+    seen: set[str] = set()
     for line in urllib.request.urlopen(f"{APP}/api/runs/{rid}/stream", timeout=600):
         text = line.decode().strip()
-        if text.startswith("data:") and '"type": "answer"' in text:
-            answered = True
-    return answered
+        if text.startswith("data:"):
+            try:
+                event = json.loads(text[5:])
+            except ValueError:
+                continue
+            seen.add(event.get("type", ""))
+            if event.get("type") == "runtime":
+                seen.add("runtime:" + str(event.get("runtime")))
+    return "answer" in seen and "runtime:openshell" in seen and not seen & {"replay", "failover"}
 
 
 def main() -> int:

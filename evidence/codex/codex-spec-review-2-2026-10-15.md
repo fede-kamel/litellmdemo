@@ -6,11 +6,14 @@ scripts again. Disposition, same day:
 - Fixed: 1 (openshell status read the heredoc), 5 (repairs run through `uv run`), 8 (node wait could fall
   through to UP OK), 9 (address probe failure skipped its diagnostic), 10 (subnet helper could return an
   empty ID), 11 (port-forward readiness).
-- Open, in the scripts, not yet changed: 2 (a replaced agent key or node address does not refresh an
-  existing OpenShell provider), 3 (an interrupted create is not adopted on rerun for every resource),
-  4 (a failed cloud-init step can still leave the ready marker), 6 (a rebuilt sandbox image does not
-  replace an existing sandbox), 7 (control-deploy's final API checks do not fail the script),
-  12 (record_runs counts replays), 13 (an SSH key path with spaces breaks rsync).
+- Fixed the same day, after the write-up's first draft: 2 and 6 (control-deploy.sh keeps a stamp of the agent
+  key, the gateway's address and sandbox/; when it changes, the provider and the sandbox are recreated),
+  3 (up.sh, control.sh and edge.sh adopt a demo resource an interrupted run already created, by name),
+  4 (cloud-init writes the ready marker only when its steps took; a rerun of control.sh reinstalls the
+  packages), 7 (control-deploy.sh fails unless the control room reports the OKE gateway, a ready sandbox and
+  the agent key), 12 (record_runs.py asks for no replay and counts only live sandbox runs), 13 (the SSH key
+  path is quoted for rsync).
+- Not yet run: a first build in an empty tenancy with these scripts.
 
 The review as Codex wrote it:
 

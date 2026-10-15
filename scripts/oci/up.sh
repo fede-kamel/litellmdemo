@@ -27,6 +27,13 @@ export OCI_CLI_AUTH=api_key OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING=True PYTHO
 o() { oci "$@" --profile "$PROFILE" --region "$REGION"; }
 say() { printf '\033[1;32m$\033[0m %s\n' "$*" >&2; }   # stderr: some callers capture stdout
 TAGS='{"demo": "litellmdemo"}'
+adopt() {  # record a demo resource an interrupted run already created: adopt <state key> <oci list args...>
+  [[ -n "$(get "$1")" ]] && return 0
+  local key="$1" id; shift
+  id="$(o "$@" --all --query 'data[?"lifecycle-state"!=`DELETED` && "lifecycle-state"!=`DELETING` && "lifecycle-state"!=`TERMINATED` && "lifecycle-state"!=`TERMINATING`].id | [0]' --raw-output 2>/dev/null || true)"
+  [[ -n "$id" && "$id" != null ]] && { put "$key" "$id"; say "adopt $key from an earlier run"; }
+  return 0
+}
 wait_wr() {  # poll an OKE work request until it succeeds (30 minutes at most)
   local s=""
   for _ in $(seq 60); do
@@ -50,6 +57,7 @@ fi
 MY_IP="$API_CIDR"
 
 # 1. Compartment ------------------------------------------------------------
+adopt compartment iam compartment list --compartment-id "$TENANCY" --name "$NAME"
 COMP="$(get compartment)"
 if [[ -z "$COMP" ]]; then
   say "create compartment $NAME"
@@ -60,6 +68,7 @@ if [[ -z "$COMP" ]]; then
 fi
 
 # 2. Network: VCN, internet gateway, route table, security list, two subnets ---
+adopt vcn network vcn list --compartment-id "$COMP" --display-name litellmdemo-vcn
 VCN="$(get vcn)"
 if [[ -z "$VCN" ]]; then
   say "create VCN 10.20.0.0/16"
@@ -67,6 +76,7 @@ if [[ -z "$VCN" ]]; then
          --dns-label litellmdemo --freeform-tags "$TAGS" --wait-for-state AVAILABLE --query data.id --raw-output)"
   put vcn "$VCN"
 fi
+adopt igw network internet-gateway list --compartment-id "$COMP" --vcn-id "$VCN" --display-name litellmdemo-igw
 IGW="$(get igw)"
 if [[ -z "$IGW" ]]; then
   say "create internet gateway"
@@ -74,6 +84,7 @@ if [[ -z "$IGW" ]]; then
          --freeform-tags "$TAGS" --wait-for-state AVAILABLE --query data.id --raw-output)"
   put igw "$IGW"
 fi
+adopt route_table network route-table list --compartment-id "$COMP" --vcn-id "$VCN" --display-name litellmdemo-rt
 RT="$(get route_table)"
 if [[ -z "$RT" ]]; then
   say "create route table (0.0.0.0/0 via the internet gateway)"
@@ -82,6 +93,7 @@ if [[ -z "$RT" ]]; then
         --freeform-tags "$TAGS" --wait-for-state AVAILABLE --query data.id --raw-output)"
   put route_table "$RT"
 fi
+adopt security_list network security-list list --compartment-id "$COMP" --vcn-id "$VCN" --display-name litellmdemo-sl
 SL="$(get security_list)"
 INGRESS="[{\"protocol\":\"all\",\"source\":\"10.20.0.0/16\",\"isStateless\":false},
           {\"protocol\":\"6\",\"source\":\"$MY_IP\",\"isStateless\":false,\"tcpOptions\":{\"destinationPortRange\":{\"min\":6443,\"max\":6443}}},
@@ -99,6 +111,7 @@ else
     --egress-security-rules "$EGRESS" --force >/dev/null
 fi
 subnet() {  # key cidr name dns
+  adopt "$1" network subnet list --compartment-id "$COMP" --vcn-id "$VCN" --display-name "$3"
   local id; id="$(get "$1")"
   if [[ -z "$id" ]]; then
     say "create subnet $3 $2"
@@ -177,6 +190,7 @@ done
 [[ "$NODE_NOW" == ACTIVE ]] || { echo "ABORT: the node is still $NODE_NOW after 30 minutes" >&2; exit 1; }
 
 # 5. Instance principal: dynamic group of the demo's instances + a scoped policy ---------
+adopt dynamic_group iam dynamic-group list --compartment-id "$TENANCY" --name litellmdemo-nodes
 DG="$(get dynamic_group)"
 if [[ -z "$DG" ]]; then
   say "create dynamic group litellmdemo-nodes (instances in the litellmdemo compartment)"
@@ -192,6 +206,7 @@ fi
 STATEMENTS="[\"Allow dynamic-group litellmdemo-nodes to use generative-ai-family in compartment $NAME\",
              \"Allow dynamic-group litellmdemo-nodes to manage generative-ai-response in compartment $NAME\",
              \"Allow dynamic-group litellmdemo-nodes to read repos in compartment $NAME\"]"
+adopt policy iam policy list --compartment-id "$TENANCY" --name litellmdemo-genai
 POLICY="$(get policy)"
 if [[ -z "$POLICY" ]]; then
   say "create policy: the nodes may use Generative AI (chat and Responses API) and read the demo's images, in the litellmdemo compartment only"

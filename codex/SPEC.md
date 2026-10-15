@@ -167,7 +167,7 @@ LITELLMDEMO_APP="$URL" uv run python scripts/record_runs.py </dev/null
 ```
 
 Paid, a few cents: 23 live jobs (six of the control room's examples and the
-seventeen use cases), saved on the VM. Checkpoint: `23/23 recorded`.
+seventeen use cases), saved on the VM. Only runs that answered live in the sandbox count, never a replay. Checkpoint: `23/23 recorded`.
 
 ### 4.7 The checks
 
@@ -229,7 +229,7 @@ not a failure to fix or retry: report it and go on.
 | `edge.sh` is quiet for minutes | the CLI's `--wait-for-state` fails silently for API Gateway resources, so it polls | wait (4.5) |
 | a run's stream stops after 15 s of silence | API Gateway closes a silent response | the control room sends a keep-alive every 5 s; check the deployment's read timeout with `edge.sh` |
 | preflight: recorded runs fewer than 5 | 4.6 not run yet | run 4.6 |
-| preflight: the agent key near its budget | $5 every 30 days; the spend resets on its own | report the spend; rotating the key early is the operator's decision (`deploy.sh` keeps a valid key, and the VM's provider is recreated only when missing) |
+| preflight: the agent key near its budget | $5 every 30 days; the spend resets on its own | report the spend; rotating the key early is the operator's decision (`deploy.sh` keeps a valid key; after a re-issued key, `control-deploy.sh` recreates the provider and the sandbox) |
 | probe `trained: constrained planning` gets COMPLEX, expects REASONING | the router's known miss: on these prompts it picks the strong route (`evidence/strong-vs-reasoning.json`) | report it; do not change the router or the check |
 | e2e `support-escalation` and `analyst-forecast` get COMPLEX, expect REASONING | the same known miss | report them |
 | e2e `agent-incident` misses `51.2` | its arithmetic step lands on a cheaper route; it missed in every run on 2026-10-12 | report it; do not loosen the check |
