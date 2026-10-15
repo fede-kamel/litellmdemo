@@ -95,9 +95,14 @@ if [[ -z "$RT" ]]; then
 fi
 adopt security_list network security-list list --compartment-id "$COMP" --vcn-id "$VCN" --display-name litellmdemo-sl
 SL="$(get security_list)"
-INGRESS="[{\"protocol\":\"all\",\"source\":\"10.20.0.0/16\",\"isStateless\":false},
-          {\"protocol\":\"6\",\"source\":\"$MY_IP\",\"isStateless\":false,\"tcpOptions\":{\"destinationPortRange\":{\"min\":6443,\"max\":6443}}},
-          {\"protocol\":\"1\",\"source\":\"0.0.0.0/0\",\"isStateless\":false,\"icmpOptions\":{\"type\":3,\"code\":4}}]"
+# api_allow_cidr may list several addresses or ranges, comma-separated (home and office, say): one rule each
+INGRESS="$(python3 -c '
+import json, sys
+rules = [{"protocol": "all", "source": "10.20.0.0/16", "isStateless": False}]
+rules += [{"protocol": "6", "source": c.strip(), "isStateless": False, "tcpOptions": {"destinationPortRange": {"min": 6443, "max": 6443}}}
+          for c in sys.argv[1].split(",") if c.strip()]
+rules.append({"protocol": "1", "source": "0.0.0.0/0", "isStateless": False, "icmpOptions": {"type": 3, "code": 4}})
+print(json.dumps(rules))' "$MY_IP")"
 EGRESS='[{"protocol":"all","destination":"0.0.0.0/0","isStateless":false}]'
 if [[ -z "$SL" ]]; then
   say "create security list (VCN-internal, Kubernetes API from $MY_IP only, all egress)"

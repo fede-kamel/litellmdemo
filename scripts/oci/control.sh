@@ -57,8 +57,10 @@ fi
 say "NSG: SSH from $MY_CIDR only"
 OLD="$(o network nsg rules list --nsg-id "$NSG" --query 'data[].id' 2>/dev/null || echo '[]')"
 [[ "$OLD" == "[]" || -z "$OLD" ]] || o network nsg rules remove --nsg-id "$NSG" --security-rule-ids "$OLD" >/dev/null
-o network nsg rules add --nsg-id "$NSG" --security-rules "[{\"direction\":\"INGRESS\",\"protocol\":\"6\",\"source\":\"$MY_CIDR\",
-  \"sourceType\":\"CIDR_BLOCK\",\"isStateless\":false,\"tcpOptions\":{\"destinationPortRange\":{\"min\":22,\"max\":22}}}]" >/dev/null
+o network nsg rules add --nsg-id "$NSG" --security-rules "$(python3 -c '
+import json, sys   # api_allow_cidr may list several, comma-separated: one rule each
+print(json.dumps([{"direction": "INGRESS", "protocol": "6", "source": c.strip(), "sourceType": "CIDR_BLOCK", "isStateless": False,
+                   "tcpOptions": {"destinationPortRange": {"min": 22, "max": 22}}} for c in sys.argv[1].split(",") if c.strip()]))' "$MY_CIDR")" >/dev/null
 
 # 2. The VM ---------------------------------------------------------------------
 adopt control_instance compute instance list --compartment-id "$COMP" --display-name litellmdemo-control
