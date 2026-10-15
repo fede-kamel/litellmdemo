@@ -412,6 +412,7 @@ the rules in [AGENTS.md](AGENTS.md), and the skills in
 | every use case through the public URL | `LITELLMDEMO_APP=https://<host> uv run python scripts/e2e.py` | `E2E OK` |
 | the screens, through the public URL | `LITELLMDEMO_APP=https://<host> node web/scripts/ui-e2e.mjs` | `UI E2E OK` |
 | the same routes through the OKE gateway | `LITELLM_GATEWAY=http://127.0.0.1:4100 uv run python scripts/probe_routes.py` | `ROUTES OK` |
+| Codex through the gateway: the right model per request, and the job done | `LITELLM_GATEWAY=<gateway> GATEWAY_LOG=<its log> uv run python scripts/codex_e2e.py` | `CODEX E2E OK` |
 | requests survive a classifier outage | `scripts/oci/chaos.sh` | `CHAOS OK` |
 | signing survives token rotation | `scripts/oci/soak.sh` (70 min) | `SOAK OK` |
 | the control room survives a gateway outage | `uv run python scripts/failover.py` | `FAILOVER OK` |

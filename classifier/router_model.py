@@ -116,6 +116,17 @@ HARNESS = re.compile(r"<(environment_context|user_instructions|INSTRUCTIONS|perm
 HARNESS_PREFIXES = ("# AGENTS.md instructions", "<environment_context>", "<user_instructions>")
 
 
+def from_coding_agent(messages: list[dict]) -> bool:
+    """True when a user turn is a coding agent's own context (Codex's AGENTS.md or environment block)."""
+    for m in messages:
+        content = m.get("content")
+        texts = [content] if isinstance(content, str) else [p.get("text", "") for p in content or [] if isinstance(p, dict)]
+        if m.get("role", "user") in ("user", "human") and any(isinstance(t, str) and (t.lstrip().startswith(HARNESS_PREFIXES)
+                                                                                     or HARNESS.search(t)) for t in texts):
+            return True
+    return False
+
+
 class RouterModel:
     def __init__(self, model_dir: Path = MODEL_DIR):
         self.model_dir = model_dir
@@ -163,7 +174,10 @@ class RouterModel:
         if len(text) > LONG_CONTEXT_CHARS:
             return Decision("LONG_CONTEXT", "rule: length", milliseconds=_ms(started))
         lang = language(text)
-        if lang != "en":
+        # A coding agent's request carries its tool list (Codex: 21 tools, 192 KB of schemas), and the
+        # multilingual route's Cohere Command A answers such a request empty: leave another language
+        # to the ladder, whose encoder is multilingual and whose routes call tools.
+        if lang != "en" and not from_coding_agent(messages):
             return Decision("MULTILINGUAL", f"rule: language ({lang})", milliseconds=_ms(started))
         if not self.trained:
             return Decision("MEDIUM", "fallback: no trained model", milliseconds=_ms(started))
