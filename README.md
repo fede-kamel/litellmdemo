@@ -297,6 +297,8 @@ gateway's configuration.
 
 ## Run it
 
+Step by step, with the Codex paths: [docs/RUNBOOK.md](docs/RUNBOOK.md).
+
 ### In Oracle Cloud
 
 Everything runs in one OCI tenancy and nothing on a laptop: the gateway, the
